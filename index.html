@@ -484,9 +484,9 @@
             {
                 title: "Cursed Forest",
                 concept: "Variabel",
-                story: "Kamu adalah murid Magician muda. Mentormu meninggalkan gulungan ajaib berisi petunjuk, Untuk membuka warp portal di Ruang Harta Sang Naga. Catat semua spell yang berhasil kamu declare di Memorize. Untuk pertama kali kamu harus menyatakan namamu menggunakan spell mantra 'let'.",
-                task: "Cast Spell Elemen Variabel bernama 'namaPenyihir' dan isi dengan namamu (dalam tanda kutip).",
-                hint: "Coba: let namaPenyihir = \"NamaMu\";",
+                story: "Kamu adalah seorang Magician muda. Mentormu meninggalkan gulungan ajaib berisi petunjuk, Untuk membuka warp portal di ruang harta Sang Naga. Catat semua spell yang berhasil kamu declare di Memorize untuk melawannya di akhir perjalanan. sekarang bangkitkan kekuatan dirimu dengan menggunakan spell mantra 'let'.",
+                task: "Cast Spell Elemen Variabel bernama 'namaMagician' dan isi dengan namamu (dalam tanda kutip).",
+                hint: "Coba: let namaMagician = \"NamaMu\";",
                 image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/hutan.jpg" alt="Hutan Terkutuk">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#1a5f3f" width="400" height="300"/>
@@ -500,7 +500,7 @@
                     <circle cx="220" cy="115" r="2" fill="#ffeb3b"/>
                     <circle cx="180" cy="125" r="2" fill="#ffeb3b"/>
                 </svg>`,
-                check: (code) => code.includes('let') && code.includes('namapenyihir') && code.includes('=') && (code.includes('"') || code.includes("'")),
+                check: (code) => code.includes('let') && code.includes('namamagician') && code.includes('=') && (code.includes('"') || code.includes("'")),
                 explanation: `<strong>📚 Pengetahuan Variabel:</strong><br><br>
                 <strong>Apa itu Variabel?</strong><br>
                 Variabel adalah wadah atau kotak untuk menyimpan data dalam program. Seperti kotak penyimpanan yang diberi label!<br><br>
@@ -516,8 +516,8 @@
                 
                 <strong>Aturan Penamaan:</strong><br>
                 • Nama variabel harus dimulai dengan huruf, underscore (_), atau dollar ($)<br>
-                • Tidak boleh pakai spasi (gunakan camelCase: namaPenyihir)<br>
-                • Case-sensitive (namaPenyihir ≠ namapenyihir)<br><br>
+                • Tidak boleh pakai spasi (gunakan camelCase: namaMagician)<br>
+                • Case-sensitive (namaMagician ≠ namamagician)<br><br>
                 
                 <strong>Contoh Penggunaan:</strong><br>
                 <code>let nama = "Merlin";</code><br>
@@ -527,9 +527,9 @@
             {
                 title: "Decision Bridge",
                 concept: "Kondisional (pernyataan if)",
-                story: "Sebuah jembatan ajaib muncul, tapi hanya mengizinkan penyihir dengan kekuatan magis 50+ untuk menyeberang. Cek apakah level kekuatanmu cukup tinggi!",
-                task: "Create Elemental pernyataan if yang mengecek apakah kekuatanMagis lebih besar atau sama dengan 50.",
-                hint: "Coba: if (kekuatanMagis >= 50) { }",
+                story: "Sebuah jembatan ajaib muncul, tapi hanya mengizinkan penyihir dengan kekuatan magis 77+ untuk menyeberang. Cek apakah level kekuatanmu cukup tinggi!",
+                task: "Create Elemental pernyataan if yang mengecek apakah kekuatanMagis lebih besar atau sama dengan 77.",
+                hint: "Coba: if (kekuatanMagis >= 77) { }",
                 image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/jembatan.PNG" alt="Jembatan Keputusan">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#87ceeb" width="400" height="300"/>
