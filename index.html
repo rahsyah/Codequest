@@ -2,10 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Belajar menulis Mantra</title>
+    <title>Petualangan Kode</title>
     <style>
         * {
             margin: 0;
@@ -106,6 +104,26 @@
             border-radius: 10px;
             margin-bottom: 20px;
             overflow: hidden;
+            position: relative;
+        }
+
+        .story-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .story-image svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
         }
 
         .story-text {
@@ -333,7 +351,8 @@
                 story: "Kamu adalah murid penyihir muda. Mentormu meninggalkan gulungan ajaib berisi petunjuk. Untuk membuka gerbang kuno, kamu harus menyatakan namamu menggunakan mantra 'let'.",
                 task: "Buat variabel bernama 'namaPenyihir' dan isi dengan namamu (dalam tanda kutip).",
                 hint: "Coba: let namaPenyihir = \"NamaMu\";",
-                image: `<svg viewBox="0 0 400 300" style="width:100%; height:100%;">
+                image: `<img src="img/works/hutan.jpg" alt="Hutan Terkutuk">
+                <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#1a5f3f" width="400" height="300"/>
                     <circle cx="80" cy="80" r="40" fill="#2d7a4f"/>
                     <circle cx="180" cy="60" r="50" fill="#2d7a4f"/>
@@ -375,7 +394,8 @@
                 story: "Sebuah jembatan ajaib muncul, tapi hanya mengizinkan penyihir dengan kekuatan magis 50+ untuk menyeberang. Cek apakah level kekuatanmu cukup tinggi!",
                 task: "Tulis pernyataan if yang mengecek apakah kekuatanMagis lebih besar atau sama dengan 50.",
                 hint: "Coba: if (kekuatanMagis >= 50) { }",
-                image: `<svg viewBox="0 0 400 300" style="width:100%; height:100%;">
+                image: `<img src="img/works/jembatan.jpg" alt="Jembatan Keputusan">
+                <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#87ceeb" width="400" height="300"/>
                     <ellipse cx="200" cy="250" rx="150" ry="30" fill="#4682b4"/>
                     <rect x="120" y="150" width="160" height="15" fill="#8b4513" rx="5"/>
@@ -423,7 +443,8 @@
                 story: "Kamu menemukan 5 kristal ajaib! Setiap kristal perlu diisi dengan mantra. Kamu harus melempar mantra berulang-ulang.",
                 task: "Tulis perulangan for yang menghitung dari 1 sampai 5.",
                 hint: "Coba: for (let i = 1; i <= 5; i++) { }",
-                image: `<svg viewBox="0 0 400 300" style="width:100%; height:100%;">
+                image: `<img src="img/works/kristal.jpg" alt="Gua Kristal">
+                <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#2c1b47" width="400" height="300"/>
                     <ellipse cx="200" cy="280" rx="180" ry="40" fill="#1a0f2e"/>
                     <polygon points="80,120 100,180 60,180" fill="#9c27b0" opacity="0.7"/>
@@ -475,7 +496,8 @@
                 story: "Perpustakaan kuno berisi buku-buku mantra. Kamu perlu membuat mantramu sendiri yang bisa digunakan berulang kali!",
                 task: "Buat fungsi bernama 'lemparMantra' tanpa parameter.",
                 hint: "Coba: function lemparMantra() { }",
-                image: `<svg viewBox="0 0 400 300" style="width:100%; height:100%;">
+                image: `<img src="img/works/perpustakaan.jpg" alt="Perpustakaan Mantra">
+                <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#5d4037" width="400" height="300"/>
                     <rect x="40" y="80" width="80" height="180" fill="#3e2723"/>
                     <rect x="50" y="90" width="15" height="20" fill="#d32f2f"/>
@@ -536,7 +558,8 @@
                 story: "Naga menjaga harta karun! Dia bertanya: 'Gabungkan semua pengetahuanmu - buat mantra yang menggunakan variabel, mengecek kondisi, melakukan perulangan, dan dalam sebuah fungsi!'",
                 task: "Buat fungsi dengan variabel, pernyataan if, dan perulangan for.",
                 hint: "Gabungkan semua yang sudah kamu pelajari! Mulai dengan 'function'...",
-                image: `<svg viewBox="0 0 400 300" style="width:100%; height:100%;">
+                image: `<img src="img/works/naga.jpg" alt="Tantangan Naga">
+                <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#ff6b35" width="400" height="300"/>
                     <ellipse cx="200" cy="180" rx="80" ry="60" fill="#d32f2f"/>
                     <ellipse cx="180" cy="140" rx="50" ry="40" fill="#c62828"/>
