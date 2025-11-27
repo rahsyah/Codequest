@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
     <title>Petualangan Kode</title>
     <style>
         * {
@@ -205,8 +203,10 @@
 
         .feedback {
             margin-top: 20px;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
+            max-height: 500px;
+            overflow-y: auto;
         }
 
         .feedback.success {
@@ -344,7 +344,28 @@
                     <circle cx="180" cy="125" r="2" fill="#ffeb3b"/>
                 </svg>`,
                 check: (code) => code.includes('let') && code.includes('namapenyihir') && code.includes('=') && (code.includes('"') || code.includes("'")),
-                explanation: "Variabel menyimpan informasi! 'let' membuat wadah untuk menyimpan data."
+                explanation: `<strong>📚 Pengetahuan Variabel:</strong><br><br>
+                <strong>Apa itu Variabel?</strong><br>
+                Variabel adalah wadah atau kotak untuk menyimpan data dalam program. Seperti kotak penyimpanan yang diberi label!<br><br>
+                
+                <strong>Kata Kunci 'let':</strong><br>
+                • <code>let</code> digunakan untuk mendeklarasikan (membuat) variabel baru<br>
+                • Nilai variabel yang dibuat dengan <code>let</code> bisa diubah nantinya<br>
+                • Contoh: <code>let umur = 15;</code><br><br>
+                
+                <strong>Alternatif lain:</strong><br>
+                • <code>const</code> - untuk variabel yang nilainya tetap/tidak berubah<br>
+                • <code>var</code> - cara lama (tidak disarankan lagi)<br><br>
+                
+                <strong>Aturan Penamaan:</strong><br>
+                • Nama variabel harus dimulai dengan huruf, underscore (_), atau dollar ($)<br>
+                • Tidak boleh pakai spasi (gunakan camelCase: namaPenyihir)<br>
+                • Case-sensitive (namaPenyihir ≠ namapenyihir)<br><br>
+                
+                <strong>Contoh Penggunaan:</strong><br>
+                <code>let nama = "Merlin";</code><br>
+                <code>let kekuatan = 100;</code><br>
+                <code>let isAktif = true;</code>`
             },
             {
                 title: "Jembatan Keputusan",
@@ -364,7 +385,35 @@
                     <text x="200" y="165" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="bold">?</text>
                 </svg>`,
                 check: (code) => code.includes('if') && code.includes('kekuatanmagis') && (code.includes('>=') || code.includes('>')),
-                explanation: "Pernyataan if membuat kode membuat keputusan berdasarkan kondisi!"
+                explanation: `<strong>📚 Pengetahuan Kondisional (If Statement):</strong><br><br>
+                <strong>Apa itu If Statement?</strong><br>
+                If statement membuat program bisa membuat keputusan. Seperti "Jika hujan, bawa payung".<br><br>
+                
+                <strong>Struktur Dasar:</strong><br>
+                <code>if (kondisi) {<br>
+                &nbsp;&nbsp;// kode yang dijalankan jika kondisi benar<br>
+                }</code><br><br>
+                
+                <strong>Operator Perbandingan:</strong><br>
+                • <code>></code> lebih besar dari<br>
+                • <code><</code> lebih kecil dari<br>
+                • <code>>=</code> lebih besar atau sama dengan<br>
+                • <code><=</code> lebih kecil atau sama dengan<br>
+                • <code>==</code> sama dengan (nilai)<br>
+                • <code>===</code> sama dengan (nilai dan tipe data)<br>
+                • <code>!=</code> tidak sama dengan<br><br>
+                
+                <strong>Variasi If:</strong><br>
+                • <code>if...else</code> - dua pilihan<br>
+                • <code>if...else if...else</code> - banyak pilihan<br><br>
+                
+                <strong>Contoh Nyata:</strong><br>
+                <code>let nilai = 80;<br>
+                if (nilai >= 75) {<br>
+                &nbsp;&nbsp;console.log("Lulus!");<br>
+                } else {<br>
+                &nbsp;&nbsp;console.log("Belum lulus");<br>
+                }</code>`
             },
             {
                 title: "Gua Kristal",
@@ -387,7 +436,36 @@
                     <circle cx="330" cy="130" r="4" fill="#ffffff"/>
                 </svg>`,
                 check: (code) => code.includes('for') && code.includes('let') && code.includes('<=') && code.includes('i++'),
-                explanation: "Perulangan mengulang aksi! Ini menghemat waktu dari menulis kode yang sama berkali-kali."
+                explanation: `<strong>📚 Pengetahuan Perulangan (Loop):</strong><br><br>
+                <strong>Apa itu Loop?</strong><br>
+                Loop adalah cara untuk menjalankan kode yang sama berulang kali tanpa harus menulis ulang. Hemat waktu dan efisien!<br><br>
+                
+                <strong>Struktur For Loop:</strong><br>
+                <code>for (inisialisasi; kondisi; increment) {<br>
+                &nbsp;&nbsp;// kode yang diulang<br>
+                }</code><br><br>
+                
+                <strong>Bagian-bagian For Loop:</strong><br>
+                • <strong>Inisialisasi</strong>: <code>let i = 1</code> - titik awal<br>
+                • <strong>Kondisi</strong>: <code>i <= 5</code> - kapan berhenti<br>
+                • <strong>Increment</strong>: <code>i++</code> - naik 1 setiap loop<br><br>
+                
+                <strong>Jenis Loop Lain:</strong><br>
+                • <code>while</code> - loop selama kondisi benar<br>
+                • <code>do...while</code> - jalankan dulu, cek kondisi kemudian<br>
+                • <code>for...of</code> - loop untuk array<br>
+                • <code>for...in</code> - loop untuk object<br><br>
+                
+                <strong>Operator Increment:</strong><br>
+                • <code>i++</code> atau <code>++i</code> - tambah 1<br>
+                • <code>i--</code> atau <code>--i</code> - kurang 1<br>
+                • <code>i += 2</code> - tambah 2<br><br>
+                
+                <strong>Contoh Praktis:</strong><br>
+                <code>for (let i = 1; i <= 5; i++) {<br>
+                &nbsp;&nbsp;console.log("Mantra ke-" + i);<br>
+                }<br>
+                // Output: Mantra ke-1, Mantra ke-2, dst...</code>`
             },
             {
                 title: "Perpustakaan Mantra",
@@ -413,7 +491,42 @@
                     <rect x="195" y="30" width="10" height="40" fill="#ffeb3b" opacity="0.4"/>
                 </svg>`,
                 check: (code) => code.includes('function') && code.includes('lemparmantra') && code.includes('(') && code.includes(')'),
-                explanation: "Fungsi adalah blok kode yang bisa digunakan ulang! Seperti membuat mantra kustommu sendiri."
+                explanation: `<strong>📚 Pengetahuan Fungsi (Function):</strong><br><br>
+                <strong>Apa itu Fungsi?</strong><br>
+                Fungsi adalah blok kode yang bisa digunakan berulang kali. Seperti resep masakan yang bisa kamu ikuti kapan saja!<br><br>
+                
+                <strong>Struktur Dasar:</strong><br>
+                <code>function namaFungsi(parameter) {<br>
+                &nbsp;&nbsp;// kode yang dijalankan<br>
+                &nbsp;&nbsp;return hasil;<br>
+                }</code><br><br>
+                
+                <strong>Cara Memanggil Fungsi:</strong><br>
+                <code>namaFungsi();</code> atau <code>namaFungsi(nilai);</code><br><br>
+                
+                <strong>Komponen Fungsi:</strong><br>
+                • <strong>Nama</strong>: identifier unik untuk fungsi<br>
+                • <strong>Parameter</strong>: input yang diterima (opsional)<br>
+                • <strong>Body</strong>: kode yang dijalankan<br>
+                • <strong>Return</strong>: output yang dikembalikan (opsional)<br><br>
+                
+                <strong>Jenis Fungsi:</strong><br>
+                • <strong>Function Declaration</strong>: <code>function nama() { }</code><br>
+                • <strong>Function Expression</strong>: <code>const nama = function() { }</code><br>
+                • <strong>Arrow Function</strong>: <code>const nama = () => { }</code><br><br>
+                
+                <strong>Keuntungan Fungsi:</strong><br>
+                • Kode lebih rapi dan terorganisir<br>
+                • Bisa digunakan berulang kali<br>
+                • Mudah di-debug dan diperbaiki<br>
+                • Membuat kode lebih modular<br><br>
+                
+                <strong>Contoh Lengkap:</strong><br>
+                <code>function sapa(nama) {<br>
+                &nbsp;&nbsp;return "Halo, " + nama + "!";<br>
+                }<br><br>
+                let pesan = sapa("Merlin");<br>
+                console.log(pesan); // Output: Halo, Merlin!</code>`
             },
             {
                 title: "Tantangan Naga",
@@ -437,7 +550,47 @@
                     <path d="M 150 150 Q 180 165 150 170" fill="none" stroke="#ff9800" stroke-width="3"/>
                 </svg>`,
                 check: (code) => code.includes('function') && code.includes('let') && code.includes('if') && code.includes('for'),
-                explanation: "Kamu sudah menguasai menggabungkan konsep coding! Beginilah cara program asli dibuat."
+                explanation: `<strong>📚 Pengetahuan Menggabungkan Konsep:</strong><br><br>
+                <strong>Kekuatan Kombinasi!</strong><br>
+                Programmer profesional tidak menggunakan konsep secara terpisah, tapi menggabungkannya untuk membuat program yang powerful!<br><br>
+                
+                <strong>Contoh Program Lengkap:</strong><br>
+                <code>function cekNilaiSiswa() {<br>
+                &nbsp;&nbsp;let daftarNilai = [75, 80, 65, 90, 85];<br>
+                &nbsp;&nbsp;<br>
+                &nbsp;&nbsp;for (let i = 0; i < daftarNilai.length; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;let nilai = daftarNilai[i];<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (nilai >= 75) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log("Siswa " + (i+1) + " LULUS");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log("Siswa " + (i+1) + " TIDAK LULUS");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;}<br>
+                }<br><br>
+                cekNilaiSiswa();</code><br><br>
+                
+                <strong>Penjelasan Program di Atas:</strong><br>
+                1. <strong>Fungsi</strong>: Membungkus semua logika dalam satu unit<br>
+                2. <strong>Variabel</strong>: Menyimpan array nilai dan nilai individual<br>
+                3. <strong>Loop</strong>: Mengiterasi setiap nilai dalam array<br>
+                4. <strong>Kondisional</strong>: Menentukan lulus atau tidak<br><br>
+                
+                <strong>Best Practices:</strong><br>
+                • Gunakan nama variabel yang deskriptif<br>
+                • Indentasi yang rapi untuk keterbacaan<br>
+                • Buat fungsi untuk tugas spesifik<br>
+                • Hindari kode yang terlalu dalam/nested<br>
+                • Tambahkan komentar untuk bagian kompleks<br><br>
+                
+                <strong>Langkah Selanjutnya:</strong><br>
+                • Pelajari Array dan Object<br>
+                • Pahami scope dan closure<br>
+                • Eksplorasi asynchronous programming<br>
+                • Coba framework seperti React atau Vue<br>
+                • Latihan dengan project nyata!<br><br>
+                
+                <strong>🎉 Selamat!</strong> Kamu sudah menguasai fondasi programming. Terus berlatih dan eksperimen dengan kombinasi konsep ini!`
             }
         ];
 
@@ -482,7 +635,7 @@
             
             if (level.check(code)) {
                 feedback.className = 'feedback success';
-                feedback.innerHTML = `<p style="font-weight: bold;">✨ Benar! Sihirnya berhasil!</p><p style="margin-top: 10px; color: #e9d5ff; font-size: 0.9em;">📚 ${level.explanation}</p>`;
+                feedback.innerHTML = `<p style="font-weight: bold;">✨ Benar! Sihirnya berhasil!</p><div style="margin-top: 15px; color: #e9d5ff; font-size: 0.95em; line-height: 1.7;">${level.explanation}</div>`;
                 feedback.classList.remove('hidden');
                 
                 if (!completedLevels.includes(currentLevel)) {
