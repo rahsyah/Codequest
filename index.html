@@ -2,6 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Petualangan Kode</title>
     <style>
@@ -379,10 +381,10 @@
         <div class="header">
             <div>
                 <span class="sparkles">✨</span>
-                <h1>Petualangan Kode</h1>
+                <h1>Quest Magician Codex</h1>
                 <span class="sparkles">✨</span>
             </div>
-            <p style="color: #e9d5ff; margin-top: 10px;">Belajar coding melalui petualangan ajaib!</p>
+            <p style="color: #e9d5ff; margin-top: 10px;">Belajar menulis coding melalui petualangan fantasy!</p>
         </div>
 
         <!-- Progress Bar -->
@@ -433,16 +435,16 @@
                 <h3 class="task-title">Tugasmu:</h3>
                 <p class="task-description" id="task-description"></p>
                 
-                <textarea id="code-input" placeholder="Tulis kode di sini..."></textarea>
+                <textarea id="code-input" placeholder="Declaration Elemental Code di sini..."></textarea>
 
                 <div class="button-group">
                     <button class="btn-submit" onclick="submitCode()">✓ Lempar Mantra</button>
-                    <button class="btn-hint" onclick="toggleHint()">💡 <span id="hint-btn-text">Lihat</span> Petunjuk</button>
+                    <button class="btn-hint" onclick="toggleHint()">💡 <span id="hint-btn-text">Call</span> Sight</button>
                     <button class="btn-next hidden" id="next-btn" onclick="nextLevel()">Level Berikutnya →</button>
                 </div>
 
                 <div class="hint-box hidden" id="hint-box">
-                    <p><strong>💡 Petunjuk:</strong> <span id="hint-text"></span></p>
+                    <p><strong>💡 Sight:</strong> <span id="hint-text"></span></p>
                 </div>
 
                 <div class="feedback hidden" id="feedback"></div>
@@ -459,7 +461,7 @@
             <div class="final-results">
                 <h3>🏆 Hasil Akhir</h3>
                 <div class="result-item">
-                    <span>👤 Nama Penyihir:</span>
+                    <span>👤 Nama Magician:</span>
                     <strong id="final-name">-</strong>
                 </div>
                 <div class="result-item">
@@ -479,12 +481,12 @@
     <script>
         const levels = [
             {
-                title: "Hutan Terkutuk",
+                title: "Cursed Forest",
                 concept: "Variabel",
-                story: "Kamu adalah murid penyihir muda. Mentormu meninggalkan gulungan ajaib berisi petunjuk. Untuk membuka gerbang kuno, kamu harus menyatakan namamu menggunakan mantra 'let'.",
+                story: "Kamu adalah murid Magician muda. Mentormu meninggalkan gulungan ajaib berisi petunjuk. Untuk membuka gerbang kuno, kamu harus menyatakan namamu menggunakan mantra 'let'.",
                 task: "Buat variabel bernama 'namaPenyihir' dan isi dengan namamu (dalam tanda kutip).",
                 hint: "Coba: let namaPenyihir = \"NamaMu\";",
-                image: `<img src="img/works/hutan.jpg" alt="Hutan Terkutuk">
+                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/hutan.jpg" alt="Hutan Terkutuk">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#1a5f3f" width="400" height="300"/>
                     <circle cx="80" cy="80" r="40" fill="#2d7a4f"/>
@@ -522,12 +524,12 @@
                 <code>let isAktif = true;</code>`
             },
             {
-                title: "Jembatan Keputusan",
+                title: "Decision Bridge",
                 concept: "Kondisional (pernyataan if)",
                 story: "Sebuah jembatan ajaib muncul, tapi hanya mengizinkan penyihir dengan kekuatan magis 50+ untuk menyeberang. Cek apakah level kekuatanmu cukup tinggi!",
-                task: "Tulis pernyataan if yang mengecek apakah kekuatanMagis lebih besar atau sama dengan 50.",
+                task: "Create Elemental pernyataan if yang mengecek apakah kekuatanMagis lebih besar atau sama dengan 50.",
                 hint: "Coba: if (kekuatanMagis >= 50) { }",
-                image: `<img src="img/works/jembatan.jpg" alt="Jembatan Keputusan">
+                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/jembatan.PNG" alt="Jembatan Keputusan">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#87ceeb" width="400" height="300"/>
                     <ellipse cx="200" cy="250" rx="150" ry="30" fill="#4682b4"/>
@@ -571,12 +573,12 @@
                 }</code>`
             },
             {
-                title: "Gua Kristal",
+                title: "Crystal Dungeon",
                 concept: "Perulangan (Loop)",
                 story: "Kamu menemukan 5 kristal ajaib! Setiap kristal perlu diisi dengan mantra. Kamu harus melempar mantra berulang-ulang.",
-                task: "Tulis perulangan for yang menghitung dari 1 sampai 5.",
+                task: "Create Elemental perulangan for yang menghitung dari 1 sampai 5.",
                 hint: "Coba: for (let i = 1; i <= 5; i++) { }",
-                image: `<img src="img/works/kristal.jpg" alt="Gua Kristal">
+                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/crystal.jpg" alt="Gua Kristal">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#2c1b47" width="400" height="300"/>
                     <ellipse cx="200" cy="280" rx="180" ry="40" fill="#1a0f2e"/>
@@ -624,12 +626,12 @@
                 // Output: Mantra ke-1, Mantra ke-2, dst...</code>`
             },
             {
-                title: "Perpustakaan Mantra",
+                title: "Spell Library",
                 concept: "Fungsi",
                 story: "Perpustakaan kuno berisi buku-buku mantra. Kamu perlu membuat mantramu sendiri yang bisa digunakan berulang kali!",
-                task: "Buat fungsi bernama 'lemparMantra' tanpa parameter.",
+                task: "Cast Spell Elemen fungsi bernama 'lemparMantra' tanpa parameter.",
                 hint: "Coba: function lemparMantra() { }",
-                image: `<img src="img/works/perpustakaan.jpg" alt="Perpustakaan Mantra">
+                image: `<img src="https://github.com/rahsyah/Codequest/blob/main/img/latar3.jpg" alt="Perpustakaan Mantra">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#5d4037" width="400" height="300"/>
                     <rect x="40" y="80" width="80" height="180" fill="#3e2723"/>
@@ -686,12 +688,12 @@
                 console.log(pesan); // Output: Halo, Merlin!</code>`
             },
             {
-                title: "Tantangan Naga",
+                title: "Dragon Quest",
                 concept: "Menggabungkan Konsep",
                 story: "Naga menjaga harta karun! Dia bertanya: 'Gabungkan semua pengetahuanmu - buat mantra yang menggunakan variabel, mengecek kondisi, melakukan perulangan, dan dalam sebuah fungsi!'",
-                task: "Buat fungsi dengan variabel, pernyataan if, dan perulangan for.",
+                task: "Cast Spell Elemen fungsi dengan variabel, pernyataan if, dan perulangan for.",
                 hint: "Gabungkan semua yang sudah kamu pelajari! Mulai dengan 'function'...",
-                image: `<img src="img/works/naga.jpg" alt="Tantangan Naga">
+                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/naga.jpg" alt="Tantangan Naga">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#ff6b35" width="400" height="300"/>
                     <ellipse cx="200" cy="180" rx="80" ry="60" fill="#d32f2f"/>
