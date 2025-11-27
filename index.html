@@ -2,10 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Belajar Menulis Codex</title>
+    <title>Petualangan Kode</title>
     <style>
         * {
             margin: 0;
@@ -75,6 +73,104 @@
 
         .progress-segment.current {
             background: #fbbf24;
+        }
+
+        .timer-score-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+        }
+
+        .timer-box, .score-box {
+            text-align: center;
+        }
+
+        .timer-box h3, .score-box h3 {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: #e9d5ff;
+        }
+
+        .timer-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .timer-display.warning {
+            color: #ef4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .score-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .final-results {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(249, 115, 22, 0.2));
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 30px;
+        }
+
+        .final-results h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #fbbf24;
+        }
+
+        .result-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .name-input-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .name-input-container input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            border: 2px solid #7c3aed;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .name-input-container input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .name-input-container input:focus {
+            outline: none;
+            border-color: #a78bfa;
         }
 
         .story-card {
@@ -283,10 +379,10 @@
         <div class="header">
             <div>
                 <span class="sparkles">✨</span>
-                <h1>Quest Magician Codex</h1>
+                <h1>Petualangan Kode</h1>
                 <span class="sparkles">✨</span>
             </div>
-            <p style="color: #e9d5ff; margin-top: 10px;">Belajar menulis coding melalui petualangan fantasy!</p>
+            <p style="color: #e9d5ff; margin-top: 10px;">Belajar coding melalui petualangan ajaib!</p>
         </div>
 
         <!-- Progress Bar -->
@@ -305,7 +401,13 @@
         </div>
 
         <!-- Game Content -->
-        <div id="game-content">
+        <div id="name-input-screen" class="name-input-container">
+            <h2 style="margin-bottom: 20px;">Siapa Nama Penyihir Muda Ini?</h2>
+            <input type="text" id="player-name" placeholder="Masukkan nama kamu..." maxlength="20">
+            <button class="btn-submit" onclick="startGame()" style="padding: 15px 40px; font-size: 1.1em;">Mulai Petualangan! 🎮</button>
+        </div>
+
+        <div id="game-content" class="hidden">
             <!-- Story Card -->
             <div class="story-card">
                 <h2 class="story-title" id="level-title"></h2>
@@ -314,21 +416,33 @@
                 <p class="story-text" id="level-story"></p>
             </div>
 
+            <!-- Timer and Score -->
+            <div class="timer-score-container">
+                <div class="timer-box">
+                    <h3>⏱️ Waktu Tersisa</h3>
+                    <div class="timer-display" id="timer">30</div>
+                </div>
+                <div class="score-box">
+                    <h3>⭐ Nilai</h3>
+                    <div class="score-display" id="score">100</div>
+                </div>
+            </div>
+
             <!-- Task Card -->
             <div class="task-card">
                 <h3 class="task-title">Tugasmu:</h3>
                 <p class="task-description" id="task-description"></p>
                 
-                <textarea id="code-input" placeholder="Declaration Elemental Code di sini..."></textarea>
+                <textarea id="code-input" placeholder="Tulis kode di sini..."></textarea>
 
                 <div class="button-group">
                     <button class="btn-submit" onclick="submitCode()">✓ Lempar Mantra</button>
-                    <button class="btn-hint" onclick="toggleHint()">💡 <span id="hint-btn-text">Call</span> Sight</button>
+                    <button class="btn-hint" onclick="toggleHint()">💡 <span id="hint-btn-text">Lihat</span> Petunjuk</button>
                     <button class="btn-next hidden" id="next-btn" onclick="nextLevel()">Level Berikutnya →</button>
                 </div>
 
                 <div class="hint-box hidden" id="hint-box">
-                    <p><strong>💡 Sight:</strong> <span id="hint-text"></span></p>
+                    <p><strong>💡 Petunjuk:</strong> <span id="hint-text"></span></p>
                 </div>
 
                 <div class="feedback hidden" id="feedback"></div>
@@ -341,6 +455,23 @@
             <h2>🎉 Petualangan Selesai!</h2>
             <p style="font-size: 1.3em; margin: 20px 0;">Kamu sudah menguasai dasar-dasar sihir coding!</p>
             <p style="color: #e9d5ff; margin-bottom: 30px;">Kamu sudah belajar: Variabel, Kondisional, Perulangan, Fungsi, dan cara menggabungkannya!</p>
+            
+            <div class="final-results">
+                <h3>🏆 Hasil Akhir</h3>
+                <div class="result-item">
+                    <span>👤 Nama Penyihir:</span>
+                    <strong id="final-name">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>⭐ Nilai Akhir:</span>
+                    <strong id="final-score" style="color: #4ade80; font-size: 1.3em;">-</strong>
+                </div>
+                <div class="result-item">
+                    <span>📊 Level Diselesaikan:</span>
+                    <strong>5 / 5</strong>
+                </div>
+            </div>
+            
             <button class="btn-restart" onclick="restartGame()">Mulai Petualangan Baru</button>
         </div>
     </div>
@@ -348,12 +479,12 @@
     <script>
         const levels = [
             {
-                title: "Cursed Forest",
+                title: "Hutan Terkutuk",
                 concept: "Variabel",
-                story: "Kamu adalah murid Magician muda. Mentormu meninggalkan gulungan ajaib berisi petunjuk. Untuk membuka gerbang kuno, kamu harus menyatakan namamu menggunakan mantra 'let'.",
-                task: "Cast Spell Elemen Variabel bernama 'namaMagician' dan isi dengan namamu (dalam tanda kutip).",
-                hint: "Coba: let namaMagician = \"NamaMu\";",
-                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/hutan.jpg" alt="Hutan Terkutuk">
+                story: "Kamu adalah murid penyihir muda. Mentormu meninggalkan gulungan ajaib berisi petunjuk. Untuk membuka gerbang kuno, kamu harus menyatakan namamu menggunakan mantra 'let'.",
+                task: "Buat variabel bernama 'namaPenyihir' dan isi dengan namamu (dalam tanda kutip).",
+                hint: "Coba: let namaPenyihir = \"NamaMu\";",
+                image: `<img src="img/works/hutan.jpg" alt="Hutan Terkutuk">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#1a5f3f" width="400" height="300"/>
                     <circle cx="80" cy="80" r="40" fill="#2d7a4f"/>
@@ -366,7 +497,7 @@
                     <circle cx="220" cy="115" r="2" fill="#ffeb3b"/>
                     <circle cx="180" cy="125" r="2" fill="#ffeb3b"/>
                 </svg>`,
-                check: (code) => code.includes('let') && code.includes('namamagician') && code.includes('=') && (code.includes('"') || code.includes("'")),
+                check: (code) => code.includes('let') && code.includes('namapenyihir') && code.includes('=') && (code.includes('"') || code.includes("'")),
                 explanation: `<strong>📚 Pengetahuan Variabel:</strong><br><br>
                 <strong>Apa itu Variabel?</strong><br>
                 Variabel adalah wadah atau kotak untuk menyimpan data dalam program. Seperti kotak penyimpanan yang diberi label!<br><br>
@@ -382,8 +513,8 @@
                 
                 <strong>Aturan Penamaan:</strong><br>
                 • Nama variabel harus dimulai dengan huruf, underscore (_), atau dollar ($)<br>
-                • Tidak boleh pakai spasi (gunakan camelCase: namaMagician)<br>
-                • Case-sensitive (namaMagician ≠ namamagician)<br><br>
+                • Tidak boleh pakai spasi (gunakan camelCase: namaPenyihir)<br>
+                • Case-sensitive (namaPenyihir ≠ namapenyihir)<br><br>
                 
                 <strong>Contoh Penggunaan:</strong><br>
                 <code>let nama = "Merlin";</code><br>
@@ -391,12 +522,12 @@
                 <code>let isAktif = true;</code>`
             },
             {
-                title: "Decision Bridge",
+                title: "Jembatan Keputusan",
                 concept: "Kondisional (pernyataan if)",
-                story: "Sebuah jembatan ajaib muncul, tapi hanya mengizinkan Magician dengan kekuatan magis 50+ untuk menyeberang. Cek apakah level kekuatanmu cukup tinggi!",
-                task: "Create Elemental pernyataan if yang mengecek apakah kekuatanMagis lebih besar atau sama dengan 50.",
+                story: "Sebuah jembatan ajaib muncul, tapi hanya mengizinkan penyihir dengan kekuatan magis 50+ untuk menyeberang. Cek apakah level kekuatanmu cukup tinggi!",
+                task: "Tulis pernyataan if yang mengecek apakah kekuatanMagis lebih besar atau sama dengan 50.",
                 hint: "Coba: if (kekuatanMagis >= 50) { }",
-                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/jembatan.PNG" alt="Jembatan Keputusan">
+                image: `<img src="img/works/jembatan.jpg" alt="Jembatan Keputusan">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#87ceeb" width="400" height="300"/>
                     <ellipse cx="200" cy="250" rx="150" ry="30" fill="#4682b4"/>
@@ -440,12 +571,12 @@
                 }</code>`
             },
             {
-                title: "Crystal Dungeon",
+                title: "Gua Kristal",
                 concept: "Perulangan (Loop)",
                 story: "Kamu menemukan 5 kristal ajaib! Setiap kristal perlu diisi dengan mantra. Kamu harus melempar mantra berulang-ulang.",
-                task: "Create Elemental perulangan for yang menghitung dari 1 sampai 5.",
+                task: "Tulis perulangan for yang menghitung dari 1 sampai 5.",
                 hint: "Coba: for (let i = 1; i <= 5; i++) { }",
-                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/crystal.jpg" alt="Gua Kristal">
+                image: `<img src="img/works/kristal.jpg" alt="Gua Kristal">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#2c1b47" width="400" height="300"/>
                     <ellipse cx="200" cy="280" rx="180" ry="40" fill="#1a0f2e"/>
@@ -493,12 +624,12 @@
                 // Output: Mantra ke-1, Mantra ke-2, dst...</code>`
             },
             {
-                title: "Spell Library",
+                title: "Perpustakaan Mantra",
                 concept: "Fungsi",
                 story: "Perpustakaan kuno berisi buku-buku mantra. Kamu perlu membuat mantramu sendiri yang bisa digunakan berulang kali!",
-                task: "Cast Spell Elemen fungsi bernama 'lemparMantra' tanpa parameter.",
+                task: "Buat fungsi bernama 'lemparMantra' tanpa parameter.",
                 hint: "Coba: function lemparMantra() { }",
-                image: `<img src="https://github.com/rahsyah/Codequest/blob/main/img/latar3.jpg" alt="Perpustakaan Mantra">
+                image: `<img src="img/works/perpustakaan.jpg" alt="Perpustakaan Mantra">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#5d4037" width="400" height="300"/>
                     <rect x="40" y="80" width="80" height="180" fill="#3e2723"/>
@@ -555,12 +686,12 @@
                 console.log(pesan); // Output: Halo, Merlin!</code>`
             },
             {
-                title: "Dragon Quest",
+                title: "Tantangan Naga",
                 concept: "Menggabungkan Konsep",
                 story: "Naga menjaga harta karun! Dia bertanya: 'Gabungkan semua pengetahuanmu - buat mantra yang menggunakan variabel, mengecek kondisi, melakukan perulangan, dan dalam sebuah fungsi!'",
-                task: " Cast Spell Elemen fungsi dengan variabel, pernyataan if, dan perulangan for.",
+                task: "Buat fungsi dengan variabel, pernyataan if, dan perulangan for.",
                 hint: "Gabungkan semua yang sudah kamu pelajari! Mulai dengan 'function'...",
-                image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/naga.jpg" alt="Tantangan Naga">
+                image: `<img src="img/works/naga.jpg" alt="Tantangan Naga">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#ff6b35" width="400" height="300"/>
                     <ellipse cx="200" cy="180" rx="80" ry="60" fill="#d32f2f"/>
@@ -623,6 +754,70 @@
 
         let currentLevel = 0;
         let completedLevels = [];
+        let timer = null;
+        let timeLeft = 0;
+        let score = 100;
+        let playerName = "";
+        let gameStarted = false;
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (!nameInput) {
+                alert('Masukkan nama kamu dulu! 😊');
+                return;
+            }
+            playerName = nameInput;
+            gameStarted = true;
+            document.getElementById('name-input-screen').classList.add('hidden');
+            document.getElementById('game-content').classList.remove('hidden');
+            loadLevel();
+        }
+
+        function startTimer() {
+            // Clear existing timer
+            if (timer) clearInterval(timer);
+            
+            // Set time based on level (30s for levels 1-4, 60s for level 5)
+            timeLeft = currentLevel === 4 ? 60 : 30;
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 10) {
+                timerDisplay.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+            }
+        }
+
+        function handleTimeout() {
+            score = Math.max(0, score - 10);
+            document.getElementById('score').textContent = score;
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback error';
+            feedback.innerHTML = '<p style="font-weight: bold;">⏰ Waktu Habis! Nilai kamu berkurang 10 poin.</p><p style="margin-top: 10px;">Coba lagi dengan lebih cepat! Timer akan restart.</p>';
+            feedback.classList.remove('hidden');
+            
+            // Restart timer
+            setTimeout(() => {
+                feedback.classList.add('hidden');
+                startTimer();
+            }, 2000);
+        }
 
         function loadLevel() {
             const level = levels[currentLevel];
@@ -637,8 +832,10 @@
             document.getElementById('hint-box').classList.add('hidden');
             document.getElementById('next-btn').classList.add('hidden');
             document.getElementById('hint-btn-text').textContent = 'Lihat';
+            document.getElementById('score').textContent = score;
             
             updateProgress();
+            startTimer();
         }
 
         function updateProgress() {
@@ -661,6 +858,7 @@
             const feedback = document.getElementById('feedback');
             
             if (level.check(code)) {
+                clearInterval(timer);
                 feedback.className = 'feedback success';
                 feedback.innerHTML = `<p style="font-weight: bold;">✨ Benar! Sihirnya berhasil!</p><div style="margin-top: 15px; color: #e9d5ff; font-size: 0.95em; line-height: 1.7;">${level.explanation}</div>`;
                 feedback.classList.remove('hidden');
@@ -701,20 +899,27 @@
         }
 
         function showCompletion() {
+            clearInterval(timer);
             document.getElementById('game-content').classList.add('hidden');
             document.getElementById('completion-screen').classList.remove('hidden');
+            document.getElementById('final-name').textContent = playerName;
+            document.getElementById('final-score').textContent = score;
         }
 
         function restartGame() {
             currentLevel = 0;
             completedLevels = [];
-            document.getElementById('game-content').classList.remove('hidden');
+            score = 100;
+            playerName = "";
+            gameStarted = false;
+            clearInterval(timer);
+            document.getElementById('game-content').classList.add('hidden');
             document.getElementById('completion-screen').classList.add('hidden');
-            loadLevel();
+            document.getElementById('name-input-screen').classList.remove('hidden');
+            document.getElementById('player-name').value = '';
         }
 
-        // Initialize game
-        loadLevel();
+        // Initialize - don't load level yet, wait for name input
     </script>
 </body>
 </html>
