@@ -2,10 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Belajar menulis Mantra</title>
+    <title>Petualangan Kode</title>
     <style>
         * {
             margin: 0;
@@ -106,6 +104,42 @@
             border-radius: 10px;
             margin-bottom: 20px;
             overflow: hidden;
+            position: relative;
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-section {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .upload-btn {
+            background: rgba(124, 58, 237, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: rgba(124, 58, 237, 1);
+            transform: scale(1.05);
+        }
+
+        #file-input {
+            display: none;
         }
 
         .story-text {
@@ -598,12 +632,40 @@
 
         let currentLevel = 0;
         let completedLevels = [];
+        let levelImages = {}; // Menyimpan gambar custom untuk setiap level
 
         function loadLevel() {
             const level = levels[currentLevel];
             document.getElementById('level-title').textContent = level.title;
             document.getElementById('level-concept').textContent = level.concept;
-            document.getElementById('level-image').innerHTML = level.image;
+            
+            // Load gambar - custom atau default
+            const imageContainer = document.getElementById('level-image');
+            if (levelImages[currentLevel]) {
+                imageContainer.innerHTML = `<img src="${levelImages[currentLevel]}" alt="${level.title}">
+                    <div class="upload-section" style="display: none;">
+                        <label for="file-input" class="upload-btn">📷 Ganti Gambar</label>
+                    </div>`;
+            } else {
+                imageContainer.innerHTML = level.image + `
+                    <div class="upload-section">
+                        <label for="file-input" class="upload-btn">📷 Upload Gambar Sendiri</label>
+                    </div>`;
+            }
+            
+            // Show upload button on hover
+            imageContainer.addEventListener('mouseenter', function() {
+                const uploadSection = this.querySelector('.upload-section');
+                if (uploadSection) uploadSection.style.display = 'block';
+            });
+            
+            imageContainer.addEventListener('mouseleave', function() {
+                if (!levelImages[currentLevel]) {
+                    const uploadSection = this.querySelector('.upload-section');
+                    if (uploadSection) uploadSection.style.display = 'block';
+                }
+            });
+            
             document.getElementById('level-story').textContent = level.story;
             document.getElementById('task-description').textContent = level.task;
             document.getElementById('hint-text').textContent = level.hint;
@@ -688,8 +750,22 @@
             loadLevel();
         }
 
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    levelImages[currentLevel] = e.target.result;
+                    loadLevel();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         // Initialize game
         loadLevel();
     </script>
+    
+    <input type="file" id="file-input" accept="image/*" onchange="handleImageUpload(event)">
 </body>
 </html>
