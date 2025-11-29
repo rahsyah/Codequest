@@ -327,6 +327,7 @@
         let playerName = '';
         let currentQuestion = 0;
         let answers = [];
+        let shuffledQuestions = [];
 
         const questions = [
             {
@@ -629,18 +630,21 @@
                 return;
             }
 
+            // Shuffle pertanyaan agar random setiap kali mulai
+            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+
             document.getElementById('nameSection').classList.add('hidden');
             document.getElementById('questionSection').style.display = 'block';
             showQuestion();
         }
 
         function showQuestion() {
-            if (currentQuestion >= questions.length) {
+            if (currentQuestion >= shuffledQuestions.length) {
                 showResult();
                 return;
             }
 
-            const q = questions[currentQuestion];
+            const q = shuffledQuestions[currentQuestion];
             document.getElementById('questionText').textContent = `${currentQuestion + 1}. ${q.question}`;
             
             const optionsContainer = document.getElementById('optionsContainer');
@@ -664,7 +668,7 @@
         }
 
         function updateProgress() {
-            const progress = ((currentQuestion) / questions.length) * 100;
+            const progress = ((currentQuestion) / shuffledQuestions.length) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
         }
 
@@ -706,6 +710,7 @@
         function restartTest() {
             currentQuestion = 0;
             answers = [];
+            shuffledQuestions = [];
             document.getElementById('playerName').value = '';
             document.getElementById('resultSection').style.display = 'none';
             document.getElementById('nameSection').classList.remove('hidden');
