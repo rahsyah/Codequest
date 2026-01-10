@@ -441,7 +441,7 @@
                 <h3 class="task-title">Tugasmu :</h3>
                 <p class="task-description" id="task-description"></p>
                 
-                <textarea id="code-input" placeholder="Declaration Elemental Code di sini, Pengetahuannya Akan Terbuka Jika Code Berhasil..."></textarea>
+                <textarea id="code-input" placeholder="Declaration Code di sini, Pengetahuannya Akan Terbuka Jika Code Berhasil..."></textarea>
 
                 <div class="button-group">
                     <button class="btn-submit" onclick="submitCode()">✓ Lempar Mantra</button>
@@ -635,8 +635,8 @@
                 title: "Spell Library",
                 concept: "Fungsi",
                 story: "Perpustakaan kuno berisi buku-buku mantra. Kamu perlu membuat mantramu sendiri yang bisa digunakan berulang kali!",
-                task: "Cast Spell Elemen fungsi bernama 'Elemental Buster' tanpa parameter.",
-                hint: "Coba Spell: function ElementalBuster() { }",
+                task: "Cast Spell Elemen fungsi bernama 'lemparMantra' tanpa parameter.",
+                hint: "Coba Spell: function lemparMantra() { }",
                 image: `<img src="https://raw.githubusercontent.com/rahsyah/Codequest/refs/heads/main/img/perpus.PNG" alt="Perpustakaan Mantra">
                 <svg viewBox="0 0 400 300" style="width:100%; height:100%;">
                     <rect fill="#5d4037" width="400" height="300"/>
@@ -655,7 +655,7 @@
                     <circle cx="200" cy="30" r="15" fill="#ffeb3b" opacity="0.6"/>
                     <rect x="195" y="30" width="10" height="40" fill="#ffeb3b" opacity="0.4"/>
                 </svg>`,
-                check: (code) => code.includes('function') && code.includes('ElementalBuster') && code.includes('(') && code.includes(')'),
+                check: (code) => code.includes('function') && code.includes('lemparmantra') && code.includes('(') && code.includes(')'),
                 explanation: `<strong>📚 Pengetahuan Fungsi (Function):</strong><br><br>
                 <strong>Apa itu Fungsi?</strong><br>
                 Fungsi adalah blok kode yang bisa digunakan berulang kali. Seperti resep masakan yang bisa kamu ikuti kapan saja!<br><br>
