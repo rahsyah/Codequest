@@ -90,11 +90,6 @@
             transform: scale(1.05);
         }
 
-        .start-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .question-section {
             display: none;
         }
@@ -372,14 +367,14 @@
             {
                 question: "Gaya komunikasi kamu saat rapat strategi gimana?",
                 options: [
-                    { text: "Langsung dan tegas, to the point tanpa basa-basi", type: 'A' },
+                    { text: "Langsung dan tegas, langsung ke inti tanpa basa-basi", type: 'A' },
                     { text: "Berdasarkan data, berbagi statistik dan penjelasan mekanik", type: 'B' },
                     { text: "Bercerita dengan visual, bikin rencana terdengar epik", type: 'C' },
                     { text: "Dengarkan dulu, kasih masukan yang membangun dan inklusif", type: 'D' },
                     { text: "Energik dan spontan, lempar ide-ide liar", type: 'E' },
                     { text: "Persuasif dan diplomatis, selaraskan semua perspektif", type: 'F' },
                     { text: "Tenang dan jelas, pastikan semua paham langkah demi langkah", type: 'G' },
-                    { text: "Semangat dan menginspirasi, bikin semua excited buat eksekusi", type: 'H' }
+                    { text: "Semangat dan menginspirasi, bikin semua bersemangat", type: 'H' }
                 ]
             },
             {
@@ -387,7 +382,7 @@
                 options: [
                     { text: "Langsung adaptasi dan pimpin tim kuasai aturan baru", type: 'A' },
                     { text: "Pelajari catatan pembaruan, hitung dampak ke susunan jurus", type: 'B' },
-                    { text: "Eksperimen gila! Tes semua kemungkinan yang baru muncul", type: 'C' },
+                    { text: "Eksperimen seru! Tes semua kemungkinan yang baru muncul", type: 'C' },
                     { text: "Bantu tim transisi, pastikan nggak ada yang tertinggal", type: 'D' },
                     { text: "Senang! Saatnya jelajahi dan temukan aturan baru", type: 'E' },
                     { text: "Diskusi komunitas, kumpulkan pendapat tentang pembaruan", type: 'F' },
@@ -396,7 +391,7 @@
                 ]
             },
             {
-                question: "Gaya pengulangan latihan kamu yang paling efisien itu:",
+                question: "Gaya latihan kamu yang paling efisien itu:",
                 options: [
                     { text: "Cepat dan banyak tugas, optimalkan setiap detik", type: 'A' },
                     { text: "Rutinitas terstruktur, sistem yang terkalkulasi", type: 'B' },
@@ -425,13 +420,13 @@
                 question: "Dunia permainan yang kamu pilih gabung untuk maksimal latihan karier:",
                 options: [
                     { text: "Dunia kompetitif pemain lawan pemain, promosi cepat dan ketat", type: 'A' },
-                    { text: "Dunia terstruktur pemain lawan lingkungan, sistem kemajuan jelas", type: 'B' },
+                    { text: "Dunia terstruktur, sistem kemajuan jelas", type: 'B' },
                     { text: "Dunia percobaan eksperimental, kebebasan buat berinovasi", type: 'C' },
-                    { text: "Dunia ramah bermain peran, budaya komunitas yang mendukung", type: 'D' },
+                    { text: "Dunia ramah, budaya komunitas yang mendukung", type: 'D' },
                     { text: "Dunia terbuka, penjelajahan tanpa batas", type: 'E' },
                     { text: "Pusat sosial, jaringan dan koneksi", type: 'F' },
                     { text: "Dunia warisan, mapan dan stabil", type: 'G' },
-                    { text: "Dunia fokus rombongan, acara-driven dan hidup", type: 'H' }
+                    { text: "Dunia fokus rombongan, penuh acara dan hidup", type: 'H' }
                 ]
             },
             {
@@ -443,7 +438,7 @@
                     { text: "Pastikan semua dapat jarahan yang adil dan senang", type: 'D' },
                     { text: "Jelajahi semua kemungkinan dan tujuan tersembunyi", type: 'E' },
                     { text: "Jaringan dengan persekutuan lain untuk misi aliansi", type: 'F' },
-                    { text: "Ikuti catatan misi dengan hati-hati, nggak terburu-buru semua aman", type: 'G' },
+                    { text: "Ikuti catatan misi dengan hati-hati, semua aman", type: 'G' },
                     { text: "Jadikan acara menyenangkan, rayakan tiap pencapaian", type: 'H' }
                 ]
             },
@@ -468,7 +463,7 @@
                     { text: "Elektronik eksperimental, unik dan futuristik", type: 'C' },
                     { text: "Suara alam damai, menenangkan dan mendukung", type: 'D' },
                     { text: "Tema petualangan, menggembirakan dan mengangkat", type: 'E' },
-                    { text: "Musik kedai sosial, hidup dan komunal", type: 'F' },
+                    { text: "Musik kedai sosial, hidup dan ramai", type: 'F' },
                     { text: "Orkestra klasik, tradisional dan andal", type: 'G' },
                     { text: "Lagu ceria, menyenangkan dan meningkatkan mood", type: 'H' }
                 ]
@@ -489,7 +484,7 @@
             {
                 question: "Kemampuan baru terbuka! Cara belajar kamu:",
                 options: [
-                    { text: "Langsung terjun dan belajar sambil praktek, latihan bikin sempurna", type: 'A' },
+                    { text: "Langsung terjun dan belajar sambil praktek", type: 'A' },
                     { text: "Baca penjelasan detail, pahami mekanisme dulu", type: 'B' },
                     { text: "Eksperimen kombo dengan kemampuan lain, temukan sinergi", type: 'C' },
                     { text: "Tanya pemain veteran untuk tips dan trik", type: 'D' },
@@ -504,7 +499,7 @@
                 options: [
                     { text: "Kumpulkan semua hadiah secepat mungkin, selesaikan semuanya", type: 'A' },
                     { text: "Hitung rute optimal untuk efisiensi maksimal", type: 'B' },
-                    { text: "Jelajahi semua telur paskah dan konten tersembunyi", type: 'C' },
+                    { text: "Jelajahi semua konten tersembunyi dan kejutan", type: 'C' },
                     { text: "Bantu pemula selesaikan konten acara", type: 'D' },
                     { text: "Coba semua fitur baru yang ditambahkan", type: 'E' },
                     { text: "Gabung acara komunitas dan pertemuan", type: 'F' },
@@ -522,7 +517,7 @@
                     { text: "Instruktur langsung praktik, belajar lewat pengalaman", type: 'E' },
                     { text: "Pembimbing jaringan, hubungkan murid ke peluang", type: 'F' },
                     { text: "Guru tradisional, teknik terbukti dan disiplin", type: 'G' },
-                    { text: "Motivator inspiratif, semangati dan berikan energi ke murid", type: 'H' }
+                    { text: "Motivator inspiratif, semangati murid", type: 'H' }
                 ]
             },
             {
@@ -532,7 +527,7 @@
                     { text: "Kepuasan dari eksekusi sempurna dan penyelesaian", type: 'B' },
                     { text: "Bangga dari pendekatan kreatif yang digunakan", type: 'C' },
                     { text: "Bersyukur untuk rombongan yang dukung perjalanan", type: 'D' },
-                    { text: "Senang untuk jelajahi konten pasca-permainan", type: 'E' },
+                    { text: "Senang untuk jelajahi konten setelah permainan", type: 'E' },
                     { text: "Bahagia berbagi pencapaian ke komunitas", type: 'F' },
                     { text: "Lega dan rasa pencapaian", type: 'G' },
                     { text: "Gembira dari pengalaman berkesan yang dibuat", type: 'H' }
@@ -543,10 +538,178 @@
         const tipeHero = {
             'A': {
                 icon: '⚔️',
-                title: 'SORA - SANG PANGLIMA',
+                title: 'SORA - SANG FIGHTER',
                 subtitle: 'Petarung yang Terlahir Memimpin',
-                description: 'Kamu adalah pemimpin alami yang punya aura wibawa kuat. Tegas, kompetitif, dan nggak takut ambil tanggung jawab besar. Energi kamu menular dan bikin tim termotivasi melampaui batas mereka.',
+                description: 'Kamu adalah pemimpin alami yang punya aura wibawa kuat. Tegas, kompetitif, dan tidak takut ambil tanggung jawab besar. Energi kamu menular dan bikin tim termotivasi melampaui batas mereka.',
                 power: 'Kehadiran Eksekutif - Kemampuan mendapat penghormatan, membuat keputusan sulit di bawah tekanan, dan mendorong tim menuju tujuan ambisius dengan kepercayaan diri yang tak tergoyahkan.',
                 role: 'Direktur Utama, Manajer Operasional, Pemimpin Tim, Direktur Proyek, Pendiri Startup, Direktur Penjualan',
-                strength: 'Berorientasi target, tegas banget, pengambil risiko alami, kehadiran yang memerintah, pola pikir driven hasil, jago dalam delegasi dan mobilisasi sumber daya.',
-                strategy: 'Naik level: Ambil kursus Kepemimpinan & Manajemen di Coursera atau LinkedIn Learning. Pelajari mendengarkan aktif dan kecerdasan emosional lewat buku "Leaders Eat Last" karya Simon Sinek. Latih berbicara di depan umum di Toastmasters atau komunitas pembicara. Ikuti program bimbingan untuk mengasah pemikiran strategis. Tantangan: belajar melambat
+                strength: 'Berorientasi target, sangat tegas, pengambil risiko alami, kehadiran yang memerintah, pola pikir hasil-driven, jago dalam delegasi dan mobilisasi sumber daya.',
+                strategy: 'Naik level: Ambil kursus Kepemimpinan & Manajemen di Coursera atau LinkedIn Learning. Pelajari mendengarkan aktif dan kecerdasan emosional lewat buku "Leaders Eat Last" karya Simon Sinek. Latih berbicara di depan umum di Toastmasters. Ikuti program bimbingan untuk mengasah pemikiran strategis.'
+            },
+            'B': {
+                icon: '🧠',
+                title: 'YVE - SANG AHLI STRATEGI',
+                subtitle: 'Penyihir dengan Kecerdasan Luar Biasa',
+                description: 'Otak kamu seperti komputer super. Data, logika, dan pemikiran analitis adalah bahasa ibumu. Sangat detail dan bisa menemukan pola yang orang lain lewatkan. Pemecah masalah yang metodis dan presisi.',
+                power: 'Analisis Strategis - Kemampuan luar biasa dalam memproses informasi kompleks, mengidentifikasi tren, membangun argumen kuat, dan memprediksi hasil dengan wawasan berbasis data.',
+                role: 'Ilmuwan Data, Analis Bisnis, Konsultan Strategi, Analis Keuangan, Peneliti Sains, Arsitek Sistem, Analis Operasional',
+                strength: 'Pemikir kritis, terobsesi detail, penalaran logis tajam, pemecahan masalah sangat baik, sabar dengan tugas kompleks, pendekatan sistematis terhadap tantangan.',
+                strategy: 'Naik level: Kuasai alat analitik - Python, SQL, Tableau via DataCamp atau Kaggle. Ambil Sertifikat Google Data Analytics atau sertifikasi AWS. Pelajari penceritaan data via buku "Storytelling with Data". Latih keterampilan presentasi. Gabung komunitas ilmuwan data dan ikut hackathon.'
+            },
+            'C': {
+                icon: '🎨',
+                title: 'YI SUN-SHIN - SANG INOVATOR',
+                subtitle: 'Pembunuh Bayangan yang Kreatif',
+                description: 'Pikiran kamu adalah arena ide tanpa batas. Kamu melihat kemungkinan di mana orang lain melihat tembok. Visioner, imajinatif, dan selalu di depan kurva. Pemikir original yang bikin solusi terobosan.',
+                power: 'Gangguan Kreatif - Kemampuan legendaris dalam menghasilkan ide baru, berpikir di luar kotak, menghubungkan konsep yang tidak terkait, dan mengubah visi abstrak menjadi inovasi nyata.',
+                role: 'Manajer Produk, Direktur Kreatif, Desainer UX/UI, Strategi Konten, Pemimpin Inovasi, Manajer Merek, Direktur Pemasaran',
+                strength: 'Visioner sekali, mudah beradaptasi dengan perubahan, eksperimen tanpa takut, master pemikiran lateral, pencipta tren, sangat baik dalam brainstorming dan sesi ideasi.',
+                strategy: 'Naik level: Pelajari Design Thinking via kursus Stanford d.school atau IDEO U. Kuasai alat kreatif - Figma, Adobe Creative Suite, alat prototyping. Ambil Sertifikat Google UX Design. Bangun portofolio di Behance/Dribbble. Ikuti lokakarya inovasi dan sprint desain. Baca "Creative Confidence". Jaringan di komunitas kreatif.'
+            },
+            'D': {
+                icon: '🤝',
+                title: 'ANGELA - SANG PENYELARAS',
+                subtitle: 'Pendukung yang Menyatukan Tim',
+                description: 'Empati kamu level maksimal. Kamu secara alami memahami orang, membangun koneksi, dan menciptakan ruang aman buat semua berkembang. Perekat tim yang bikin tempat kerja jadi rumah.',
+                power: 'Penguasaan Kecerdasan Emosional - Kemampuan epik dalam membangun kepercayaan, memfasilitasi kolaborasi, menyelesaikan konflik dengan anggun, dan memelihara bakat dalam dinamika tim.',
+                role: 'Mitra Bisnis SDM, Manajer Pengembangan Orang, Pemimpin Kesuksesan Pelanggan, Pelatih Tim, Manajer Komunitas, Spesialis Keterlibatan Karyawan',
+                strength: 'Empati sangat tinggi, ahli resolusi konflik, pendengar yang baik, energi mendukung, pembangun hubungan, juara budaya yang menciptakan keamanan psikologis.',
+                strategy: 'Naik level: Ambil sertifikasi SHRM atau HRCI untuk jalur SDM. Pelajari coaching via program terakreditasi ICF. Kuasai psikologi organisasi lewat kursus di Coursera. Baca "Dare to Lead" karya Brené Brown dan "Crucial Conversations". Latih keterampilan fasilitasi. Gabung komunitas SDM dan acara networking fokus orang.'
+            },
+            'E': {
+                icon: '🗡️',
+                title: 'HAYABUSA - SANG PENJELAJAH',
+                subtitle: 'Pencari Petualangan yang Tanpa Rasa Takut',
+                description: 'Kamu berkembang di ketidakpastian dan suka penemuan. Pengambil risiko yang energik, spontan, dan selalu siap untuk tantangan berikutnya. Berorientasi aksi dan belajar paling baik dengan melakukan.',
+                power: 'Kelincahan Adaptif - Kemampuan gila dalam beradaptasi cepat ke lingkungan baru, mengambil risiko terkalkulasi, belajar sambil jalan, dan mengubah hambatan menjadi peluang dengan kepintaran.',
+                role: 'Manajer Pengembangan Bisnis, Eksekutif Penjualan Lapangan, Peretas Pertumbuhan Startup, Pembuat Konten Perjalanan, Manajer Acara, Eksekutif Akun',
+                strength: 'Pembangkit tenaga energik, super fleksibel, pelajar langsung praktek, sangat tangguh, penemu peluang, sangat baik dalam jaringan dan membangun koneksi saat bergerak.',
+                strategy: 'Naik level: Ambil kursus Penjualan & Negosiasi di LinkedIn Learning. Pelajari strategi Growth Hacking lewat Reforge atau GrowthTribe. Kuasai alat CRM dan analitik penjualan. Baca "The Lean Startup" karya Eric Ries. Latih pitching dan storytelling. Gabung komunitas startup dan hadiri acara networking secara teratur. Kembangkan merek pribadi di LinkedIn.'
+            },
+            'F': {
+                icon: '👑',
+                title: 'IXIA - SANG PENEMBAK JITU',
+                subtitle: 'Penembak dengan Karisma Maksimal',
+                description: 'Jaringan adalah kekuatan supermu. Karismatik, persuasif, dan secara alami baik dalam terhubung dengan orang-orang beragam. Kamu membangun jembatan dan membuka pintu buat semua.',
+                power: 'Arsitek Modal Sosial - Kemampuan legendaris dalam membangun jaringan luas, mempengaruhi opini, menegosiasikan hasil saling menguntungkan, dan menciptakan peluang melalui hubungan.',
+                role: 'Manajer Hubungan Masyarakat, Manajer Kemitraan, Duta Merek, Strategi Media Sosial, Direktur Komunikasi, Urusan Korporat',
+                strength: 'Karisma keren, ahli persuasi, komunikator sangat baik, cerdas secara politis, pemelihara hubungan, hebat dalam membaca ruangan dan situasi.',
+                strategy: 'Naik level: Kuasai pemasaran digital via Google Digital Garage atau HubSpot Academy. Pelajari strategi PR dan komunikasi krisis. Ambil kursus Negosiasi dan Pengaruh. Baca "Influence" karya Robert Cialdini dan "Never Split the Difference". Bangun kehadiran LinkedIn yang kuat. Gabung Toastmasters dan grup jaringan profesional. Latih pembuatan konten secara konsisten.'
+            },
+            'G': {
+                icon: '🛡️',
+                title: 'TIGREAL - SANG PENJAGA',
+                subtitle: 'Benteng yang Kokoh dan Dapat Diandalkan',
+                description: 'Stabilitas dan keandalan adalah ciri khasmu. Bertanggung jawab, terorganisir, dan bisa dipercaya 100%. Kamu yang bikin segalanya berjalan lancar dengan konsistensi.',
+                power: 'Keunggulan Operasional - Kemampuan superior dalam menjaga standar kualitas, memastikan kepatuhan, mengelola risiko, dan memberikan hasil konsisten dengan keandalan yang tak tertandingi.',
+                role: 'Manajer Operasional, Pemimpin Jaminan Kualitas, Petugas Kepatuhan, Manajer Administratif, Koordinator Proyek, Manajer Risiko',
+                strength: 'Raja/ratu yang bisa diandalkan, perfeksionis detail, berorientasi proses, sadar risiko, pekerja disiplin, sangat baik dalam perencanaan dan eksekusi yang menyeluruh.',
+                strategy: 'Naik level: Ambil sertifikasi PMP (Project Management Professional). Pelajari Six Sigma atau metodologi Lean. Kuasai alat manajemen proyek - Asana, Monday, MS Project. Baca "The Checklist Manifesto" karya Atul Gawande. Ambil kursus Manajemen Operasi. Gabung PMI atau grup profesional fokus operasi. Latih metodologi agile.'
+            },
+            'H': {
+                icon: '✨',
+                title: 'ESTES - SANG PEMBERI BERKAH',
+                subtitle: 'Penyembuh yang Membawa Energi Positif',
+                description: 'Kamu seperti sinar matahari manusia. Antusias, menyenangkan, dan bikin suasana langsung lebih baik. Magnet orang yang menyebarkan energi positif dan menjaga semangat tetap tinggi.',
+                power: 'Katalis Semangat - Kemampuan ajaib dalam memberi energi tim, menciptakan pengalaman menarik, meningkatkan motivasi melalui positivitas, dan membuat pekerjaan terasa kurang seperti pekerjaan.',
+                role: 'Manajer Acara, Pembuat Konten, Pemimpin Keterlibatan Karyawan, Produser Hiburan, Manajer Media Sosial, Pembawa Acara/MC Profesional',
+                strength: 'Pembuat suasana antusias, penghibur spontan, pencerita hebat, pencipta energi, pemberi energi tim, sangat baik dalam menciptakan pengalaman berkesan.',
+                strategy: 'Naik level: Pelajari pembuatan konten - pengeditan video, copywriting, strategi media sosial. Ambil kursus Manajemen Acara atau Bisnis Hiburan. Kuasai alat dan platform keterlibatan. Baca "Contagious" karya Jonah Berger. Latih keterampilan berbicara di depan umum dan MC. Bangun merek pribadi di media sosial. Gabung komunitas pembuat konten dan kolaborasi dengan orang lain.'
+            }
+        };
+
+        function mulaiPetualangan() {
+            namaPemain = document.getElementById('playerName').value.trim();
+            if (!namaPemain) {
+                alert('Silakan masukkan nama kamu terlebih dahulu!');
+                return;
+            }
+
+            pertanyaanAcak = [...daftarPertanyaan].sort(() => Math.random() - 0.5);
+
+            document.getElementById('nameSection').classList.add('hidden');
+            document.getElementById('questionSection').style.display = 'block';
+            tampilkanPertanyaan();
+        }
+
+        function tampilkanPertanyaan() {
+            if (pertanyaanSekarang >= pertanyaanAcak.length) {
+                tampilkanHasil();
+                return;
+            }
+
+            const q = pertanyaanAcak[pertanyaanSekarang];
+            document.getElementById('questionText').textContent = `${pertanyaanSekarang + 1}. ${q.question}`;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((option) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option.text;
+                btn.onclick = () => pilihJawaban(option.type);
+                optionsContainer.appendChild(btn);
+            });
+
+            perbaruiProgress();
+        }
+
+        function pilihJawaban(type) {
+            jawabanPemain.push(type);
+            pertanyaanSekarang++;
+            tampilkanPertanyaan();
+        }
+
+        function perbaruiProgress() {
+            const progress = ((pertanyaanSekarang) / pertanyaanAcak.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function hitungHasil() {
+            const counts = {};
+            jawabanPemain.forEach(answer => {
+                counts[answer] = (counts[answer] || 0) + 1;
+            });
+
+            let maxCount = 0;
+            let resultType = 'A';
+            for (let type in counts) {
+                if (counts[type] > maxCount) {
+                    maxCount = counts[type];
+                    resultType = type;
+                }
+            }
+
+            return resultType;
+        }
+
+        function tampilkanHasil() {
+            const resultType = hitungHasil();
+            const hero = tipeHero[resultType];
+
+            document.getElementById('questionSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+
+            document.getElementById('heroIcon').textContent = hero.icon;
+            document.getElementById('heroTitle').textContent = `${namaPemain}, Kamu adalah ${hero.title}!`;
+            document.getElementById('heroSubtitle').textContent = hero.subtitle;
+            document.getElementById('heroDescription').textContent = hero.description;
+            document.getElementById('heroPower').textContent = hero.power;
+            document.getElementById('heroRole').textContent = hero.role;
+            document.getElementById('heroStrength').textContent = hero.strength;
+            document.getElementById('heroStrategy').textContent = hero.strategy;
+        }
+
+        function mulaiUlang() {
+            pertanyaanSekarang = 0;
+            jawabanPemain = [];
+            pertanyaanAcak = [];
+            document.getElementById('playerName').value = '';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('nameSection').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
