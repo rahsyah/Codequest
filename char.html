@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hero Personality Test - Temukan Hero Kariermu</title>
+    <title>Tes Kepribadian Hero - Temukan Hero Kariermu</title>
     <style>
         * {
             margin: 0;
@@ -269,17 +269,17 @@
 <body>
     <div class="container">
         <div class="hero-header">
-            <h1>🎮 HERO PERSONALITY TEST</h1>
+            <h1>🎮 TES KEPRIBADIAN HERO</h1>
             <p>Temukan Hero Karier yang Sesuai dengan Kepribadianmu!</p>
         </div>
 
         <div class="game-card">
             <div id="nameSection" class="name-input-section">
-                <h2>Selamat Datang, Hero!</h2>
-                <p style="margin-bottom: 20px;">Siapa nama pejuang karier kita hari ini?</p>
-                <input type="text" id="playerName" placeholder="Masukkan nama Anda..." maxlength="50">
+                <h2>Selamat Datang, Pejuang!</h2>
+                <p style="margin-bottom: 20px;">Siapa nama petualang kita hari ini?</p>
+                <input type="text" id="playerName" placeholder="Masukkan nama kamu..." maxlength="50">
                 <br>
-                <button class="start-btn" onclick="startTest()">Mulai Petualangan</button>
+                <button class="start-btn" onclick="mulaiPetualangan()">Mulai Petualangan</button>
             </div>
 
             <div id="questionSection" class="question-section">
@@ -318,404 +318,235 @@
                         </div>
                     </div>
                 </div>
-                <button class="restart-btn" onclick="restartTest()">Coba Lagi</button>
+                <button class="restart-btn" onclick="mulaiUlang()">Coba Lagi</button>
             </div>
         </div>
     </div>
 
     <script>
-        let playerName = '';
-        let currentQuestion = 0;
-        let answers = [];
-        let shuffledQuestions = [];
+        let namaPemain = '';
+        let pertanyaanSekarang = 0;
+        let jawabanPemain = [];
+        let pertanyaanAcak = [];
 
-        const questions = [
+        const daftarPertanyaan = [
             {
-                question: "Dalam guild adventurer, peran apa yang paling cocok untukmu?",
+                question: "Dalam sebuah persekutuan petualang, peran apa yang paling cocok untukmu?",
                 options: [
-                    { text: "Guild Master yang memimpin dan mengkoordinasi semua member", type: 'A' },
-                    { text: "Tactician yang menganalisis musuh dan merancang strategi pertempuran", type: 'B' },
-                    { text: "Inventor yang menciptakan skill combo dan taktik baru", type: 'C' },
-                    { text: "Healer yang support dan menjaga party tetap solid", type: 'D' },
-                    { text: "Scout yang eksplorasi dan mencari peluang baru", type: 'E' },
-                    { text: "Diplomat yang negosiasi dan bangun alliance", type: 'F' },
-                    { text: "Guardian yang protect dan stabilkan tim", type: 'G' },
-                    { text: "Enchanter yang boost motivasi dan moral party", type: 'H' }
+                    { text: "Ketua persekutuan yang memimpin dan mengatur semua anggota", type: 'A' },
+                    { text: "Ahli taktik yang menganalisis musuh dan merancang strategi pertempuran", type: 'B' },
+                    { text: "Penemu yang menciptakan jurus kombo dan taktik baru", type: 'C' },
+                    { text: "Penyembuh yang mendukung dan menjaga rombongan tetap solid", type: 'D' },
+                    { text: "Pengintai yang eksplorasi dan mencari peluang baru", type: 'E' },
+                    { text: "Diplomat yang negosiasi dan bangun aliansi", type: 'F' },
+                    { text: "Penjaga yang melindungi dan menstabilkan tim", type: 'G' },
+                    { text: "Pemberi semangat yang meningkatkan motivasi rombongan", type: 'H' }
                 ]
             },
             {
-                question: "Boss besar muncul dengan deadline super ketat! Apa movemu?",
+                question: "Bos besar muncul dengan batas waktu super ketat! Apa gerakanmu?",
                 options: [
-                    { text: "Take control! Bagi tugas dan lead team ke victory", type: 'A' },
-                    { text: "Analyze boss pattern, bikin execution plan yang perfect", type: 'B' },
-                    { text: "Improvise! Cari exploit dan strategi speedrun", type: 'C' },
-                    { text: "Coordinate bareng team, pastikan semua ready dan support maksimal", type: 'D' },
-                    { text: "Langsung action! Trial error sampe nemuin cara tercepat", type: 'E' },
-                    { text: "Diskusi bareng party, cari win-win solution untuk semua", type: 'F' },
-                    { text: "Stay calm, ikutin proven method yang aman dan reliable", type: 'G' },
-                    { text: "Pump up the team! Bikin semangat membara untuk clutch play", type: 'H' }
+                    { text: "Ambil alih kendali! Bagi tugas dan pimpin tim menuju kemenangan", type: 'A' },
+                    { text: "Analisis pola bos, bikin rencana eksekusi yang sempurna", type: 'B' },
+                    { text: "Berimprovisasi! Cari celah dan strategi tercepat", type: 'C' },
+                    { text: "Koordinasi bareng tim, pastikan semua siap dan dukungan maksimal", type: 'D' },
+                    { text: "Langsung aksi! Coba-coba sampai nemuin cara tercepat", type: 'E' },
+                    { text: "Diskusi bareng rombongan, cari solusi menguntungkan semua", type: 'F' },
+                    { text: "Tetap tenang, ikutin metode yang terbukti aman dan andal", type: 'G' },
+                    { text: "Bakar semangat tim! Bikin semangat membara untuk aksi heroik", type: 'H' }
                 ]
             },
             {
-                question: "Apa yang bikin EXP bar kamu terisi paling cepat?",
+                question: "Apa yang bikin pengalaman kamu bertambah paling cepat?",
                 options: [
-                    { text: "Achieve target dan jadi MVP dalam quest", type: 'A' },
-                    { text: "Solve puzzle level nightmare dengan logic sempurna", type: 'B' },
-                    { text: "Create build/combo original yang belum ada di meta", type: 'C' },
-                    { text: "Help party member level up dan reach potential mereka", type: 'D' },
-                    { text: "Unlock hidden area dan discover konten baru", type: 'E' },
-                    { text: "Build reputation dan jadi influencer di community", type: 'F' },
-                    { text: "Complete achievement dan unlock rare title", type: 'G' },
-                    { text: "Share meme dan vibe positif yang bikin guild aktif", type: 'H' }
+                    { text: "Mencapai target dan jadi pemain terbaik dalam misi", type: 'A' },
+                    { text: "Memecahkan teka-teki tingkat neraka dengan logika sempurna", type: 'B' },
+                    { text: "Menciptakan susunan jurus original yang belum ada", type: 'C' },
+                    { text: "Membantu anggota rombongan naik level dan capai potensi mereka", type: 'D' },
+                    { text: "Membuka area tersembunyi dan menemukan konten baru", type: 'E' },
+                    { text: "Membangun reputasi dan jadi tokoh terkenal di komunitas", type: 'F' },
+                    { text: "Menyelesaikan pencapaian dan membuka gelar langka", type: 'G' },
+                    { text: "Berbagi candaan dan energi positif yang bikin persekutuan aktif", type: 'H' }
                 ]
             },
             {
-                question: "Style komunikasi kamu saat raid meeting gimana?",
+                question: "Gaya komunikasi kamu saat rapat strategi gimana?",
                 options: [
-                    { text: "Direct dan assertive, langsung point tanpa basa-basi", type: 'A' },
-                    { text: "Data-driven, share stat dan mechanic explanation", type: 'B' },
-                    { text: "Storytelling dengan visual, bikin plan terdengar epic", type: 'C' },
-                    { text: "Listen first, kasih input yang membangun dan inklusif", type: 'D' },
-                    { text: "Energetic dan spontan, throw ide-ide wild", type: 'E' },
-                    { text: "Persuasive dan diplomatic, align semua perspektif", type: 'F' },
-                    { text: "Calm dan clear, pastikan semua paham step by step", type: 'G' },
-                    { text: "Hype dan inspiring, bikin semua excited buat execute", type: 'H' }
+                    { text: "Langsung dan tegas, to the point tanpa basa-basi", type: 'A' },
+                    { text: "Berdasarkan data, berbagi statistik dan penjelasan mekanik", type: 'B' },
+                    { text: "Bercerita dengan visual, bikin rencana terdengar epik", type: 'C' },
+                    { text: "Dengarkan dulu, kasih masukan yang membangun dan inklusif", type: 'D' },
+                    { text: "Energik dan spontan, lempar ide-ide liar", type: 'E' },
+                    { text: "Persuasif dan diplomatis, selaraskan semua perspektif", type: 'F' },
+                    { text: "Tenang dan jelas, pastikan semua paham langkah demi langkah", type: 'G' },
+                    { text: "Semangat dan menginspirasi, bikin semua excited buat eksekusi", type: 'H' }
                 ]
             },
             {
-                question: "Meta game berubah drastis! New patch drop. Reaksimu?",
+                question: "Aturan permainan berubah drastis! Pembaruan besar turun. Reaksimu?",
                 options: [
-                    { text: "Langsung adapt dan lead team master meta baru", type: 'A' },
-                    { text: "Deep dive patch notes, calculate impact ke build", type: 'B' },
-                    { text: "Experiment wild! Test semua possibility yang baru muncul", type: 'C' },
-                    { text: "Help team transition, pastikan no one left behind", type: 'D' },
-                    { text: "Excited! Saatnya explore dan discover new meta", type: 'E' },
-                    { text: "Diskusi community, gather feedback tentang patch", type: 'F' },
-                    { text: "Wait and see, stick to proven strategy dulu", type: 'G' },
-                    { text: "Turn it into meme, bikin community chill dengan change", type: 'H' }
+                    { text: "Langsung adaptasi dan pimpin tim kuasai aturan baru", type: 'A' },
+                    { text: "Pelajari catatan pembaruan, hitung dampak ke susunan jurus", type: 'B' },
+                    { text: "Eksperimen gila! Tes semua kemungkinan yang baru muncul", type: 'C' },
+                    { text: "Bantu tim transisi, pastikan nggak ada yang tertinggal", type: 'D' },
+                    { text: "Senang! Saatnya jelajahi dan temukan aturan baru", type: 'E' },
+                    { text: "Diskusi komunitas, kumpulkan pendapat tentang pembaruan", type: 'F' },
+                    { text: "Tunggu dan lihat, tetap di strategi yang sudah terbukti dulu", type: 'G' },
+                    { text: "Jadikan candaan, bikin komunitas santai dengan perubahan", type: 'H' }
                 ]
             },
             {
-                question: "Grinding style kamu yang paling efisien itu:",
+                question: "Gaya pengulangan latihan kamu yang paling efisien itu:",
                 options: [
-                    { text: "Fast-paced multitasking, optimize setiap detik", type: 'A' },
-                    { text: "Structured routine, sistem yang calculated", type: 'B' },
-                    { text: "Freestyle experimental, test build baru tiap hari", type: 'C' },
-                    { text: "Cooperative, grinding bareng party lebih seru", type: 'D' },
-                    { text: "Solo adventure, explore map sambil grinding", type: 'E' },
-                    { text: "Social grind, networking sambil farm", type: 'F' },
-                    { text: "Steady dan consistent, sesuai daily checklist", type: 'G' },
-                    { text: "Santai tapi fun, vibe positif yang sustainable", type: 'H' }
+                    { text: "Cepat dan banyak tugas, optimalkan setiap detik", type: 'A' },
+                    { text: "Rutinitas terstruktur, sistem yang terkalkulasi", type: 'B' },
+                    { text: "Gaya bebas eksperimental, tes jurus baru tiap hari", type: 'C' },
+                    { text: "Kerjasama, latihan bareng rombongan lebih seru", type: 'D' },
+                    { text: "Petualangan solo, jelajahi peta sambil latihan", type: 'E' },
+                    { text: "Latihan sosial, jaringan sambil berlatih", type: 'F' },
+                    { text: "Stabil dan konsisten, sesuai daftar harian", type: 'G' },
+                    { text: "Santai tapi menyenangkan, energi positif yang berkelanjutan", type: 'H' }
                 ]
             },
             {
-                question: "Saat harus pick skill tree untuk endgame build, kamu:",
+                question: "Saat harus pilih pohon kemampuan untuk susunan akhir permainan, kamu:",
                 options: [
-                    { text: "Instinct player, trust pengalaman dan gut feeling", type: 'A' },
-                    { text: "Spreadsheet warrior, calculate DPS dan optimal path", type: 'B' },
-                    { text: "Intuitive theorycrafter, vision build yang ahead of meta", type: 'C' },
-                    { text: "Ask party, pilih yang benefit tim secara keseluruhan", type: 'D' },
-                    { text: "YOLO spec, pilih yang interesting meski off-meta", type: 'E' },
-                    { text: "Popular consensus, ikutin recommendation community", type: 'F' },
-                    { text: "Proven build, ikutin guide dari top player", type: 'G' },
-                    { text: "Fun over meta, yang bikin enjoy jangka panjang", type: 'H' }
+                    { text: "Pemain insting, percaya pengalaman dan firasat", type: 'A' },
+                    { text: "Pejuang tabel data, hitung kekuatan dan jalur optimal", type: 'B' },
+                    { text: "Perancang teori intuitif, visi susunan yang di depan zamannya", type: 'C' },
+                    { text: "Tanya rombongan, pilih yang untungkan tim secara keseluruhan", type: 'D' },
+                    { text: "Ambil risiko, pilih yang menarik meski di luar arus utama", type: 'E' },
+                    { text: "Konsensus populer, ikutin rekomendasi komunitas", type: 'F' },
+                    { text: "Susunan terbukti, ikutin panduan dari pemain terbaik", type: 'G' },
+                    { text: "Kesenangan lebih penting, yang bikin enjoy jangka panjang", type: 'H' }
                 ]
             },
             {
-                question: "Server realm yang kamu pilih join untuk maksimal career grind:",
+                question: "Dunia permainan yang kamu pilih gabung untuk maksimal latihan karier:",
                 options: [
-                    { text: "Competitive PvP server, fast promotion dan cutthroat", type: 'A' },
-                    { text: "Structured PvE server, clear progression system", type: 'B' },
-                    { text: "Experimental test server, freedom buat innovate", type: 'C' },
-                    { text: "Friendly RP server, supportive community culture", type: 'D' },
-                    { text: "Open world server, unlimited exploration", type: 'E' },
-                    { text: "Social hub server, networking dan connections", type: 'F' },
-                    { text: "Legacy server, established dan stable", type: 'G' },
-                    { text: "Party-focused server, event-driven dan lively", type: 'H' }
+                    { text: "Dunia kompetitif pemain lawan pemain, promosi cepat dan ketat", type: 'A' },
+                    { text: "Dunia terstruktur pemain lawan lingkungan, sistem kemajuan jelas", type: 'B' },
+                    { text: "Dunia percobaan eksperimental, kebebasan buat berinovasi", type: 'C' },
+                    { text: "Dunia ramah bermain peran, budaya komunitas yang mendukung", type: 'D' },
+                    { text: "Dunia terbuka, penjelajahan tanpa batas", type: 'E' },
+                    { text: "Pusat sosial, jaringan dan koneksi", type: 'F' },
+                    { text: "Dunia warisan, mapan dan stabil", type: 'G' },
+                    { text: "Dunia fokus rombongan, acara-driven dan hidup", type: 'H' }
                 ]
             },
             {
-                question: "Dapat rare item quest yang butuh team effort. Pendekatan kamu?",
+                question: "Dapat misi barang langka yang butuh kerja tim. Pendekatan kamu?",
                 options: [
-                    { text: "Lead the charge! Organize dan drive team ke completion", type: 'A' },
-                    { text: "Research quest mechanics, share detailed guide", type: 'B' },
-                    { text: "Suggest creative shortcuts atau alternate methods", type: 'C' },
-                    { text: "Make sure semua dapat loot fair dan happy", type: 'D' },
-                    { text: "Explore semua possibilities dan hidden objectives", type: 'E' },
-                    { text: "Network dengan guild lain untuk alliance quest", type: 'F' },
-                    { text: "Follow quest log carefully, no rush semua aman", type: 'G' },
-                    { text: "Turn it into fun event, celebrate tiap milestone", type: 'H' }
+                    { text: "Pimpin serangan! Atur dan dorong tim ke penyelesaian", type: 'A' },
+                    { text: "Riset mekanik misi, bagikan panduan detail", type: 'B' },
+                    { text: "Sarankan jalan pintas kreatif atau metode alternatif", type: 'C' },
+                    { text: "Pastikan semua dapat jarahan yang adil dan senang", type: 'D' },
+                    { text: "Jelajahi semua kemungkinan dan tujuan tersembunyi", type: 'E' },
+                    { text: "Jaringan dengan persekutuan lain untuk misi aliansi", type: 'F' },
+                    { text: "Ikuti catatan misi dengan hati-hati, nggak terburu-buru semua aman", type: 'G' },
+                    { text: "Jadikan acara menyenangkan, rayakan tiap pencapaian", type: 'H' }
                 ]
             },
             {
-                question: "Kalau kamu jadi Class Representative di academy, fokus kamu:",
+                question: "Kalau kamu jadi Perwakilan Kelas di akademi, fokus kamu:",
                 options: [
-                    { text: "Set high goals, push class jadi yang terbaik", type: 'A' },
-                    { text: "Optimize schedule dan resource allocation", type: 'B' },
-                    { text: "Innovate learning method yang lebih engaging", type: 'C' },
-                    { text: "Ensure semua student comfortable dan supported", type: 'D' },
-                    { text: "Organize field trip dan praktik langsung", type: 'E' },
-                    { text: "Build connection dengan kelas lain dan mentor", type: 'F' },
-                    { text: "Maintain stability dan tradition yang proven", type: 'G' },
-                    { text: "Create fun activities yang boost class morale", type: 'H' }
+                    { text: "Tetapkan target tinggi, dorong kelas jadi yang terbaik", type: 'A' },
+                    { text: "Optimalkan jadwal dan alokasi sumber daya", type: 'B' },
+                    { text: "Berinovasi metode belajar yang lebih menarik", type: 'C' },
+                    { text: "Pastikan semua murid nyaman dan didukung", type: 'D' },
+                    { text: "Atur karyawisata dan praktik langsung", type: 'E' },
+                    { text: "Bangun koneksi dengan kelas lain dan mentor", type: 'F' },
+                    { text: "Jaga stabilitas dan tradisi yang terbukti", type: 'G' },
+                    { text: "Buat kegiatan seru yang tingkatkan semangat kelas", type: 'H' }
                 ]
             },
             {
-                question: "Saat solo quest, soundtrack yang match vibe kamu:",
+                question: "Saat misi solo, musik latar yang cocok dengan energi kamu:",
                 options: [
-                    { text: "Epic battle theme, energetic dan powerful", type: 'A' },
-                    { text: "Strategic BGM, calculated dan focused", type: 'B' },
-                    { text: "Experimental electronic, unique dan futuristic", type: 'C' },
-                    { text: "Peaceful ambient, calming dan supportive", type: 'D' },
-                    { text: "Adventure theme, exciting dan uplifting", type: 'E' },
-                    { text: "Social tavern music, lively dan communal", type: 'F' },
-                    { text: "Classic orchestral, traditional dan reliable", type: 'G' },
-                    { text: "Upbeat pop, fun dan mood-boosting", type: 'H' }
+                    { text: "Tema pertempuran epik, energik dan kuat", type: 'A' },
+                    { text: "Musik latar strategis, terkalkulasi dan fokus", type: 'B' },
+                    { text: "Elektronik eksperimental, unik dan futuristik", type: 'C' },
+                    { text: "Suara alam damai, menenangkan dan mendukung", type: 'D' },
+                    { text: "Tema petualangan, menggembirakan dan mengangkat", type: 'E' },
+                    { text: "Musik kedai sosial, hidup dan komunal", type: 'F' },
+                    { text: "Orkestra klasik, tradisional dan andal", type: 'G' },
+                    { text: "Lagu ceria, menyenangkan dan meningkatkan mood", type: 'H' }
                 ]
             },
             {
-                question: "Party member rage quit mid-dungeon. Kamu:",
+                question: "Anggota rombongan keluar tengah gua bawah tanah. Kamu:",
                 options: [
-                    { text: "Take charge, reallocate role dan push forward", type: 'A' },
-                    { text: "Analyze situation, adjust strategy accordingly", type: 'B' },
-                    { text: "Improvise creative solution dengan remaining team", type: 'C' },
-                    { text: "Reach out ke member itu, cari tau masalahnya", type: 'D' },
-                    { text: "See it as challenge, prove bisa clear dengan fewer", type: 'E' },
-                    { text: "Mediasi situasi, cari replacement via network", type: 'F' },
-                    { text: "Retreat dan regroup, safety first", type: 'G' },
-                    { text: "Lighten mood dengan humor, prevent more tilt", type: 'H' }
+                    { text: "Ambil kendali, alokasi ulang peran dan maju terus", type: 'A' },
+                    { text: "Analisis situasi, sesuaikan strategi", type: 'B' },
+                    { text: "Improvisasi solusi kreatif dengan tim yang tersisa", type: 'C' },
+                    { text: "Hubungi anggota itu, cari tau masalahnya", type: 'D' },
+                    { text: "Lihat sebagai tantangan, buktikan bisa selesai dengan lebih sedikit orang", type: 'E' },
+                    { text: "Mediasi situasi, cari pengganti via jaringan", type: 'F' },
+                    { text: "Mundur dan kumpul ulang, keselamatan utama", type: 'G' },
+                    { text: "Ringankan suasana dengan humor, cegah lebih banyak yang keluar", type: 'H' }
                 ]
             },
             {
-                question: "New skill unlock! Cara belajar kamu:",
+                question: "Kemampuan baru terbuka! Cara belajar kamu:",
                 options: [
-                    { text: "Jump in dan learn by doing, practice makes perfect", type: 'A' },
-                    { text: "Read tooltip detail, understand mechanic dulu", type: 'B' },
-                    { text: "Experiment combo dengan skill lain, find synergy", type: 'C' },
-                    { text: "Ask veteran player untuk tips dan tricks", type: 'D' },
-                    { text: "Test di berbagai scenario dan situasi", type: 'E' },
-                    { text: "Check community guide dan discussion", type: 'F' },
-                    { text: "Practice di training dummy sampai perfect", type: 'G' },
-                    { text: "Share excitement ke guild dan belajar bareng", type: 'H' }
+                    { text: "Langsung terjun dan belajar sambil praktek, latihan bikin sempurna", type: 'A' },
+                    { text: "Baca penjelasan detail, pahami mekanisme dulu", type: 'B' },
+                    { text: "Eksperimen kombo dengan kemampuan lain, temukan sinergi", type: 'C' },
+                    { text: "Tanya pemain veteran untuk tips dan trik", type: 'D' },
+                    { text: "Tes di berbagai skenario dan situasi", type: 'E' },
+                    { text: "Cek panduan komunitas dan diskusi", type: 'F' },
+                    { text: "Latihan di boneka latihan sampai sempurna", type: 'G' },
+                    { text: "Bagikan kegembiraan ke persekutuan dan belajar bareng", type: 'H' }
                 ]
             },
             {
-                question: "Event crossover collab datang! Attitude kamu:",
+                question: "Acara kolaborasi datang! Sikap kamu:",
                 options: [
-                    { text: "Grind semua reward ASAP, complete everything", type: 'A' },
-                    { text: "Calculate optimal route untuk max efficiency", type: 'B' },
-                    { text: "Explore semua easter egg dan hidden content", type: 'C' },
-                    { text: "Help newbie clear event content", type: 'D' },
-                    { text: "Try semua new feature yang ditambahkan", type: 'E' },
-                    { text: "Join community event dan gathering", type: 'F' },
-                    { text: "Focus ke reward yang actually useful", type: 'G' },
-                    { text: "Just enjoy the vibe dan have fun", type: 'H' }
+                    { text: "Kumpulkan semua hadiah secepat mungkin, selesaikan semuanya", type: 'A' },
+                    { text: "Hitung rute optimal untuk efisiensi maksimal", type: 'B' },
+                    { text: "Jelajahi semua telur paskah dan konten tersembunyi", type: 'C' },
+                    { text: "Bantu pemula selesaikan konten acara", type: 'D' },
+                    { text: "Coba semua fitur baru yang ditambahkan", type: 'E' },
+                    { text: "Gabung acara komunitas dan pertemuan", type: 'F' },
+                    { text: "Fokus ke hadiah yang beneran berguna", type: 'G' },
+                    { text: "Nikmati saja energinya dan bersenang-senang", type: 'H' }
                 ]
             },
             {
-                question: "Kamu dapat title 'Mentor'. Teaching style kamu:",
+                question: "Kamu dapat gelar 'Pembimbing'. Gaya mengajar kamu:",
                 options: [
-                    { text: "Challenging mentor, push student ke limit mereka", type: 'A' },
-                    { text: "Systematic tutor, structured lesson plan", type: 'B' },
-                    { text: "Creative teacher, unorthodox tapi effective method", type: 'C' },
-                    { text: "Patient coach, adapt ke pace tiap student", type: 'D' },
-                    { text: "Hands-on instructor, learning by experience", type: 'E' },
-                    { text: "Networking mentor, connect student ke opportunities", type: 'F' },
-                    { text: "Traditional sensei, proven technique dan discipline", type: 'G' },
-                    { text: "Inspiring guru, motivate dan energize student", type: 'H' }
+                    { text: "Pembimbing menantang, dorong murid ke batas mereka", type: 'A' },
+                    { text: "Pengajar sistematis, rencana pelajaran terstruktur", type: 'B' },
+                    { text: "Guru kreatif, metode tidak biasa tapi efektif", type: 'C' },
+                    { text: "Pelatih sabar, sesuaikan ke kecepatan tiap murid", type: 'D' },
+                    { text: "Instruktur langsung praktik, belajar lewat pengalaman", type: 'E' },
+                    { text: "Pembimbing jaringan, hubungkan murid ke peluang", type: 'F' },
+                    { text: "Guru tradisional, teknik terbukti dan disiplin", type: 'G' },
+                    { text: "Motivator inspiratif, semangati dan berikan energi ke murid", type: 'H' }
                 ]
             },
             {
-                question: "Main quest clear! End credits roll. Yang kamu rasakan:",
+                question: "Misi utama selesai! Kredit akhir bergulir. Yang kamu rasakan:",
                 options: [
-                    { text: "Victory! Langsung planning NG+ dengan target lebih tinggi", type: 'A' },
-                    { text: "Satisfaction dari perfect execution dan completion", type: 'B' },
-                    { text: "Pride dari creative approach yang digunakan", type: 'C' },
-                    { text: "Grateful untuk party yang support journey", type: 'D' },
-                    { text: "Excited untuk explore post-game content", type: 'E' },
-                    { text: "Happy sharing achievement ke community", type: 'F' },
-                    { text: "Relief dan sense of accomplishment", type: 'G' },
-                    { text: "Joy dari memorable experience yang dibuat", type: 'H' }
+                    { text: "Kemenangan! Langsung rencanakan permainan ulang dengan target lebih tinggi", type: 'A' },
+                    { text: "Kepuasan dari eksekusi sempurna dan penyelesaian", type: 'B' },
+                    { text: "Bangga dari pendekatan kreatif yang digunakan", type: 'C' },
+                    { text: "Bersyukur untuk rombongan yang dukung perjalanan", type: 'D' },
+                    { text: "Senang untuk jelajahi konten pasca-permainan", type: 'E' },
+                    { text: "Bahagia berbagi pencapaian ke komunitas", type: 'F' },
+                    { text: "Lega dan rasa pencapaian", type: 'G' },
+                    { text: "Gembira dari pengalaman berkesan yang dibuat", type: 'H' }
                 ]
             }
         ];
 
-        const heroTypes = {
+        const tipeHero = {
             'A': {
                 icon: '⚔️',
-                title: 'THE COMMANDER',
-                subtitle: 'Guild Master yang Born to Lead',
-                description: 'Kamu adalah leader natural yang punya aura authority kuat. Decisive, competitive, dan nggak takut ambil responsibility besar. Energy kamu infectious dan bikin team termotivasi push limit mereka.',
-                power: 'Executive Presence - Kemampuan command respect, make tough calls under pressure, dan drive team towards ambitious goals dengan confidence yang unshakeable.',
-                role: 'CEO, Operations Manager, Team Leader, Project Director, Startup Founder, Sales Director',
-                strength: 'Goal-oriented beast, decisive af, natural risk-taker, commanding presence, result-driven mindset, excellent di delegate dan mobilize resources.',
-                strategy: 'Level up: Ambil course Leadership & Management di Coursera/LinkedIn Learning. Belajar active listening dan emotional intelligence lewat buku "Leaders Eat Last" by Simon Sinek. Practice public speaking di Toastmasters atau komunitas speaker. Ikuti mentorship program buat refine strategic thinking. Challenge: belajar slow down dan empower team, bukan just command.'
-            },
-            'B': {
-                icon: '🧠',
-                title: 'THE STRATEGIST',
-                subtitle: 'Mastermind dengan IQ 200',
-                description: 'Otak kamu literally supercomputer. Data, logic, dan analytical thinking adalah native language kamu. Detail-oriented banget dan bisa spot pattern yang orang lain miss. Problem solver yang methodical dan precise.',
-                power: 'Strategic Analytics - Kemampuan god-tier dalam process complex information, identify trends, construct air-tight arguments, dan predict outcomes dengan data-driven insights.',
-                role: 'Data Scientist, Business Analyst, Strategy Consultant, Financial Analyst, Research Scientist, System Architect, Operations Analyst',
-                strength: 'Critical thinker, detail-obsessed, logical reasoning on point, excellent problem-solving, patient dengan complex tasks, systematic approach ke challenges.',
-                strategy: 'Level up: Master tools analytics - Python, SQL, Tableau via DataCamp atau Kaggle. Ambil Google Data Analytics Certificate atau AWS certification. Belajar data storytelling via "Storytelling with Data" by Cole Nussbaumer. Practice presentation skills biar analisis kompleks jadi digestible. Join data science communities dan ikut hackathon buat sharpen skills.'
-            },
-            'C': {
-                icon: '🎨',
-                title: 'THE INNOVATOR',
-                subtitle: 'Creative Genius yang Think Different',
-                description: 'Mind kamu playground unlimited ideas. Kamu see possibilities dimana others see walls. Visionary, imaginative, dan always ahead of the curve. Original thinker yang bikin breakthrough solutions.',
-                power: 'Creative Disruption - Kemampuan legendary dalam generate novel ideas, think outside the box, connect unrelated concepts, dan transform abstract visions into tangible innovations.',
-                role: 'Product Manager, Creative Director, UX/UI Designer, Content Strategist, Innovation Lead, Brand Manager, Marketing Director',
-                strength: 'Visioner af, adaptable ke changes, fearless experimenter, lateral thinking master, trend-setter, excellent di brainstorming dan ideation sessions.',
-                strategy: 'Level up: Belajar Design Thinking via Stanford d.school atau IDEO U courses. Master tools kreative - Figma, Adobe Creative Suite, prototyping tools. Ambil Google UX Design Certificate. Bangun portfolio di Behance/Dribbble. Join innovation workshops dan design sprints. Baca "Creative Confidence" by Tom & David Kelley. Network di creative communities.'
-            },
-            'D': {
-                icon: '🤝',
-                title: 'THE HARMONIZER',
-                subtitle: 'People Person yang Bikin Team Solid',
-                description: 'Empati kamu level max. Kamu naturally understand people, build connections, dan create safe space buat semua berkembang. Team glue yang bikin workplace jadi home.',
-                power: 'Emotional Intelligence Mastery - Kemampuan epic dalam build trust, facilitate collaboration, resolve conflicts gracefully, dan nurture talent dalam team dynamics.',
-                role: 'HR Business Partner, People Development Manager, Customer Success Lead, Team Coach, Community Manager, Employee Engagement Specialist',
-                strength: 'Empati through the roof, conflict resolution pro, great listener, supportive energy, relationship builder, culture champion yang create psychological safety.',
-                strategy: 'Level up: Ambil SHRM atau HRCI certification untuk HR track. Belajar coaching via ICF-accredited programs. Master organizational psychology lewat courses di Coursera. Baca "Dare to Lead" by Brené Brown dan "Crucial Conversations". Practice facilitation skills di workshops. Join HR communities dan people-focused networking events.'
-            },
-            'E': {
-                icon: '🗡️',
-                title: 'THE EXPLORER',
-                subtitle: 'Adventure Seeker yang Fearless',
-                description: 'Kamu thrive di uncertainty dan love discovery. Risk-taker yang energetic, spontaneous, dan always ready untuk next challenge. Action-oriented dan learn best by doing.',
-                power: 'Adaptive Agility - Kemampuan insane dalam quickly adapt to new environments, take calculated risks, learn on the fly, dan turn obstacles into opportunities dengan resourcefulness.',
-                role: 'Business Development Manager, Field Sales Executive, Startup Growth Hacker, Travel Content Creator, Event Manager, Account Executive',
-                strength: 'Energetic powerhouse, super flexible, hands-on learner, resilient af, opportunity spotter, excellent di networking dan building connections on the go.',
-                strategy: 'Level up: Ambil courses Sales & Negotiation di LinkedIn Learning. Belajar Growth Hacking strategies lewat Reforge atau GrowthTribe. Master CRM tools dan sales analytics. Baca "The Lean Startup" by Eric Ries. Practice pitching dan storytelling. Join startup communities dan attend networking events regularly. Develop personal brand di LinkedIn.'
-            },
-            'F': {
-                icon: '👑',
-                title: 'THE INFLUENCER',
-                subtitle: 'Social Butterfly dengan Charisma Max',
-                description: 'Network adalah superpowermu. Charismatic, persuasive, dan naturally good di connect dengan diverse people. Kamu build bridges dan open doors buat semua.',
-                power: 'Social Capital Architect - Kemampuan legendary dalam build extensive networks, influence opinions, negotiate win-win outcomes, dan create opportunities through relationships.',
-                role: 'Public Relations Manager, Partnership Manager, Brand Ambassador, Social Media Strategist, Communications Director, Corporate Affairs',
-                strength: 'Charisma on fleek, persuasion expert, excellent communicator, politically savvy, relationship cultivator, great di reading rooms dan situations.',
-                strategy: 'Level up: Master digital marketing via Google Digital Garage atau HubSpot Academy. Belajar PR strategies dan crisis communication. Ambil courses Negotiation dan Influence. Baca "Influence" by Robert Cialdini dan "Never Split the Difference". Build strong LinkedIn presence. Join Toastmasters dan professional networking groups. Practice content creation consistently.'
-            },
-            'G': {
-                icon: '🛡️',
-                title: 'THE GUARDIAN',
-                subtitle: 'Reliable AF dan Rock Solid',
-                description: 'Stability dan reliability adalah trademark kamu. Responsible, organized, dan bisa dipercaya 100%. Kamu yang bikin everything runs smoothly dengan consistency.',
-                power: 'Operational Excellence - Kemampuan superior dalam maintain quality standards, ensure compliance, manage risks, dan deliver consistent results dengan reliability yang unmatched.',
-                role: 'Operations Manager, Quality Assurance Lead, Compliance Officer, Administrative Manager, Project Coordinator, Risk Manager',
-                strength: 'Dependable king/queen, detail perfectionist, process-oriented, risk-aware, disciplined worker, excellent di planning dan execution yang thorough.',
-                strategy: 'Level up: Ambil PMP (Project Management Professional) certification. Belajar Six Sigma atau Lean methodology. Master project management tools - Asana, Monday, MS Project. Baca "The Checklist Manifesto" by Atul Gawande. Take courses Operations Management. Join PMI atau operations-focused professional groups. Practice agile methodologies.'
-            },
-            'H': {
-                icon: '✨',
-                title: 'THE ENTERTAINER',
-                subtitle: 'Energy Booster yang Bikin Vibe Lit',
-                description: 'Kamu literally human sunshine. Enthusiastic, fun, dan bikin atmosphere instantly better. People magnet yang spread positive vibes dan keep morale high.',
-                power: 'Morale Catalyst - Kemampuan magical dalam energize teams, create engaging experiences, boost motivation through positivity, dan make work feel less like work.',
-                role: 'Events Manager, Content Creator, Employee Engagement Lead, Entertainment Producer, Social Media Manager, Host/MC Professional',
-                strength: 'Enthusiastic mood-maker, spontaneous entertainer, great storyteller, vibe creator, team energizer, excellent di create memorable experiences.',
-                strategy: 'Level up: Belajar content creation - video editing, copywriting, social media strategies. Ambil courses Event Management atau Entertainment Business. Master engagement tools dan platforms. Baca "Contagious" by Jonah Berger. Practice public speaking dan MC skills. Build personal brand di social media. Join content creator communities dan collab dengan others.'
-            }
-        };
-
-        function startTest() {
-            playerName = document.getElementById('playerName').value.trim();
-            if (!playerName) {
-                alert('Silakan masukkan nama Anda terlebih dahulu!');
-                return;
-            }
-
-            // Shuffle pertanyaan agar random setiap kali mulai
-            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
-
-            document.getElementById('nameSection').classList.add('hidden');
-            document.getElementById('questionSection').style.display = 'block';
-            showQuestion();
-        }
-
-        function showQuestion() {
-            if (currentQuestion >= shuffledQuestions.length) {
-                showResult();
-                return;
-            }
-
-            const q = shuffledQuestions[currentQuestion];
-            document.getElementById('questionText').textContent = `${currentQuestion + 1}. ${q.question}`;
-            
-            const optionsContainer = document.getElementById('optionsContainer');
-            optionsContainer.innerHTML = '';
-            
-            q.options.forEach((option, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = option.text;
-                btn.onclick = () => selectAnswer(option.type);
-                optionsContainer.appendChild(btn);
-            });
-
-            updateProgress();
-        }
-
-        function selectAnswer(type) {
-            answers.push(type);
-            currentQuestion++;
-            showQuestion();
-        }
-
-        function updateProgress() {
-            const progress = ((currentQuestion) / shuffledQuestions.length) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-        }
-
-        function calculateResult() {
-            const counts = {};
-            answers.forEach(answer => {
-                counts[answer] = (counts[answer] || 0) + 1;
-            });
-
-            let maxCount = 0;
-            let resultType = 'A';
-            for (let type in counts) {
-                if (counts[type] > maxCount) {
-                    maxCount = counts[type];
-                    resultType = type;
-                }
-            }
-
-            return resultType;
-        }
-
-        function showResult() {
-            const resultType = calculateResult();
-            const hero = heroTypes[resultType];
-
-            document.getElementById('questionSection').style.display = 'none';
-            document.getElementById('resultSection').style.display = 'block';
-
-            document.getElementById('heroIcon').textContent = hero.icon;
-            document.getElementById('heroTitle').textContent = `${playerName}, Kamu adalah ${hero.title}!`;
-            document.getElementById('heroSubtitle').textContent = hero.subtitle;
-            document.getElementById('heroDescription').textContent = hero.description;
-            document.getElementById('heroPower').textContent = hero.power;
-            document.getElementById('heroRole').textContent = hero.role;
-            document.getElementById('heroStrength').textContent = hero.strength;
-            document.getElementById('heroStrategy').textContent = hero.strategy;
-        }
-
-        function restartTest() {
-            currentQuestion = 0;
-            answers = [];
-            shuffledQuestions = [];
-            document.getElementById('playerName').value = '';
-            document.getElementById('resultSection').style.display = 'none';
-            document.getElementById('nameSection').classList.remove('hidden');
-            document.getElementById('progressBar').style.width = '0%';
-        }
-    </script>
-</body>
-</html>
+                title: 'SANG PANGLIMA',
+                subtitle: 'Ketua Persekutuan yang Terlahir Memimpin',
+                description: 'Kamu adalah pemimpin alami yang punya aura wibawa kuat. Tegas, kompetitif, dan nggak takut ambil tanggung jawab besar. Energi kamu menular dan bikin tim termotivasi melampaui batas mereka.',
+                power: 'Kehadiran Eksekutif - Kemampuan mendapat penghormatan, membuat keputusan sulit di bawah tekanan, dan mendorong tim menuju tujuan ambisius dengan kepercayaan diri yang tak tergoyahkan.',
+                role: 'Direktur Utama, Manajer Operasional, Pemimpin Tim, Direktur Proyek, Pendiri Startup, Direktur Penjualan',
+                strength: 'Berorientasi target, tegas banget, pengambil risiko alami, kehadiran yang memerintah, pola pikir driven hasil, jago dalam delegasi dan mobilisasi sumber daya.',
+                strategy: 'Naik level: Ambil kursus Kepemimpinan & Manajemen di Coursera atau LinkedIn Learning. Pelajari mendengarkan aktif dan kecerdasan emosional lewat buku "Leaders Eat Last" karya Simon Sinek. Latih berbicara di depan umum di Toastmasters atau komunitas pembicara. Ikuti program bimbingan untuk mengasah pemikiran strategis. Tantangan: belajar melambat
