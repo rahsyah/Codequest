@@ -644,7 +644,10 @@
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
             
-            q.options.forEach((option) => {
+            // Acak urutan pilihan jawaban
+            const pilihanAcak = [...q.options].sort(() => Math.random() - 0.5);
+            
+            pilihanAcak.forEach((option) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.textContent = option.text;
