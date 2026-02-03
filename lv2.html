@@ -368,7 +368,7 @@
                     hint: "Gunakan perintah moveRight(), moveUp(), collectKey(), openDoor()",
                     expectedCode: ["moveRight", "moveUp", "collectKey", "openDoor"],
                     challenge: "Tuliskan 4 perintah berurutan untuk:\n1. Bergerak ke kanan\n2. Bergerak ke atas\n3. Mengambil kunci\n4. Membuka pintu",
-                    solution: "hero.moveRight()\nhero.moveUp()\nhero.collectKey()\nhero.openDoor()"
+                    solution: "ZhengHe.moveRight()\nZhengHe.moveUp()\nZhengHe.collectKey()\nZhengHe.openDoor()"
                 },
                 {
                     title: "Quest 2: Pengulangan (Loop) - Melewati Jembatan Berbahaya",
@@ -378,7 +378,7 @@
                     hint: "Gunakan for loop atau while loop untuk mengulangi hero.moveForward()",
                     expectedCode: ["for", "moveForward"],
                     challenge: "Gunakan loop untuk membuat hero bergerak maju 5 kali",
-                    solution: "for (let i = 0; i < 5; i++) {\n    hero.moveForward()\n}"
+                    solution: "for (let i = 0; i < 5; i++) {\n    ZhengHe.moveForward()\n}"
                 },
                 {
                     title: "Quest 3: Percabangan (If-Else) - Memilih Jalur yang Aman",
@@ -388,7 +388,7 @@
                     hint: "Gunakan if-else untuk memeriksa hero.isTrapAhead(), lalu pilih moveRight() atau moveLeft()",
                     expectedCode: ["if", "isTrapAhead", "else", "moveRight"],
                     challenge: "Buat kondisi: jika ada jebakan di depan, bergerak ke kanan, jika tidak bergerak ke kiri",
-                    solution: "if (hero.isTrapAhead()) {\n    hero.moveRight()\n} else {\n    hero.moveLeft()\n}"
+                    solution: "if (ZhengHe.isTrapAhead()) {\n    ZhengHe.moveRight()\n} else {\n    ZhengHe.moveLeft()\n}"
                 },
                 {
                     title: "Quest 4: Fungsi (Function) - Membuat Mantra Ajaib",
@@ -398,7 +398,7 @@
                     hint: "Buat fungsi attackCombo() yang berisi hero.attack() sebanyak 3 kali, lalu panggil fungsi tersebut",
                     expectedCode: ["function", "attackCombo", "attack"],
                     challenge: "Buat fungsi bernama attackCombo yang melakukan serangan 3 kali, lalu panggil fungsi tersebut",
-                    solution: "function attackCombo() {\n    hero.attack()\n    hero.attack()\n    hero.attack()\n}\n\nattackCombo()"
+                    solution: "function attackCombo() {\n    ZhengHe.attack()\n    ZhengHe.attack()\n    ZhengHe.attack()\n}\n\nattackCombo()"
                 },
                 {
                     title: "Quest 5: Boss Fight - Kombinasi Semua Konsep",
@@ -408,7 +408,7 @@
                     hint: "Buat strategi: cek health, gunakan loop untuk menyerang, dan fungsi untuk healing",
                     expectedCode: ["function", "if", "for", "attack"],
                     challenge: "Buat strategi lengkap:\n1. Fungsi heal()\n2. Loop untuk menyerang 5 kali\n3. Kondisi: jika health < 50, gunakan heal()",
-                    solution: "function heal() {\n    hero.usePotion()\n}\n\nfor (let i = 0; i < 5; i++) {\n    if (hero.getHealth() < 50) {\n        heal()\n    }\n    hero.attack()\n}"
+                    solution: "function heal() {\n    ZhengHe.usePotion()\n}\n\nfor (let i = 0; i < 5; i++) {\n    if (ZhengHe.getHealth() < 50) {\n        heal()\n    }\n    ZhengHe.attack()\n}"
                 }
             ]
         };
