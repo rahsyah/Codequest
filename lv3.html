@@ -6,7 +6,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Belajar Coding - Pemprograman Berorientasi Object</title>
+    <title>Belajar Coding - Pemprograman Berbasis Objek</title>
     <style>
         * {
             margin: 0;
@@ -325,7 +325,7 @@
     <div class="container">
         <div class="game-header">
             <h1>🎮 CODING QUEST 🎮</h1>
-            <p>Belajar Petualangan - Paradigma Berorientasi Object (OOP)</p>
+            <p>Belajar Petualangan - Paradigma Berorientasi Objek (PBO)</p>
             
             <div class="stats-bar">
                 <div class="stat">
@@ -459,8 +459,8 @@
                     <div class="character-sprite">⚔️</div>
                     <h2 style="color: #00d4ff; margin: 30px 0;">Selamat Datang di Stage 3!</h2>
                     <p style="font-size: 1.2em; margin: 20px 0;">
-                        Sebelum memulai memasuki dungeon, tulis nama hero mu!<br>
-                        <small style="color: #ffc107;">⚠️ Bersiaplah mempelajari 4 Pilar OOP melalui petualangan epik!</small>
+                        Bersiaplah mempelajari 4 Pilar PBO melalui petualangan epik!<br>
+                        <small style="color: #ffc107;">⚠️ Quest 1-4 akan muncul secara acak, Boss Fight di akhir!</small>
                     </p>
                     <div class="oop-badge">Encapsulation</div>
                     <div class="oop-badge">Inheritance</div>
@@ -640,8 +640,8 @@
                     <button class="button" onclick="showSummary()" style="font-size: 1.3em; margin-top: 30px;">
                         📜 Lihat Koleksi Kode OOP
                     </button>
-                    <button class="button button-danger" onclick="resetGame()" style="font-size: 1.3em;">
-                        🔄 Main Lagi
+                    <button class="button" onclick="nextLevel()" style="font-size: 1.3em; background: linear-gradient(135deg, #05ffa3 0%, #00b288 100%); box-shadow: 0 0 10px rgba(5, 255, 163, 0.3);">
+                        🚀 Next Level
                     </button>
                 </div>
             `;
@@ -678,6 +678,11 @@
 
         function closeSummary() {
             document.getElementById('summaryModal').style.display = 'none';
+        }
+
+        function nextLevel() {
+            // Redirect ke level berikutnya
+            window.location.href = 'https://questmantra.vercel.app/lv2.html';
         }
 
         function resetGame() {
