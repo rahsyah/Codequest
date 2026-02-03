@@ -351,7 +351,7 @@
 
         <div class="modal" id="summaryModal">
             <div class="modal-content">
-                <h2 style="color: #00d4ff; text-align: center;">📜 Koleksi Kode OOP Anda 📜</h2>
+                <h2 style="color: #00d4ff; text-align: center;">📜 Koleksi Kode PBO Anda 📜</h2>
                 <div id="codeCollection"></div>
                 <button class="button" onclick="closeSummary()">Tutup</button>
             </div>
@@ -586,7 +586,7 @@
                         <br>🎉 BERHASIL! Kamu telah menguasai ${quest.concept}!<br>
                         ⚔️ Musuh ${quest.enemy} dikalahkan!<br>
                         ✨ +150 XP<br>
-                        🏆 Pilar OOP Unlocked: ${quest.concept}
+                        🏆 Pilar PBO Unlocked: ${quest.concept}
                     </div>`;
                     
                     gameState.codes.push({
@@ -624,7 +624,7 @@
                     <h2>🏆 SELAMAT ${gameState.playerName.toUpperCase()}! 🏆</h2>
                     <div class="character-sprite">⚔️✨</div>
                     <p style="font-size: 1.5em; margin: 20px 0;">
-                        Kamu telah menguasai 4 Pilar OOP!
+                        Kamu telah menguasai 4 Pilar PBO!
                     </p>
                     <div>
                         <div class="oop-badge">✓ Encapsulation</div>
@@ -638,7 +638,7 @@
                         Quest Selesai: ${gameState.questData.length}/5
                     </p>
                     <button class="button" onclick="showSummary()" style="font-size: 1.3em; margin-top: 30px;">
-                        📜 Lihat Koleksi Kode OOP
+                        📜 Lihat Koleksi Kode PBO
                     </button>
                     <button class="button" onclick="nextLevel()" style="font-size: 1.3em; background: linear-gradient(135deg, #05ffa3 0%, #00b288 100%); box-shadow: 0 0 10px rgba(5, 255, 163, 0.3);">
                         🚀 Next Level
@@ -693,7 +693,7 @@
                 gameState.codes = [];
                 gameState.playerName = '';
                 gameState.questOrder = [];
-                document.querySelector('.game-header h1').textContent = '🎮 RPG OOP QUEST 🎮';
+                document.querySelector('.game-header h1').textContent = '🎮 RPG PBO QUEST 🎮';
                 initGame();
             }
         }
