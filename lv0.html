@@ -956,7 +956,7 @@
             <div class="login-card">
                 <h1>🚀 Selamat Datang!</h1>
                 <h2>Petualangan Pemikiran Komputasional</h2>
-                <p>Game Edukasi Interaktif - Dasar Informatika</p>
+                <p>Melatih Berpikir Komputasional</p>
                 <input type="text" id="userName" class="login-input" placeholder="Masukkan nama Anda" maxlength="50">
                 <button class="btn btn-large" onclick="startLearning()">Mulai Petualangan 🎯</button>
                 <p class="login-note">💡 Tip: Selesaikan dengan cepat untuk skor tinggi!</p>
@@ -966,8 +966,8 @@
         <!-- MAIN CONTENT -->
         <div id="mainContent" style="display: none;">
             <header>
-                <h1>🚀 Melatih Berpikir Komputasional</h1>
-                <p>Survive Di Dunia Kerja Yang Berbasis Data & Teknologi.</p>
+                <h1>🚀 Petualangan Pemikiran Komputasional</h1>
+                <p>Kuasai 4 Elemen Pilar Keterampilan Dasar Pemprograman</p>
                 <div class="user-info">
                     <span>👤 <strong id="displayName"></strong></span>
                     <span style="margin-left: 20px;">⏱️ Waktu: <strong id="totalTime">00:00</strong></span>
@@ -1571,7 +1571,7 @@
         }
 
         function goToNextGame() {
-            const nextGameURL = prompt('Masukkan URL game berikutnya:', 'https://example.com/next-game');
+            const nextGameURL = prompt('Masukkan URL game berikutnya:', 'https://questmantra.vercel.app/');
             if (nextGameURL && nextGameURL.trim()) {
                 window.location.href = nextGameURL;
             }
