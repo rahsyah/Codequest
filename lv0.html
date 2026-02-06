@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Edukasi Interaktif - Petualangan Pemikiran Komputasional</title>
+    <title>Petualangan Pemikiran Komputasional - Game Edukasi Interaktif</title>
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="Belajar pemikiran komputasional dengan cara menyenangkan! Game edukasi interaktif untuk memahami Dekomposisi, Pengenalan Pola, Abstraksi, dan Algoritma dengan 5 level tantangan.">
@@ -730,9 +730,16 @@
         }
 
         .activity-box strong {
-            color: #667eea;
+            color: #dc3545;
             display: block;
             margin-bottom: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        .activity-box p {
+            color: #c82333;
+            font-weight: 600;
         }
 
         .challenge-input {
@@ -933,6 +940,87 @@
             margin-top: 20px;
         }
 
+        .answer-records-section {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .answer-records-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .answer-record-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .answer-record-item h4 {
+            color: #dc3545;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .answer-record-question {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .answer-record-answer {
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            color: #155724;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .answer-record-time {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .view-answers-btn {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            margin-top: 10px;
+        }
+
+        .answer-records-section {
+            display: none;
+        }
+
+        .penalty-warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .penalty-warning strong {
+            color: #dc3545;
+            font-size: 1.2em;
+        }
+
         @media (max-width: 768px) {
             header h1 {
                 font-size: 1.8em;
@@ -957,7 +1045,7 @@
                 <h1>🚀 Selamat Datang!</h1>
                 <h2>Petualangan Pemikiran Komputasional</h2>
                 <p>Melatih Berpikir Komputasional</p>
-                <input type="text" id="userName" class="login-input" placeholder="Masukkan nama Anda" maxlength="50">
+                <input type="text" id="userName" class="login-input" placeholder="Masukkan nama Anda..." maxlength="50">
                 <button class="btn btn-large" onclick="startLearning()">Mulai Petualangan 🎯</button>
                 <p class="login-note">💡 Tip: Selesaikan dengan cepat untuk skor tinggi!</p>
             </div>
@@ -967,7 +1055,7 @@
         <div id="mainContent" style="display: none;">
             <header>
                 <h1>🚀 Petualangan Pemikiran Komputasional</h1>
-                <p>Kuasai 4 Elemen Pilar Keterampilan Dasar Informatika</p>
+                <p>Jelajahi & Kuasai 4 Elemen Pilar Keterampilan Dasar Informatika</p>
                 <div class="user-info">
                     <span>👤 <strong id="displayName"></strong></span>
                     <span style="margin-left: 20px;">⏱️ Waktu: <strong id="totalTime">00:00</strong></span>
@@ -1022,11 +1110,23 @@
                 <button class="btn btn-large" onclick="downloadCertificate()" style="margin-top: 20px;">
                     📥 Download Sertifikat (Screenshot)
                 </button>
+                <button class="btn view-answers-btn btn-large" onclick="toggleAnswerRecords()">
+                    📝 Lihat Semua Jawaban Saya
+                </button>
                 <button class="btn next-game-btn btn-large" onclick="goToNextGame()">
                     🎮 Lanjut ke Game Berikutnya →
                 </button>
                 <button class="btn" onclick="restartJourney()" style="margin-top: 10px; background: white; color: #667eea;">
                     🔄 Mulai Ulang
+                </button>
+            </div>
+
+            <!-- Answer Records Section -->
+            <div class="answer-records-section" id="answerRecordsSection">
+                <h3>📝 Rekaman Jawaban Anda</h3>
+                <div id="answerRecordsContainer"></div>
+                <button class="btn" onclick="toggleAnswerRecords()" style="margin-top: 20px;">
+                    ⬆️ Tutup Jawaban
                 </button>
             </div>
 
@@ -1063,12 +1163,15 @@
 
                         <div class="activity-section">
                             <h3>Aktivitas Bermakna</h3>
+                            <div class="penalty-warning">
+                                ⚠️ <strong>Perhatian!</strong> Biasakan Ketik jawaban Anda sendiri untuk meningkatkan kemampuan berpikir kritis.</strong>! ⏰
+                            </div>
                             <div class="activity-box">
                                 <strong>Tantangan: Membuat ${currentLevel1Challenge.task}</strong>
                                 <p>${currentLevel1Challenge.instruction}</p>
                                 <div class="paste-warning" id="paste-warning-1">
                                     ⚠️ <strong>Copy-Paste Dinonaktifkan!</strong><br>
-                                    Biasakan Ketik jawaban Anda sendiri untuk meningkatkan kemampuan berpikir kritis.
+                                    Ketik jawaban Anda sendiri untuk proses pembelajaran yang efektif.
                                 </div>
                                 <textarea class="challenge-input no-paste" id="level1-input" rows="6" placeholder="Contoh:
 1. Siapkan...
@@ -1118,11 +1221,14 @@
 
                         <div class="activity-section">
                             <h3>Aktivitas Interaktif</h3>
+                            <div class="penalty-warning">
+                                ⚠️ <strong>Perhatian!</strong> Nilai akan berkurang <strong>10 poin</strong> setiap <strong>5 menit</strong>! ⏰
+                            </div>
                             <div class="activity-box">
                                 <strong>Tantangan: Tebak Pola Angka</strong>
                                 <p id="patternChallenge">Lengkapi deret: ${currentPattern.sequence.join(', ')}, ?, ?, ?</p>
                                 <div class="paste-warning" id="paste-warning-2a">
-                                    ⚠️ <strong>Copy-Paste Dinonaktifkan!</strong> Biasakan Ketik jawabanmu sendiri.
+                                    ⚠️ <strong>Copy-Paste Dinonaktifkan!</strong> Ketik jawaban sendiri.
                                 </div>
                                 <input type="number" class="challenge-input no-paste" id="level2-input1" placeholder="Angka ke-1">
                                 <input type="number" class="challenge-input no-paste" id="level2-input2" placeholder="Angka ke-2">
@@ -1135,7 +1241,7 @@
                                 <strong>Dekomposisi Masalah</strong>
                                 <p>Pecahkan masalah "${currentLevel2Decompose.task}" menjadi minimal 5 sub-tugas:</p>
                                 <div class="paste-warning" id="paste-warning-2b">
-                                    ⚠️ <strong>Copy-Paste Dinonaktifkan!</strong> Biasakan Ketik jawabanmu sendiri.
+                                    ⚠️ <strong>Copy-Paste Dinonaktifkan!</strong> Ketik jawaban sendiri.
                                 </div>
                                 <textarea class="challenge-input no-paste" id="level2-decompose" rows="6" placeholder="1. ...
 2. ...
@@ -1194,6 +1300,16 @@
         let level2DecomposeCompleted = false;
 
         const idealTimes = [180, 300, 480, 600, 900]; // 3, 5, 8, 10, 15 menit
+
+        // Answer records
+        let answerRecords = {
+            level1: { question: '', answer: '', time: 0 },
+            level2_pattern: { question: '', answer: '', time: 0 },
+            level2_decompose: { question: '', answer: '', time: 0 },
+            level3: { question: '', answer: '', time: 0 },
+            level4: { question: '', answer: '', time: 0 },
+            level5: { question: '', answer: '', time: 0 }
+        };
 
         // Initialize game
         function initializeGame() {
@@ -1273,6 +1389,9 @@
                     </div>
                     <div class="activity-section">
                         <h3>Tantangan Utama</h3>
+                        <div class="penalty-warning">
+                            ⚠️ <strong>Perhatian!</strong> Nilai akan berkurang <strong>10 poin</strong> setiap <strong>5 menit</strong>! ⏰
+                        </div>
                         <div class="activity-box">
                             <strong>${challenge.task}</strong>
                             <p>Jelaskan solusi Anda menggunakan keempat prinsip pemikiran komputasional (minimal ${challenge.minWords} kata).</p>
@@ -1335,6 +1454,14 @@
             
             if (lines.length >= currentLevel1Challenge.minSteps && answer.length > 60) {
                 level1Completed = true;
+                
+                // Save answer record
+                answerRecords.level1 = {
+                    question: `Membuat ${currentLevel1Challenge.task}`,
+                    answer: answer,
+                    time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+                };
+                
                 showFeedback('level1-feedback', 
                     '✅ <strong>Sempurna!</strong><br>' +
                     'Kamu telah menerapkan <strong>Dekomposisi</strong> dan <strong>Algoritma</strong> dengan baik!<br><br>' +
@@ -1359,6 +1486,14 @@
                 ans2 === currentPattern.answers[1] && 
                 ans3 === currentPattern.answers[2]) {
                 level2PatternCompleted = true;
+                
+                // Save answer record
+                answerRecords.level2_pattern = {
+                    question: `Pola: ${currentPattern.sequence.join(', ')}, ?, ?, ?`,
+                    answer: `${ans1}, ${ans2}, ${ans3} (Pola: ${currentPattern.name})`,
+                    time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+                };
+                
                 showFeedback('level2-feedback',
                     `🎯 <strong>Benar!</strong> Pola: ${currentPattern.name}<br>` +
                     `Sekarang selesaikan tantangan Dekomposisi!`,
@@ -1377,6 +1512,14 @@
             
             if (lines.length >= currentLevel2Decompose.minSteps && answer.length > 80) {
                 level2DecomposeCompleted = true;
+                
+                // Save answer record
+                answerRecords.level2_decompose = {
+                    question: `Dekomposisi: ${currentLevel2Decompose.task}`,
+                    answer: answer,
+                    time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+                };
+                
                 showFeedback('decompose-feedback',
                     '✅ <strong>Bagus!</strong> Dekomposisi yang baik!',
                     'success');
@@ -1437,6 +1580,19 @@
                 return;
             }
 
+            // Save answer record
+            const challenges = {
+                3: 'Analisis studi kasus perpustakaan',
+                4: 'Optimisasi sistem pengiriman paket',
+                5: 'Rancang sistem smart city'
+            };
+            
+            answerRecords[`level${level}`] = {
+                question: challenges[level],
+                answer: answer,
+                time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+            };
+
             showFeedback(`level${level}-feedback`,
                 '✅ <strong>Luar biasa!</strong> Analisis yang sangat baik!<br><br>' +
                 `<button class="btn" onclick="completeLevel(${level})">Lanjut ${level === 5 ? 'ke Hasil' : 'ke Level ' + (level + 1)} →</button>`,
@@ -1489,24 +1645,27 @@
             
             levelTimes.forEach((time, index) => {
                 const ideal = idealTimes[index];
-                let levelScore = 0;
-                let performance = '';
+                let levelScore = 100; // Start with perfect score
                 
-                if (time <= ideal) {
-                    levelScore = 100;
+                // Pengurangan 10 poin setiap 5 menit (300 detik)
+                const fiveMinutePeriods = Math.floor(time / 300);
+                levelScore = Math.max(0, 100 - (fiveMinutePeriods * 10));
+                
+                let performance = '';
+                if (levelScore === 100) {
+                    performance = 'Sempurna! 🏆';
+                } else if (levelScore >= 90) {
                     performance = 'Sangat Cepat! 🚀';
-                } else if (time <= ideal * 1.5) {
-                    levelScore = 85;
+                } else if (levelScore >= 80) {
                     performance = 'Cepat! ⚡';
-                } else if (time <= ideal * 2) {
-                    levelScore = 70;
+                } else if (levelScore >= 70) {
                     performance = 'Baik 👍';
-                } else if (time <= ideal * 3) {
-                    levelScore = 60;
+                } else if (levelScore >= 60) {
                     performance = 'Cukup 👌';
+                } else if (levelScore >= 50) {
+                    performance = 'Lumayan 💪';
                 } else {
-                    levelScore = 50;
-                    performance = 'Perlu Latihan 💪';
+                    performance = 'Perlu Latihan 📚';
                 }
                 
                 totalScore += levelScore;
@@ -1514,7 +1673,8 @@
                     level: index + 1,
                     score: levelScore,
                     time: time,
-                    performance: performance
+                    performance: performance,
+                    penalties: fiveMinutePeriods
                 });
             });
             
@@ -1541,13 +1701,14 @@
             
             let timeBreakdownHTML = '';
             scoreDetails.forEach(detail => {
-                timeBreakdownHTML += `Level ${detail.level}: ${formatTime(detail.time)} (${detail.score}) ${detail.performance}<br>`;
+                const penaltyText = detail.penalties > 0 ? ` (-${detail.penalties * 10} poin penalty)` : '';
+                timeBreakdownHTML += `Level ${detail.level}: ${formatTime(detail.time)} (${detail.score}${penaltyText}) ${detail.performance}<br>`;
             });
             timeBreakdownHTML += `<strong>Total: ${formatTime(totalElapsed)}</strong>`;
             document.getElementById('timeBreakdown').innerHTML = timeBreakdownHTML;
             
             const fastLevels = scoreDetails.filter(d => d.score === 100).length;
-            let achievementsHTML = `⚡ ${fastLevels} Level Super Cepat<br>`;
+            let achievementsHTML = `⚡ ${fastLevels} Level Sempurna<br>`;
             achievementsHTML += `✅ ${totalLevels} Level Diselesaikan<br>`;
             if (avgScore >= 90) achievementsHTML += `🏆 Master Pemikiran Komputasional<br>`;
             else if (avgScore >= 75) achievementsHTML += `🥈 Ahli Pemikiran Komputasional<br>`;
@@ -1571,10 +1732,147 @@
         }
 
         function goToNextGame() {
-            const nextGameURL = prompt('Masukkan URL game berikutnya:', 'https://questmantra.vercel.app/');
+            const nextGameURL = prompt('Masukkan URL game berikutnya:', 'https://example.com/next-game');
             if (nextGameURL && nextGameURL.trim()) {
                 window.location.href = nextGameURL;
             }
+        }
+
+        function toggleAnswerRecords() {
+            const section = document.getElementById('answerRecordsSection');
+            const certificate = document.getElementById('certificateSection');
+            
+            if (section.style.display === 'none' || section.style.display === '') {
+                renderAnswerRecords();
+                section.style.display = 'block';
+                certificate.style.display = 'none';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                section.style.display = 'none';
+                certificate.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function renderAnswerRecords() {
+            const container = document.getElementById('answerRecordsContainer');
+            let html = '';
+            
+            // Level 1
+            if (answerRecords.level1.answer) {
+                html += `
+                    <div class="answer-record-item">
+                        <h4>Level 1: Pengenalan Dasar</h4>
+                        <div class="answer-record-question">
+                            <strong>Soal:</strong> ${answerRecords.level1.question}
+                        </div>
+                        <div class="answer-record-answer">
+                            <strong>Jawaban Anda:</strong><br>
+                            ${answerRecords.level1.answer}
+                        </div>
+                        <div class="answer-record-time">
+                            ⏱️ Waktu pengerjaan: ${formatTime(answerRecords.level1.time)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Level 2 - Pattern
+            if (answerRecords.level2_pattern.answer) {
+                html += `
+                    <div class="answer-record-item">
+                        <h4>Level 2: Pengenalan Pola</h4>
+                        <div class="answer-record-question">
+                            <strong>Soal:</strong> ${answerRecords.level2_pattern.question}
+                        </div>
+                        <div class="answer-record-answer">
+                            <strong>Jawaban Anda:</strong><br>
+                            ${answerRecords.level2_pattern.answer}
+                        </div>
+                        <div class="answer-record-time">
+                            ⏱️ Waktu pengerjaan: ${formatTime(answerRecords.level2_pattern.time)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Level 2 - Decompose
+            if (answerRecords.level2_decompose.answer) {
+                html += `
+                    <div class="answer-record-item">
+                        <h4>Level 2: Dekomposisi</h4>
+                        <div class="answer-record-question">
+                            <strong>Soal:</strong> ${answerRecords.level2_decompose.question}
+                        </div>
+                        <div class="answer-record-answer">
+                            <strong>Jawaban Anda:</strong><br>
+                            ${answerRecords.level2_decompose.answer}
+                        </div>
+                        <div class="answer-record-time">
+                            ⏱️ Waktu pengerjaan: ${formatTime(answerRecords.level2_decompose.time)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Level 3
+            if (answerRecords.level3.answer) {
+                html += `
+                    <div class="answer-record-item">
+                        <h4>Level 3: Integrasi Konsep</h4>
+                        <div class="answer-record-question">
+                            <strong>Soal:</strong> ${answerRecords.level3.question}
+                        </div>
+                        <div class="answer-record-answer">
+                            <strong>Jawaban Anda:</strong><br>
+                            ${answerRecords.level3.answer}
+                        </div>
+                        <div class="answer-record-time">
+                            ⏱️ Waktu pengerjaan: ${formatTime(answerRecords.level3.time)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Level 4
+            if (answerRecords.level4.answer) {
+                html += `
+                    <div class="answer-record-item">
+                        <h4>Level 4: Optimisasi & Efisiensi</h4>
+                        <div class="answer-record-question">
+                            <strong>Soal:</strong> ${answerRecords.level4.question}
+                        </div>
+                        <div class="answer-record-answer">
+                            <strong>Jawaban Anda:</strong><br>
+                            ${answerRecords.level4.answer}
+                        </div>
+                        <div class="answer-record-time">
+                            ⏱️ Waktu pengerjaan: ${formatTime(answerRecords.level4.time)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Level 5
+            if (answerRecords.level5.answer) {
+                html += `
+                    <div class="answer-record-item">
+                        <h4>Level 5: Kreasi & Inovasi</h4>
+                        <div class="answer-record-question">
+                            <strong>Soal:</strong> ${answerRecords.level5.question}
+                        </div>
+                        <div class="answer-record-answer">
+                            <strong>Jawaban Anda:</strong><br>
+                            ${answerRecords.level5.answer}
+                        </div>
+                        <div class="answer-record-time">
+                            ⏱️ Waktu pengerjaan: ${formatTime(answerRecords.level5.time)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
         }
 
         function restartJourney() {
@@ -1658,6 +1956,18 @@
             if (level3Input) {
                 preventCopyPaste(level3Input, 'paste-warning-3');
             }
+
+            // Level 4
+            const level4Input = document.getElementById('level4-input');
+            if (level4Input) {
+                preventCopyPaste(level4Input, 'paste-warning-4');
+            }
+
+            // Level 5
+            const level5Input = document.getElementById('level5-input');
+            if (level5Input) {
+                preventCopyPaste(level5Input, 'paste-warning-5');
+            }
         }
 
         // Override renderCurrentLevel to add paste prevention after rendering
@@ -1675,11 +1985,9 @@
         renderSimplifiedLevel = function(levelNum, container) {
             originalRenderSimplifiedLevel(levelNum, container);
             setTimeout(() => {
-                if (levelNum === 3) {
-                    const level3Input = document.getElementById('level3-input');
-                    if (level3Input) {
-                        preventCopyPaste(level3Input, 'paste-warning-3');
-                    }
+                const levelInput = document.getElementById(`level${levelNum}-input`);
+                if (levelInput) {
+                    preventCopyPaste(levelInput, `paste-warning-${levelNum}`);
                 }
             }, 100);
         };
@@ -1689,14 +1997,14 @@
             // Get current level
             const currentLevelNum = completedLevels + 1;
             
-            // Only apply to levels 1-3
-            if (currentLevelNum <= 3) {
+            // Apply to ALL levels (1-5)
+            if (currentLevelNum <= 5) {
                 // Ctrl+C, Ctrl+V, Ctrl+X
                 if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'v' || e.key === 'x')) {
                     // Check if target is a no-paste input
                     if (e.target.classList && e.target.classList.contains('no-paste')) {
                         e.preventDefault();
-                        const warningId = 'paste-warning-' + currentLevelNum;
+                        const warningId = 'paste-warning-' + (currentLevelNum === 2 && e.target.id.includes('decompose') ? '2b' : currentLevelNum === 2 ? '2a' : currentLevelNum);
                         showPasteWarning(warningId);
                         return false;
                     }
