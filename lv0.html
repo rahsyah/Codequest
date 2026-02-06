@@ -2,7 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Petualangan Pemikiran Komputasional - Game Edukasi Interaktif</title>
     
     <!-- SEO Meta Tags -->
@@ -753,10 +755,29 @@
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+            -webkit-touch-callout: none;
         }
 
         .challenge-input.no-paste {
             background-color: #fffbf0;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+            touch-action: manipulation;
+        }
+
+        .challenge-input.no-paste::selection {
+            background: transparent;
+        }
+
+        .challenge-input.no-paste::-moz-selection {
+            background: transparent;
+        }
+
+        /* Prevent all selection globally on mobile for no-paste inputs */
+        .no-paste * {
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+            user-select: none !important;
         }
 
         .challenge-input.no-paste::placeholder {
@@ -1885,32 +1906,32 @@
         function preventCopyPaste(element, warningId) {
             if (!element) return;
 
-            // Prevent paste
+            // Method 1: Prevent paste event
             element.addEventListener('paste', function(e) {
                 e.preventDefault();
                 showPasteWarning(warningId);
                 return false;
             });
 
-            // Prevent copy
+            // Method 2: Prevent copy
             element.addEventListener('copy', function(e) {
                 e.preventDefault();
                 return false;
             });
 
-            // Prevent cut
+            // Method 3: Prevent cut
             element.addEventListener('cut', function(e) {
                 e.preventDefault();
                 return false;
             });
 
-            // Prevent right-click context menu
+            // Method 4: Prevent context menu (right-click)
             element.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
                 return false;
             });
 
-            // Prevent drag and drop
+            // Method 5: Prevent drag and drop
             element.addEventListener('drop', function(e) {
                 e.preventDefault();
                 showPasteWarning(warningId);
@@ -1920,6 +1941,67 @@
             element.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 return false;
+            });
+
+            // Method 6: Monitor for sudden large text changes (detect paste on mobile)
+            let lastValue = element.value || '';
+            let lastLength = lastValue.length;
+            
+            element.addEventListener('input', function(e) {
+                const currentValue = element.value || '';
+                const currentLength = currentValue.length;
+                const lengthDiff = Math.abs(currentLength - lastLength);
+                
+                // If more than 10 characters added at once, likely a paste
+                // Exception: initial typing or very fast typing
+                if (lengthDiff > 10 && currentLength > lastLength) {
+                    // Revert to last value
+                    element.value = lastValue;
+                    showPasteWarning(warningId);
+                    e.preventDefault();
+                    return false;
+                }
+                
+                lastValue = currentValue;
+                lastLength = currentLength;
+            });
+
+            // Method 7: Mobile-specific - detect long press (which triggers paste menu)
+            let touchTimer;
+            let touchStarted = false;
+            
+            element.addEventListener('touchstart', function(e) {
+                touchStarted = true;
+                touchTimer = setTimeout(function() {
+                    // Long press detected
+                    if (touchStarted) {
+                        // Blur and refocus to close paste menu
+                        element.blur();
+                        setTimeout(function() {
+                            element.focus();
+                        }, 100);
+                    }
+                }, 500);
+            });
+            
+            element.addEventListener('touchend', function(e) {
+                touchStarted = false;
+                clearTimeout(touchTimer);
+            });
+            
+            element.addEventListener('touchmove', function(e) {
+                touchStarted = false;
+                clearTimeout(touchTimer);
+            });
+
+            // Method 8: Additional mobile keyboard detection
+            element.addEventListener('beforeinput', function(e) {
+                // Check if input type is paste
+                if (e.inputType === 'insertFromPaste' || e.inputType === 'insertFromDrop') {
+                    e.preventDefault();
+                    showPasteWarning(warningId);
+                    return false;
+                }
             });
         }
 
@@ -2009,6 +2091,34 @@
                         return false;
                     }
                 }
+            }
+        });
+
+        // Additional mobile paste protection at document level
+        document.addEventListener('paste', function(e) {
+            if (e.target.classList && e.target.classList.contains('no-paste')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const currentLevelNum = completedLevels + 1;
+                const warningId = 'paste-warning-' + currentLevelNum;
+                showPasteWarning(warningId);
+                return false;
+            }
+        }, true);
+
+        // Prevent selection on mobile
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.classList && e.target.classList.contains('no-paste')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable long-press context menu on mobile
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.classList && e.target.classList.contains('no-paste')) {
+                e.preventDefault();
+                return false;
             }
         });
     </script>
