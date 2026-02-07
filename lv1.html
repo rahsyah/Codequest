@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://revenant-three.vercel.app/img/7429.png" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konsep Dasar Pemrograman - Belajar Coding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+            /* Disable text selection on mobile */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            /* Disable touch callout on iOS */
+            -webkit-touch-callout: none;
+        }
+
+        /* Re-enable selection for input fields */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: bounceIn 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: textGlow 2s ease-in-out infinite;
+        }
+
+        .header .sparkles {
+            font-size: 2em;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            animation: slideInLeft 0.6s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        .progress-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .progress-segment {
+            flex: 1;
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-segment::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .progress-segment.completed {
+            background: #4ade80;
+            animation: progressPulse 0.5s ease-out;
+        }
+
+        .progress-segment.current {
+            background: #fbbf24;
+            animation: currentPulse 1.5s ease-in-out infinite;
+        }
+
+        .timer-score-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        .timer-box, .score-box {
+            text-align: center;
+            animation: floatUpDown 3s ease-in-out infinite;
+        }
+
+        .timer-box {
+            animation-delay: 0s;
+        }
+
+        .score-box {
+            animation-delay: 1.5s;
+        }
+
+        .timer-box h3, .score-box h3 {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: #e9d5ff;
+        }
+
+        .timer-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #fbbf24;
+            transition: all 0.3s ease;
+        }
+
+        .timer-display.warning {
+            color: #ef4444;
+            animation: pulse 1s infinite;
+        }
+
+        .score-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4ade80;
+            transition: all 0.3s ease;
+        }
+
+        .final-results {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(249, 115, 22, 0.2));
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 30px;
+            animation: zoomIn 0.5s ease-out;
+        }
+
+        .final-results h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #fbbf24;
+            animation: textGlow 2s ease-in-out infinite;
+        }
+
+        .result-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideInUp 0.5s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            transform: translateX(10px);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .name-input-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        .name-input-container input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            border: 2px solid #7c3aed;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .name-input-container input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .name-input-container input:focus {
+            outline: none;
+            border-color: #a78bfa;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
+        }
+
+        .story-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            animation: fadeInUp 0.8s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .story-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        .concept-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        .story-image {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+            animation: zoomIn 0.8s ease-out;
+        }
+
+        .story-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            transition: transform 0.5s ease;
+        }
+
+        .story-image:hover img {
+            transform: scale(1.1);
+        }
+
+        .story-image svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .story-text {
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .task-card {
+            background: rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #6366f1;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .task-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #c7d2fe;
+        }
+
+        .code-editor {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .code-editor textarea {
+            width: 100%;
+            min-height: 150px;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            color: #a5f3fc;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            padding: 15px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .code-editor textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            animation: buttonFloat 3s ease-in-out infinite;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            animation: successPulse 2s ease-in-out infinite;
+        }
+
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .hint-box {
+            background: rgba(251, 191, 36, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #fbbf24;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .hint-box h4 {
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+
+        .feedback {
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        .feedback.success {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 4px solid #10b981;
+        }
+
+        .feedback.error {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid #ef4444;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes textGlow {
+            0%, 100% {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255,255,255,0.5), 2px 2px 4px rgba(0,0,0,0.3);
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes progressPulse {
+            0% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(1.5);
+            }
+            100% {
+                transform: scaleY(1);
+            }
+        }
+
+        @keyframes currentPulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes floatUpDown {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes buttonFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes successPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 20px 10px rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .story-title {
+                font-size: 1.5em;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="sparkles">✨🎮✨</div>
+            <h1>🧙‍♂️ Game Belajar Programming</h1>
+            <p>Petualangan Sihir Coding! ✨</p>
+        </div>
+
+        <!-- Name Input Screen -->
+        <div id="name-input-screen">
+            <div class="name-input-container">
+                <h2 style="margin-bottom: 20px; font-size: 1.8em;">Selamat Datang, Penyihir Muda! 🎩</h2>
+                <p style="margin-bottom: 20px; color: #e9d5ff;">Siapa namamu? Mari mulai petualangan coding bersama!</p>
+                <input type="text" id="player-name" placeholder="Masukkan nama kamu..." maxlength="20">
+                <button class="btn btn-success" onclick="startGame()">🚀 Mulai Petualangan!</button>
+            </div>
+        </div>
+
+        <!-- Game Content -->
+        <div id="game-content" class="hidden">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>📊 Progress Belajar</span>
+                    <span id="progress-text">0 / 5 Level</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-segment"></div>
+                    <div class="progress-segment"></div>
+                    <div class="progress-segment"></div>
+                    <div class="progress-segment"></div>
+                    <div class="progress-segment"></div>
+                </div>
+            </div>
+
+            <!-- Timer and Score -->
+            <div class="timer-score-container">
+                <div class="timer-box">
+                    <h3>⏱️ WAKTU</h3>
+                    <div class="timer-display" id="timer">30</div>
+                </div>
+                <div class="score-box">
+                    <h3>⭐ SKOR</h3>
+                    <div class="score-display" id="score">100</div>
+                </div>
+            </div>
+
+            <!-- Story Card -->
+            <div class="story-card">
+                <h2 class="story-title" id="level-title">Loading...</h2>
+                <div class="concept-badge" id="level-concept">Loading...</div>
+                <div class="story-image" id="level-image"></div>
+                <p class="story-text" id="level-story">Loading...</p>
+            </div>
+
+            <!-- Task Card -->
+            <div class="task-card">
+                <h3>🎯 Misi Kamu:</h3>
+                <p id="task-description">Loading...</p>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="code-editor">
+                <h3 style="margin-bottom: 15px;">💻 Tulis Mantramu di Sini:</h3>
+                <textarea id="code-input" placeholder="// Tulis code JavaScript kamu di sini..."></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="submitCode()">🔮 Jalankan Mantra!</button>
+                <button class="btn btn-secondary" onclick="toggleHint()">💡 <span id="hint-btn-text">Lihat</span> Petunjuk</button>
+            </div>
+
+            <!-- Hint Box -->
+            <div id="hint-box" class="hint-box hidden">
+                <h4>💡 Petunjuk:</h4>
+                <p id="hint-text">Loading...</p>
+            </div>
+
+            <!-- Feedback -->
+            <div id="feedback" class="feedback hidden"></div>
+
+            <!-- Next Button -->
+            <button id="next-btn" class="btn btn-success hidden" onclick="nextLevel()" style="width: 100%; margin-top: 20px;">
+                ➡️ Level Selanjutnya
+            </button>
+        </div>
+
+        <!-- Completion Screen -->
+        <div id="completion-screen" class="hidden">
+            <div class="final-results">
+                <h3 style="text-align: center; font-size: 2.5em;">🎉 SELAMAT! 🎉</h3>
+                <p style="text-align: center; font-size: 1.3em; margin-bottom: 30px;">
+                    Kamu telah menyelesaikan semua level!
+                </p>
+                
+                <div class="result-item">
+                    <span>👤 Nama Penyihir:</span>
+                    <strong id="final-name" style="font-size: 1.2em;">-</strong>
+                </div>
+                
+                <div class="result-item">
+                    <span>⭐ Skor Akhir:</span>
+                    <strong id="final-score" style="font-size: 1.5em; color: #fbbf24;">100</strong>
+                </div>
+                
+                <div class="result-item">
+                    <span>🏆 Level Diselesaikan:</span>
+                    <strong style="font-size: 1.2em; color: #4ade80;">5 / 5</strong>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                    <p style="font-size: 1.1em; line-height: 1.6;">
+                        🌟 Luar biasa! Kamu sekarang sudah memahami konsep dasar programming:<br>
+                        <strong>Variabel, Fungsi, Kondisional, Loop, dan Kombinasi Konsep!</strong>
+                    </p>
+                    <p style="margin-top: 15px; color: #e9d5ff;">
+                        Terus berlatih dan eksplorasi dunia coding! 🚀
+                    </p>
+                </div>
+                
+                <button class="btn btn-primary" onclick="restartGame()" style="width: 100%; margin-top: 25px; font-size: 1.1em;">
+                    🔄 Main Lagi!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Disable copy-paste on mobile devices
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // Disable context menu (long press menu on mobile)
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+
+            // Disable copy
+            document.addEventListener('copy', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable cut
+            document.addEventListener('cut', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable paste
+            document.addEventListener('paste', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable selection start
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        }
+
+        const levels = [
+            {
+                title: "Level 1: Kotak Ajaib Penyimpanan",
+                concept: "📦 Variabel",
+                story: "Di dunia sihir programming, kamu menemukan kotak ajaib yang bisa menyimpan apapun! Kotak ini namanya 'variabel'. Kamu bisa menaruh angka, kata, atau bahkan mantra di dalamnya!",
+                task: "Buatlah sebuah variabel bernama 'umur' dan isi dengan angka umurmu menggunakan 'let'!",
+                hint: "Gunakan kata kunci 'let' diikuti nama variabel, tanda '=', dan nilai. Contoh: let nama = 'Andi';",
+                image: `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="75" y="50" width="150" height="100" rx="10" fill="url(#boxGrad)" stroke="#a78bfa" stroke-width="3"/>
+                    <text x="150" y="105" text-anchor="middle" fill="white" font-size="24" font-weight="bold">let umur</text>
+                    <circle cx="150" cy="40" r="8" fill="#fbbf24"/>
+                    <circle cx="120" cy="30" r="6" fill="#fbbf24" opacity="0.7"/>
+                    <circle cx="180" cy="35" r="7" fill="#fbbf24" opacity="0.8"/>
+                </svg>`,
+                check: (code) => code.includes('let') && code.includes('umur'),
+                explanation: `<strong>📚 Pengetahuan Baru Dibuka!</strong><br><br>
+                <strong>Variabel</strong> adalah 'kotak penyimpanan' dalam programming. Ada 3 cara mendeklarasikan variabel:<br>
+                1. <code>let</code> - untuk nilai yang bisa berubah<br>
+                2. <code>const</code> - untuk nilai yang tetap/konstan<br>
+                3. <code>var</code> - cara lama (jarang dipakai)<br><br>
+                <strong>Contoh:</strong><br>
+                <code>let nama = "Budi";</code><br>
+                <code>let umur = 15;</code><br>
+                <code>const sekolah = "SMA 1";</code><br><br>
+                Variabel bisa menyimpan:<br>
+                • Angka (Number): <code>let nilai = 100;</code><br>
+                • Teks (String): <code>let nama = "Ani";</code><br>
+                • Boolean: <code>let sudahMakan = true;</code>`
+            },
+            {
+                title: "Level 2: Mesin Ajaib",
+                concept: "⚙️ Fungsi",
+                story: "Kamu menemukan mesin ajaib yang bisa melakukan tugas berulang kali! Mesin ini disebut 'fungsi'. Cukup beri nama, dan mesin akan bekerja kapan saja kamu panggil!",
+                task: "Buatlah fungsi bernama 'sapa' yang menampilkan 'Halo!' ke console!",
+                hint: "Gunakan keyword 'function' diikuti nama fungsi dan kurung kurawal {}. Di dalam kurung kurawal, gunakan console.log() untuk menampilkan teks.",
+                image: `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="50" y="40" width="200" height="120" rx="15" fill="#6366f1" stroke="#a78bfa" stroke-width="3"/>
+                    <circle cx="80" cy="70" r="15" fill="#ef4444"/>
+                    <circle cx="120" cy="70" r="15" fill="#fbbf24"/>
+                    <circle cx="160" cy="70" r="15" fill="#10b981"/>
+                    <rect x="80" y="100" width="140" height="40" rx="5" fill="#1e293b"/>
+                    <text x="150" y="125" text-anchor="middle" fill="#4ade80" font-size="16" font-family="monospace">function</text>
+                    <path d="M 220 100 L 270 100" stroke="#fbbf24" stroke-width="3" fill="none"/>
+                    <circle cx="270" cy="100" r="5" fill="#fbbf24"/>
+                </svg>`,
+                check: (code) => code.includes('function') && code.includes('sapa') && code.includes('console.log'),
+                explanation: `<strong>📚 Pengetahuan Baru Dibuka!</strong><br><br>
+                <strong>Fungsi</strong> adalah blok kode yang bisa dipanggil berulang kali. Berguna untuk:<br>
+                • Menghindari kode yang berulang<br>
+                • Membuat kode lebih terorganisir<br>
+                • Memudahkan maintenance<br><br>
+                <strong>Ada 2 cara membuat fungsi:</strong><br>
+                1. Function Declaration:<br>
+                <code>function sapa() {<br>
+                &nbsp;&nbsp;console.log("Halo!");<br>
+                }</code><br><br>
+                2. Arrow Function (cara modern):<br>
+                <code>const sapa = () => {<br>
+                &nbsp;&nbsp;console.log("Halo!");<br>
+                }</code><br><br>
+                <strong>Fungsi dengan Parameter:</strong><br>
+                <code>function sapa(nama) {<br>
+                &nbsp;&nbsp;console.log("Halo " + nama);<br>
+                }<br>
+                sapa("Budi"); // Output: Halo Budi</code>`
+            },
+            {
+                title: "Level 3: Persimpangan Jalan",
+                concept: "🔀 Kondisional (If-Else)",
+                story: "Di perjalananmu, kamu menemukan persimpangan dengan 2 jalan. Mantra 'if-else' membantumu memilih jalan mana yang harus diambil berdasarkan kondisi tertentu!",
+                task: "Buatlah kondisi if yang mengecek apakah variabel 'nilai' lebih dari 75. Jika ya, tampilkan 'Lulus'!",
+                hint: "Gunakan struktur: if (kondisi) { aksi }. Contoh: if (nilai > 75) { console.log('Lulus'); }",
+                image: `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 150 30 L 150 80" stroke="#a78bfa" stroke-width="4" fill="none"/>
+                    <polygon points="150,20 145,30 155,30" fill="#a78bfa"/>
+                    <rect x="100" y="70" width="100" height="50" rx="10" fill="#6366f1" stroke="#a78bfa" stroke-width="2"/>
+                    <text x="150" y="100" text-anchor="middle" fill="white" font-size="16" font-weight="bold">IF ?</text>
+                    <path d="M 100 95 L 50 140" stroke="#10b981" stroke-width="4" fill="none"/>
+                    <text x="40" y="135" fill="#10b981" font-size="14" font-weight="bold">TRUE</text>
+                    <path d="M 200 95 L 250 140" stroke="#ef4444" stroke-width="4" fill="none"/>
+                    <text x="240" y="135" fill="#ef4444" font-size="14" font-weight="bold">FALSE</text>
+                    <circle cx="50" cy="150" r="20" fill="#10b981"/>
+                    <circle cx="250" cy="150" r="20" fill="#ef4444"/>
+                </svg>`,
+                check: (code) => code.includes('if') && (code.includes('>') || code.includes('<') || code.includes('==')),
+                explanation: `<strong>📚 Pengetahuan Baru Dibuka!</strong><br><br>
+                <strong>Kondisional (If-Else)</strong> memungkinkan program membuat keputusan:<br><br>
+                <strong>Struktur Dasar:</strong><br>
+                <code>if (kondisi) {<br>
+                &nbsp;&nbsp;// kode jika kondisi benar<br>
+                } else {<br>
+                &nbsp;&nbsp;// kode jika kondisi salah<br>
+                }</code><br><br>
+                <strong>Operator Perbandingan:</strong><br>
+                • <code>></code> lebih besar<br>
+                • <code><</code> lebih kecil<br>
+                • <code>>=</code> lebih besar sama dengan<br>
+                • <code><=</code> lebih kecil sama dengan<br>
+                • <code>===</code> sama dengan (strict)<br>
+                • <code>!==</code> tidak sama dengan<br><br>
+                <strong>Contoh Lengkap:</strong><br>
+                <code>let nilai = 85;<br>
+                if (nilai >= 75) {<br>
+                &nbsp;&nbsp;console.log("Lulus!");<br>
+                } else if (nilai >= 60) {<br>
+                &nbsp;&nbsp;console.log("Remidi");<br>
+                } else {<br>
+                &nbsp;&nbsp;console.log("Tidak Lulus");<br>
+                }</code>`
+            },
+            {
+                title: "Level 4: Roda Berputar",
+                concept: "🔄 Loop (Perulangan)",
+                story: "Kamu menemukan roda ajaib yang bisa berputar berkali-kali secara otomatis! Dengan mantra 'loop', kamu bisa mengulang aksi tanpa menulis kode berulang-ulang!",
+                task: "Buatlah loop for yang menampilkan angka 1 sampai 5 ke console!",
+                hint: "Gunakan struktur: for (let i = 1; i <= 5; i++) { console.log(i); }",
+                image: `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="150" cy="100" r="60" fill="none" stroke="#6366f1" stroke-width="8" stroke-dasharray="10,5"/>
+                    <circle cx="150" cy="100" r="45" fill="none" stroke="#a78bfa" stroke-width="6" stroke-dasharray="8,4"/>
+                    <circle cx="150" cy="100" r="30" fill="#6366f1"/>
+                    <text x="150" y="110" text-anchor="middle" fill="white" font-size="20" font-weight="bold">FOR</text>
+                    <path d="M 150 40 L 150 20 L 160 30 L 150 20 L 140 30" stroke="#fbbf24" stroke-width="3" fill="none"/>
+                    <circle cx="150" cy="15" r="5" fill="#fbbf24"/>
+                    <circle cx="210" cy="100" r="8" fill="#10b981"/>
+                    <circle cx="220" cy="120" r="6" fill="#10b981" opacity="0.8"/>
+                    <circle cx="230" cy="90" r="7" fill="#10b981" opacity="0.6"/>
+                </svg>`,
+                check: (code) => code.includes('for') && (code.includes('i++') || code.includes('i += 1')),
+                explanation: `<strong>📚 Pengetahuan Baru Dibuka!</strong><br><br>
+                <strong>Loop (Perulangan)</strong> mengulang kode berkali-kali secara efisien:<br><br>
+                <strong>1. For Loop</strong> (tahu berapa kali):<br>
+                <code>for (let i = 1; i <= 5; i++) {<br>
+                &nbsp;&nbsp;console.log(i);<br>
+                }</code><br>
+                Output: 1, 2, 3, 4, 5<br><br>
+                <strong>2. While Loop</strong> (selama kondisi benar):<br>
+                <code>let i = 1;<br>
+                while (i <= 5) {<br>
+                &nbsp;&nbsp;console.log(i);<br>
+                &nbsp;&nbsp;i++;<br>
+                }</code><br><br>
+                <strong>3. For...of Loop</strong> (untuk array):<br>
+                <code>let buah = ['apel', 'jeruk', 'mangga'];<br>
+                for (let item of buah) {<br>
+                &nbsp;&nbsp;console.log(item);<br>
+                }</code><br><br>
+                <strong>Kontrol Loop:</strong><br>
+                • <code>break</code> - keluar dari loop<br>
+                • <code>continue</code> - skip iterasi saat ini<br><br>
+                <strong>Tips:</strong> Loop sangat powerful untuk memproses data dalam jumlah besar!`
+            },
+            {
+                title: "Level 5: Mantra Legendaris",
+                concept: "🌟 Gabungan Semua Konsep",
+                story: "Sekarang saatnya menggabungkan semua mantra yang telah kamu pelajari! Buatlah program yang menggunakan variabel, fungsi, kondisional, DAN loop sekaligus. Inilah mantra legendaris programmer sejati!",
+                task: "Buatlah sebuah program yang mengandung: function, let, if, dan for. Bebas berkreasi!",
+                hint: "Contoh: Buat fungsi yang mengecek angka genap dari 1-10 menggunakan loop dan if. Atau buat fungsi yang menghitung jumlah nilai dalam array.",
+                image: `<svg viewBox="0 0 300 250" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="magicGlow">
+                            <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#f97316;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <circle cx="150" cy="125" r="80" fill="url(#magicGlow)"/>
+                    <polygon points="150,40 170,100 230,110 185,150 200,210 150,175 100,210 115,150 70,110 130,100" fill="#fbbf24" stroke="#f97316" stroke-width="3"/>
+                    <circle cx="150" cy="125" r="35" fill="#6366f1"/>
+                    <text x="150" y="115" text-anchor="middle" fill="white" font-size="12" font-weight="bold">let</text>
+                    <text x="150" y="130" text-anchor="middle" fill="white" font-size="12" font-weight="bold">function</text>
+                    <text x="150" y="145" text-anchor="middle" fill="white" font-size="12" font-weight="bold">if for</text>
+                    <path d="M 150 60 L 130 80" stroke="#ff9800" stroke-width="2" fill="none"/>
+                    <path d="M 150 60 L 170 80" stroke="#ff9800" stroke-width="2" fill="none"/>
+                    <circle cx="130" cy="80" r="4" fill="#ffeb3b"/>
+                    <circle cx="170" cy="80" r="4" fill="#ffeb3b"/>
+                    <path d="M 210 100 L 190 80 L 200 100 Z" fill="#d32f2f"/>
+                    <path d="M 220 180 L 280 160 L 270 190 Z" fill="#b71c1c"/>
+                    <path d="M 220 200 L 280 220 L 270 200 Z" fill="#b71c1c"/>
+                    <ellipse cx="140" cy="240" rx="30" ry="15" fill="#ffd700"/>
+                    <ellipse cx="180" cy="245" rx="25" ry="12" fill="#ffd700"/>
+                    <ellipse cx="160" cy="250" rx="20" ry="10" fill="#ffeb3b"/>
+                    <path d="M 150 150 Q 180 165 150 170" fill="none" stroke="#ff9800" stroke-width="3"/>
+                </svg>`,
+                check: (code) => code.includes('function') && code.includes('let') && code.includes('if') && code.includes('for'),
+                explanation: `<strong>📚 Pengetahuan Menggabungkan Konsep:</strong><br><br>
+                <strong>Kekuatan Kombinasi!</strong><br>
+                Programmer profesional tidak menggunakan konsep secara terpisah, tapi menggabungkannya untuk membuat program yang powerful!<br><br>
+                
+                <strong>Contoh Program Lengkap:</strong><br>
+                <code>function cekNilaiSiswa() {<br>
+                &nbsp;&nbsp;let daftarNilai = [75, 80, 65, 90, 85];<br>
+                &nbsp;&nbsp;<br>
+                &nbsp;&nbsp;for (let i = 0; i < daftarNilai.length; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;let nilai = daftarNilai[i];<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (nilai >= 75) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log("Siswa " + (i+1) + " LULUS");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log("Siswa " + (i+1) + " TIDAK LULUS");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;}<br>
+                }<br><br>
+                cekNilaiSiswa();</code><br><br>
+                
+                <strong>Penjelasan Program di Atas:</strong><br>
+                1. <strong>Fungsi</strong>: Membungkus semua logika dalam satu unit<br>
+                2. <strong>Variabel</strong>: Menyimpan array nilai dan nilai individual<br>
+                3. <strong>Loop</strong>: Mengiterasi setiap nilai dalam array<br>
+                4. <strong>Kondisional</strong>: Menentukan lulus atau tidak<br><br>
+                
+                <strong>Best Practices:</strong><br>
+                • Gunakan nama variabel yang deskriptif<br>
+                • Indentasi yang rapi untuk keterbacaan<br>
+                • Buat fungsi untuk tugas spesifik<br>
+                • Hindari kode yang terlalu dalam/nested<br>
+                • Tambahkan komentar untuk bagian kompleks<br><br>
+                
+                <strong>Langkah Selanjutnya:</strong><br>
+                • Pelajari Array dan Object<br>
+                • Pahami scope dan closure<br>
+                • Eksplorasi asynchronous programming<br>
+                • Coba framework seperti React atau Vue<br>
+                • Latihan dengan project nyata!<br><br>
+                
+                <strong>🎉 Selamat!</strong> Kamu sudah menguasai fondasi programming. Terus berlatih dan eksperimen dengan kombinasi konsep ini!`
+            }
+        ];
+
+        let currentLevel = 0;
+        let completedLevels = [];
+        let timer = null;
+        let timeLeft = 0;
+        let score = 100;
+        let playerName = "";
+        let gameStarted = false;
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (!nameInput) {
+                alert('Masukkan nama kamu dulu! 😊');
+                return;
+            }
+            playerName = nameInput;
+            gameStarted = true;
+            document.getElementById('name-input-screen').classList.add('hidden');
+            document.getElementById('game-content').classList.remove('hidden');
+            loadLevel();
+        }
+
+        function startTimer() {
+            // Clear existing timer
+            if (timer) clearInterval(timer);
+            
+            // Set time based on level (30s for levels 1-4, 60s for level 5)
+            timeLeft = currentLevel === 4 ? 60 : 30;
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 10) {
+                timerDisplay.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+            }
+        }
+
+        function handleTimeout() {
+            score = Math.max(0, score - 10);
+            document.getElementById('score').textContent = score;
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback error';
+            feedback.innerHTML = '<p style="font-weight: bold;">⏰ Waktu Habis! Nilai kamu berkurang 10 poin.</p><p style="margin-top: 10px;">Coba lagi dengan lebih cepat! Timer akan restart.</p>';
+            feedback.classList.remove('hidden');
+            
+            // Restart timer
+            setTimeout(() => {
+                feedback.classList.add('hidden');
+                startTimer();
+            }, 2000);
+        }
+
+        function loadLevel() {
+            const level = levels[currentLevel];
+            document.getElementById('level-title').textContent = level.title;
+            document.getElementById('level-concept').textContent = level.concept;
+            document.getElementById('level-image').innerHTML = level.image;
+            document.getElementById('level-story').textContent = level.story;
+            document.getElementById('task-description').textContent = level.task;
+            document.getElementById('hint-text').textContent = level.hint;
+            document.getElementById('code-input').value = '';
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('hint-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('hint-btn-text').textContent = 'Lihat';
+            document.getElementById('score').textContent = score;
+            
+            updateProgress();
+            startTimer();
+        }
+
+        function updateProgress() {
+            document.getElementById('progress-text').textContent = `${completedLevels.length} / ${levels.length} Level`;
+            
+            const segments = document.querySelectorAll('.progress-segment');
+            segments.forEach((seg, idx) => {
+                seg.classList.remove('completed', 'current');
+                if (completedLevels.includes(idx)) {
+                    seg.classList.add('completed');
+                } else if (idx === currentLevel) {
+                    seg.classList.add('current');
+                }
+            });
+        }
+
+        function submitCode() {
+            const code = document.getElementById('code-input').value.toLowerCase();
+            const level = levels[currentLevel];
+            const feedback = document.getElementById('feedback');
+            
+            if (level.check(code)) {
+                clearInterval(timer);
+                feedback.className = 'feedback success';
+                feedback.innerHTML = `<p style="font-weight: bold;">✨ Benar! Sihirnya berhasil!</p><div style="margin-top: 15px; color: #e9d5ff; font-size: 0.95em; line-height: 1.7;">${level.explanation}</div>`;
+                feedback.classList.remove('hidden');
+                
+                if (!completedLevels.includes(currentLevel)) {
+                    completedLevels.push(currentLevel);
+                    updateProgress();
+                }
+                
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                feedback.className = 'feedback error';
+                feedback.innerHTML = '<p style="font-weight: bold;">❌ Belum tepat. Coba lagi atau lihat petunjuknya!</p>';
+                feedback.classList.remove('hidden');
+            }
+        }
+
+        function toggleHint() {
+            const hintBox = document.getElementById('hint-box');
+            const btnText = document.getElementById('hint-btn-text');
+            
+            if (hintBox.classList.contains('hidden')) {
+                hintBox.classList.remove('hidden');
+                btnText.textContent = 'Sembunyikan';
+            } else {
+                hintBox.classList.add('hidden');
+                btnText.textContent = 'Lihat';
+            }
+        }
+
+        function nextLevel() {
+            if (currentLevel < levels.length - 1) {
+                currentLevel++;
+                loadLevel();
+            } else {
+                showCompletion();
+            }
+        }
+
+        function showCompletion() {
+            clearInterval(timer);
+            document.getElementById('game-content').classList.add('hidden');
+            document.getElementById('completion-screen').classList.remove('hidden');
+            document.getElementById('final-name').textContent = playerName;
+            document.getElementById('final-score').textContent = score;
+        }
+
+        function restartGame() {
+            currentLevel = 0;
+            completedLevels = [];
+            score = 100;
+            playerName = "";
+            gameStarted = false;
+            clearInterval(timer);
+            document.getElementById('game-content').classList.add('hidden');
+            document.getElementById('completion-screen').classList.add('hidden');
+            document.getElementById('name-input-screen').classList.remove('hidden');
+            document.getElementById('player-name').value = '';
+        }
+
+        // Initialize - don't load level yet, wait for name input
+    </script>
+</body>
+</html>
