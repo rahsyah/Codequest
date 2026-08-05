@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Misteri Ksatria yang Menyelamatkan Naga — Level 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#F3E7D2;
+    --parchment-deep:#E8D8B8;
+    --ink:#2B211A;
+    --burgundy:#7A1E2B;
+    --burgundy-deep:#5A1520;
+    --gold:#B8892B;
+    --gold-light:#D9AE55;
+    --forest:#3F5D42;
+    --forest-deep:#2C4230;
+    --steel:#5C6B78;
+    --paper:#FBF4E4;
+    --shadow: 0 6px 0 rgba(43,33,26,0.18);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 10% 0%, #EFDCB0 0%, transparent 45%),
+      radial-gradient(circle at 95% 10%, #E4D2AA 0%, transparent 40%),
+      var(--parchment);
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:18px 12px 60px;
+  }
+  .app{ width:100%; max-width:600px; }
+
+  /* ---------- Header ---------- */
+  header{ text-align:center; margin-bottom:14px; }
+  .eyebrow{
+    font-family:'Cinzel'; font-weight:700; font-size:12px;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--burgundy);
+  }
+  h1{
+    font-family:'Cinzel'; font-weight:800;
+    font-size:clamp(21px,6.4vw,28px);
+    margin:4px 0 6px; color:var(--burgundy-deep); line-height:1.25;
+  }
+  .subtitle{ font-size:13.5px; color:#5A4E3E; margin:0; line-height:1.5; }
+
+  .story-card{
+    background:var(--paper);
+    border:3px solid var(--gold);
+    border-radius:16px;
+    padding:14px 16px;
+    margin:16px 0;
+    box-shadow:var(--shadow);
+    font-size:13px;
+    line-height:1.6;
+    color:#4A3F30;
+  }
+  .story-card b{ color:var(--burgundy); }
+
+  /* ---------- Clue recap ---------- */
+  .recap{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:6px;
+    margin-bottom:18px;
+  }
+  .recap-slot{
+    background:var(--paper);
+    border:2px solid var(--parchment-deep);
+    border-radius:10px;
+    padding:6px 4px;
+    text-align:center;
+    font-size:16px;
+    color:#B9AA8C;
+  }
+  .recap-slot.done{ border-color:var(--forest); color:var(--forest); background:#EAF1E6; }
+  .recap-slot .num{ display:block; font-family:'Cinzel'; font-size:9px; font-weight:700; letter-spacing:.04em; color:inherit; margin-bottom:2px; }
+
+  /* ---------- Puzzle cards ---------- */
+  .puzzle-card{
+    background:var(--paper);
+    border:3px solid var(--burgundy);
+    border-radius:20px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    transition: opacity .3s ease;
+  }
+  .puzzle-card.locked{
+    border-color:var(--parchment-deep);
+    opacity:.65;
+  }
+  .puzzle-card.solved{ border-color:var(--forest); }
+  .puzzle-head{
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px;
+    background:linear-gradient(180deg,#F8EFDB,var(--paper));
+    border-bottom:2px solid var(--parchment-deep);
+  }
+  .puzzle-card.locked .puzzle-head{ border-bottom-color:transparent; }
+  .badge-num{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--burgundy); color:#fff;
+    font-family:'Cinzel'; font-weight:700; font-size:14px;
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;
+  }
+  .puzzle-card.locked .badge-num{ background:var(--steel); }
+  .puzzle-card.solved .badge-num{ background:var(--forest); }
+  .puzzle-title{
+    font-family:'Cinzel'; font-weight:700; font-size:14.5px;
+    color:var(--burgundy-deep); flex:1;
+    line-height:1.3;
+  }
+  .puzzle-card.locked .puzzle-title{ color:#8A7C63; }
+  .status-pill{
+    font-size:10.5px; font-weight:800; font-family:'Nunito';
+    padding:3px 9px; border-radius:999px;
+    background:var(--forest); color:#fff; flex:0 0 auto;
+  }
+  .puzzle-body{ padding:16px; }
+  .puzzle-card.locked .puzzle-body{ display:none; }
+  .instruction{ font-size:12.5px; color:#5A4E3E; margin:0 0 12px; line-height:1.55; }
+
+  /* ---------- shape grid ---------- */
+  .shape-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  @media (max-width:400px){ .shape-grid{ grid-template-columns:1fr; } }
+  .shape-box{
+    background:#fff;
+    border:2px solid var(--parchment-deep);
+    border-radius:12px;
+    padding:10px;
+  }
+  .shape-box.correct{ border-color:var(--forest); background:#F1F8EE; }
+  .shape-box.wrong{ border-color:var(--burgundy); background:#FBEEEE; }
+  .shape-visual{
+    display:flex; align-items:center; justify-content:center;
+    height:56px; margin-bottom:6px; position:relative;
+  }
+  .shape-rect{
+    background:var(--shape-color, #C7A6D9);
+    border-radius:3px;
+  }
+  .shape-tri{ width:0; height:0; }
+  .dims{ font-size:11px; text-align:center; color:#7A6B54; margin-bottom:8px; font-weight:700;}
+  .field-row{ display:flex; gap:6px; align-items:center; margin-bottom:6px; }
+  .field-row label{ font-size:11.5px; color:#5A4E3E; width:56px; flex:0 0 auto; font-weight:700;}
+  .field-row input{
+    flex:1; min-width:0;
+    padding:7px 8px;
+    border-radius:8px;
+    border:2px solid var(--parchment-deep);
+    font-size:13px;
+    font-family:'Nunito'; font-weight:700;
+    background:#fff;
+  }
+  .field-row input:focus{ outline:none; border-color:var(--gold); }
+  .unit{ font-size:11px; color:#9A8B6F; flex:0 0 auto; }
+
+  .btn-check{
+    font-family:'Cinzel'; font-weight:700; font-size:13px;
+    padding:11px 16px; width:100%;
+    border-radius:12px; border:none;
+    background:var(--burgundy); color:#fff;
+    box-shadow:0 4px 0 var(--burgundy-deep);
+    cursor:pointer; letter-spacing:.03em;
+  }
+  .btn-check:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--burgundy-deep); }
+  .feedback{
+    margin-top:10px; font-size:12.5px; font-weight:700;
+    text-align:center; min-height:18px;
+  }
+  .feedback.ok{ color:var(--forest); }
+  .feedback.bad{ color:var(--burgundy); }
+
+  .clue-reveal{
+    margin-top:14px;
+    background:#EAF1E6;
+    border:2px dashed var(--forest);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:13px;
+    color:var(--forest-deep);
+    display:flex; gap:8px; align-items:flex-start;
+  }
+  .clue-reveal b{ font-family:'Cinzel'; }
+
+  /* ---------- anagram tiles (petunjuk 2) ---------- */
+  .anagram-wrap{ margin-top:14px; }
+  .anagram-label{ font-size:11.5px; font-weight:700; color:#5A4E3E; margin-bottom:6px; }
+  .tile-row{ display:flex; gap:6px; flex-wrap:wrap; min-height:42px; margin-bottom:8px; }
+  .tile{
+    width:38px; height:38px;
+    border-radius:8px;
+    background:var(--gold-light);
+    color:#4A3212;
+    font-family:'Cinzel'; font-weight:700; font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; border:none;
+    box-shadow:0 3px 0 var(--gold);
+  }
+  .tile:active{ transform:translateY(2px); box-shadow:none; }
+  .tile.placed{ opacity:.25; pointer-events:none; }
+  .answer-strip{
+    display:flex; gap:6px; min-height:42px;
+    background:#fff; border:2px dashed var(--parchment-deep);
+    border-radius:10px; padding:6px; margin-bottom:8px;
+  }
+
+  /* ---------- true/false rows ---------- */
+  .tf-row{
+    display:flex; gap:8px; align-items:center;
+    padding:10px; background:#fff; border:2px solid var(--parchment-deep);
+    border-radius:12px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .tf-row.correct{ border-color:var(--forest); background:#F1F8EE; }
+  .tf-row.wrong{ border-color:var(--burgundy); background:#FBEEEE; }
+  .tf-shapes{ display:flex; gap:8px; flex:1; min-width:180px; }
+  .tf-shape{ text-align:center; font-size:10.5px; color:#7A6B54; font-weight:700; }
+  .tf-shape input{ width:56px; padding:5px; border-radius:6px; border:2px solid var(--parchment-deep); font-size:12px; text-align:center; margin-top:3px; font-weight:700;}
+  .tf-choice{ display:flex; gap:5px; }
+  .tf-btn{
+    font-family:'Cinzel'; font-size:11px; font-weight:700;
+    padding:7px 10px; border-radius:8px; border:2px solid var(--parchment-deep);
+    background:#fff; color:#5A4E3E; cursor:pointer;
+  }
+  .tf-btn.active{ background:var(--burgundy); color:#fff; border-color:var(--burgundy); }
+
+  /* ---------- volume rows ---------- */
+  .vol-row{
+    display:flex; gap:10px; margin-bottom:10px;
+  }
+  .vol-box{
+    flex:1; background:#fff; border:2px solid var(--parchment-deep);
+    border-radius:12px; padding:10px; text-align:center;
+  }
+  .vol-box.correct{ border-color:var(--forest); background:#F1F8EE; }
+  .vol-box.wrong{ border-color:var(--burgundy); background:#FBEEEE; }
+  .vol-box .mat-label{ font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-weight:800; margin-top:4px; }
+  .vol-box input{ width:90px; padding:6px; border-radius:7px; border:2px solid var(--parchment-deep); text-align:center; font-weight:700; font-size:12.5px; }
+
+  .col-tally{
+    display:flex; justify-content:space-around; margin:8px 0 12px;
+    font-size:12px; font-weight:700; color:#5A4E3E;
+  }
+
+  footer{ text-align:center; margin-top:22px; font-size:11px; color:#8A7C63; line-height:1.6; }
+
+  /* ---------- final section ---------- */
+  .knight-table-wrap{ overflow-x:auto; margin-bottom:14px; border:2px solid var(--parchment-deep); border-radius:12px; }
+  table.knights{ border-collapse:collapse; width:100%; font-size:11px; white-space:nowrap; }
+  table.knights th{
+    background:var(--burgundy); color:#fff; font-family:'Cinzel'; font-weight:700;
+    padding:8px 7px; position:sticky; top:0; font-size:10px;
+  }
+  table.knights td{ padding:7px; border-top:1px solid var(--parchment-deep); }
+  table.knights tr:nth-child(even) td{ background:#F8F0DD; }
+
+  .final-select{ display:flex; gap:8px; margin-bottom:10px; }
+  .final-select select{
+    flex:1; padding:11px; border-radius:10px; border:2px solid var(--parchment-deep);
+    font-size:13px; font-weight:700; font-family:'Nunito'; background:#fff;
+  }
+
+  /* ---------- win overlay ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(43,33,26,0.6);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .overlay.show{ display:flex; }
+  .win-card{
+    background:var(--paper); border-radius:22px; padding:28px 22px 22px;
+    text-align:center; max-width:340px; width:100%;
+    box-shadow:0 14px 0 rgba(0,0,0,.15); border:3px solid var(--gold);
+    position:relative; overflow:hidden;
+  }
+  .win-card .big-emoji{ font-size:48px; display:block; margin-bottom:8px; }
+  .win-card h2{ font-family:'Cinzel'; color:var(--burgundy-deep); margin:0 0 8px; font-size:20px; }
+  .win-card p{ font-size:13px; color:#5A4E3E; margin:0 0 18px; line-height:1.6; }
+  .win-card button{
+    font-family:'Cinzel'; font-weight:700; padding:12px 16px; border-radius:12px;
+    border:none; background:var(--burgundy); color:#fff; cursor:pointer;
+    box-shadow:0 4px 0 var(--burgundy-deep); width:100%; font-size:13.5px;
+  }
+  .confetti{ position:absolute; top:-10px; width:8px; height:14px; border-radius:2px; animation: fall linear forwards; }
+  @keyframes fall{ to{ transform: translateY(340px) rotate(400deg); opacity:0; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">Level 4 · Bangun Datar &amp; Bangun Ruang</div>
+    <h1>Misteri Ksatria yang<br>Menyelamatkan Naga</h1>
+    <p class="subtitle">Pecahkan 5 petunjuk matematika untuk mengungkap identitas ksatria misterius.</p>
+  </header>
+
+  <div class="story-card">
+    Firestone si naga baik hati terjebak longsor di dalam guanya. <b>Sang Raja</b> mengirim seorang ksatria untuk menyelamatkannya — tapi identitas ksatria itu dirahasiakan! Selesaikan setiap petunjuk di bawah ini untuk mengumpulkan fakta tentang sang ksatria, lalu gunakan tabel data di akhir untuk menebak siapa dia.
+  </div>
+
+  <div class="recap" id="recap"></div>
+
+  <div id="puzzles"></div>
+
+  <div class="puzzle-card locked" id="final-card">
+    <div class="puzzle-head">
+      <div class="badge-num" id="final-badge">👑</div>
+      <div class="puzzle-title">Ruang Takhta: Ungkap Sang Ksatria</div>
+    </div>
+    <div class="puzzle-body">
+      <p class="instruction">Gunakan kelima petunjuk yang sudah terkumpul untuk menyaring tabel ksatria di bawah ini, lalu pilih nama ksatria yang menurutmu menyelamatkan Firestone.</p>
+      <div class="knight-table-wrap">
+        <table class="knights" id="knightTable"></table>
+      </div>
+      <div class="final-select">
+        <select id="knightSelect"></select>
+      </div>
+      <button class="btn-check" id="finalCheckBtn">🔍 Ungkap Identitas Ksatria!</button>
+      <div class="feedback" id="finalFeedback"></div>
+    </div>
+  </div>
+
+  <footer>Dibuat untuk kelas Matematika &amp; Coding — dapat dimainkan di banyak HP sekaligus, tanpa login.</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="win-card" id="winCard">
+    <span class="big-emoji">🐉</span>
+    <h2>Misteri Terpecahkan!</h2>
+    <p id="winMsg"></p>
+    <button id="playAgainBtn">Main Lagi dari Awal</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ DATA ============ */
+  const KNIGHTS = [
+    {name:"Sir Giddy-Up", weight:31, shield:"lion", armor:"iron", flag:"copper", age:24},
+    {name:"Sir Loin the Beef", weight:28, shield:"lion", armor:"iron", flag:"cerise", age:22},
+    {name:"Lady Braveheart", weight:23, shield:"lion", armor:"steel", flag:"cerise", age:29},
+    {name:"Sir Vey the Lookout", weight:18, shield:"dragon", armor:"steel", flag:"claret", age:27},
+    {name:"Sir Valiant the Brave", weight:25, shield:"eagle", armor:"steel", flag:"copper", age:19},
+    {name:"Lady Motte and Bailey", weight:20, shield:"dragon", armor:"steel", flag:"claret", age:21},
+    {name:"Lady Gallops-a-Lot", weight:36, shield:"dragon", armor:"iron", flag:"copper", age:17},
+    {name:"Sir Scaredy Cat", weight:30, shield:"eagle", armor:"iron", flag:"chrome", age:24},
+    {name:"Sir Call the Round", weight:33, shield:"eagle", armor:"steel", flag:"claret", age:25},
+    {name:"Lady Portia Cullis", weight:31, shield:"eagle", armor:"iron", flag:"cerise", age:25},
+    {name:"Sir Rebral the Thoughtful", weight:27, shield:"eagle", armor:"iron", flag:"claret", age:18},
+    {name:"Sir Charge the Bold", weight:24, shield:"dragon", armor:"iron", flag:"copper", age:42},
+    {name:"Lady Turret the Tall", weight:29, shield:"lion", armor:"iron", flag:"claret", age:28},
+    {name:"Lady Gwendolyn the Great", weight:29, shield:"dragon", armor:"steel", flag:"chrome", age:23},
+    {name:"Sir Tainly the Wise", weight:26, shield:"dragon", armor:"steel", flag:"claret", age:20},
+    {name:"Sir Vival the Everlasting", weight:22, shield:"lion", armor:"steel", flag:"cherry", age:37},
+    {name:"Sir Pass the Salt", weight:37, shield:"eagle", armor:"iron", flag:"cerise", age:26},
+    {name:"Sir Realist the Pragmatic", weight:19, shield:"lion", armor:"steel", flag:"claret", age:22},
+    {name:"Sir Prize the Unexpected", weight:21, shield:"dragon", armor:"iron", flag:"chrome", age:34},
+    {name:"Lady Barbican the Protector", weight:27, shield:"eagle", armor:"iron", flag:"chrome", age:21}
+  ];
+  const CORRECT_KNIGHT = "Lady Braveheart";
+
+  const CODE_TABLE = {A:224,B:245,C:187,D:88,E:33,F:36,G:49,H:165,I:56,J:204,K:150,L:81,M:98,
+    N:64,O:322,P:225,Q:116,R:140,S:86,T:26,U:38,V:72,W:175,X:190,Y:236,Z:44};
+
+  const rects = [
+    {w:14,h:3,color:"#B98FC9"}, {w:6,h:6,color:"#EFC94C"},
+    {w:10,h:4,color:"#8FBF6B"}, {w:9,h:2,color:"#B9B9B9"}
+  ];
+  const triangles = [
+    {base:11,height:6,letter:'E'}, {base:20,height:14,letter:'R'}, {base:22,height:17,letter:'C'},
+    {base:4,height:13,letter:'T'}, {base:18,height:9,letter:'L'}, {base:32,height:14,letter:'A'}
+  ];
+  const TARGET_WORD = "CLARET";
+
+  const tfRows = [
+    {s1:{w:2,h:25}, s2:{w:5,h:10}},
+    {s1:{w:5,h:8},  s2:{w:6,h:7}},
+    {s1:{w:4,h:12}, s2:{w:6,h:8}}
+  ];
+
+  const volRows = [
+    {left:{l:3,w:4,h:7}, right:{l:7,w:7,h:7}},
+    {left:{l:5,w:6,h:9}, right:{l:8,w:6,h:6}},
+    {left:{l:10,w:10,h:10}, right:{l:2,w:2,h:2}}
+  ];
+
+  const paras = [
+    {base:32,height:64,label:"an eagle"},
+    {base:55,height:24,label:null}
+  ];
+
+  const clueSlots = document.getElementById('recap');
+  const puzzlesEl = document.getElementById('puzzles');
+  const finalCard = document.getElementById('final-card');
+  const solvedState = {1:false,2:false,3:false,4:false,5:false};
+
+  /* ============ recap slots ============ */
+  function buildRecap(){
+    clueSlots.innerHTML = '';
+    for(let i=1;i<=5;i++){
+      const d = document.createElement('div');
+      d.className = 'recap-slot' + (solvedState[i] ? ' done' : '');
+      d.id = 'recap-'+i;
+      d.innerHTML = '<span class="num">P'+i+'</span>' + (solvedState[i] ? '✓' : '🔒');
+      clueSlots.appendChild(d);
+    }
+  }
+
+  function unlock(n){
+    solvedState[n] = true;
+    buildRecap();
+    const card = document.getElementById('puzzle-'+n);
+    card.classList.remove('locked'); card.classList.add('solved');
+    card.querySelector('.puzzle-head').insertAdjacentHTML('beforeend','<span class="status-pill">Selesai</span>');
+    const next = (n<5) ? document.getElementById('puzzle-'+(n+1)) : finalCard;
+    if(next){
+      next.classList.remove('locked');
+      setTimeout(()=> next.scrollIntoView({behavior:'smooth', block:'center'}), 300);
+    }
+  }
+
+  /* ============ PETUNJUK 1 : rectangles ============ */
+  function renderP1(){
+    const card = document.createElement('div');
+    card.className = 'puzzle-card';
+    card.id = 'puzzle-1';
+    let boxes = '';
+    rects.forEach((r,i)=>{
+      boxes += `<div class="shape-box" id="rect-box-${i}">
+        <div class="shape-visual"><div class="shape-rect" style="--shape-color:${r.color}; width:${Math.min(r.w*3.6,120)}px; height:${Math.min(r.h*10,44)}px;"></div></div>
+        <div class="dims">${r.w}cm &times; ${r.h}cm</div>
+        <div class="field-row"><label>Keliling</label><input type="number" id="rect-p-${i}"><span class="unit">cm</span></div>
+        <div class="field-row"><label>Luas</label><input type="number" id="rect-a-${i}"><span class="unit">cm&sup2;</span></div>
+      </div>`;
+    });
+    card.innerHTML = `
+      <div class="puzzle-head"><div class="badge-num">1</div><div class="puzzle-title">Petunjuk 1: Keliling &amp; Luas Persegi Panjang</div></div>
+      <div class="puzzle-body">
+        <p class="instruction">Hitung keliling dan luas keempat bangun berikut, lalu ketuk <b>Periksa Jawaban</b>.</p>
+        <div class="shape-grid">${boxes}</div>
+        <button class="btn-check" id="p1-check">Periksa Jawaban</button>
+        <div class="feedback" id="p1-feedback"></div>
+        <div id="p1-clue"></div>
+      </div>`;
+    puzzlesEl.appendChild(card);
+
+    document.getElementById('p1-check').addEventListener('click', ()=>{
+      let allOk = true;
+      rects.forEach((r,i)=>{
+        const p = Number(document.getElementById('rect-p-'+i).value);
+        const a = Number(document.getElementById('rect-a-'+i).value);
+        const ok = p === 2*(r.w+r.h) && a === r.w*r.h;
+        const box = document.getElementById('rect-box-'+i);
+        box.classList.remove('correct','wrong');
+        box.classList.add(ok ? 'correct' : 'wrong');
+        if(!ok) allOk = false;
+      });
+      const fb = document.getElementById('p1-feedback');
+      if(allOk){
+        fb.className = 'feedback ok';
+        fb.textContent = '✓ Semua jawaban benar!';
+        document.getElementById('p1-clue').innerHTML =
+          '<div class="clue-reveal">🗝️ <div><b>Petunjuk 1:</b> Sang ksatria berusia <b>kurang dari tiga puluh tahun</b>.</div></div>';
+        unlock(1);
+      } else {
+        fb.className = 'feedback bad';
+        fb.textContent = 'Beberapa jawaban belum tepat, coba periksa lagi kotak berwarna merah.';
+      }
+    });
+  }
+
+  /* ============ PETUNJUK 2 : triangles + anagram ============ */
+  function renderP2(){
+    const card = document.createElement('div');
+    card.className = 'puzzle-card locked';
+    card.id = 'puzzle-2';
+    let boxes = '';
+    triangles.forEach((t,i)=>{
+      boxes += `<div class="shape-box" id="tri-box-${i}">
+        <div class="shape-visual"><div class="shape-tri" style="border-left:${Math.min(t.base*1.6,60)/2}px solid transparent;border-right:${Math.min(t.base*1.6,60)/2}px solid transparent;border-bottom:${Math.min(t.height*2.6,54)}px solid #8FB8D9;"></div></div>
+        <div class="dims">alas ${t.base}cm, tinggi ${t.height}cm</div>
+        <div class="field-row"><label>Luas</label><input type="number" id="tri-a-${i}"><span class="unit">cm&sup2;</span></div>
+      </div>`;
+    });
+    card.innerHTML = `
+      <div class="puzzle-head"><div class="badge-num">2</div><div class="puzzle-title">Petunjuk 2: Luas Segitiga &amp; Pemecah Kode</div></div>
+      <div class="puzzle-body">
+        <p class="instruction">Hitung luas keenam segitiga berikut.</p>
+        <div class="shape-grid">${boxes}</div>
+        <button class="btn-check" id="p2-check">Periksa Luas</button>
+        <div class="feedback" id="p2-feedback"></div>
+        <div id="p2-anagram"></div>
+        <div id="p2-clue"></div>
+      </div>`;
+    puzzlesEl.appendChild(card);
+
+    document.getElementById('p2-check').addEventListener('click', ()=>{
+      let allOk = true;
+      triangles.forEach((t,i)=>{
+        const a = Number(document.getElementById('tri-a-'+i).value);
+        const ok = a === 0.5*t.base*t.height;
+        const box = document.getElementById('tri-box-'+i);
+        box.classList.remove('correct','wrong');
+        box.classList.add(ok ? 'correct' : 'wrong');
+        if(!ok) allOk = false;
+      });
+      const fb = document.getElementById('p2-feedback');
+      if(allOk){
+        fb.className = 'feedback ok';
+        fb.textContent = '✓ Semua luas benar! Sekarang susun hurufnya menjadi sebuah kata warna.';
+        renderAnagram();
+      } else {
+        fb.className = 'feedback bad';
+        fb.textContent = 'Ada jawaban yang belum tepat, periksa kotak merah.';
+      }
+    });
+
+    function renderAnagram(){
+      const wrap = document.getElementById('p2-anagram');
+      const letters = triangles.map(t=>t.letter);
+      const shuffled = [...letters].sort(()=>Math.random()-0.5);
+      let assembled = [];
+      wrap.innerHTML = `
+        <div class="anagram-wrap">
+          <div class="anagram-label">Susun huruf menjadi kata warna (bukan warna bendera sang ksatria):</div>
+          <div class="answer-strip" id="ana-strip"></div>
+          <div class="tile-row" id="ana-bank"></div>
+          <button class="btn-check" id="ana-check">Periksa Kata</button>
+        </div>`;
+      const bank = document.getElementById('ana-bank');
+      const strip = document.getElementById('ana-strip');
+
+      function renderTiles(){
+        bank.innerHTML = '';
+        shuffled.forEach((L,idx)=>{
+          const b = document.createElement('button');
+          b.className = 'tile' + (assembled.includes(idx) ? ' placed' : '');
+          b.textContent = L;
+          b.addEventListener('click', ()=>{
+            if(assembled.includes(idx)) return;
+            assembled.push(idx);
+            renderTiles(); renderStrip();
+          });
+          bank.appendChild(b);
+        });
+      }
+      function renderStrip(){
+        strip.innerHTML = '';
+        assembled.forEach((idx)=>{
+          const b = document.createElement('button');
+          b.className = 'tile';
+          b.textContent = shuffled[idx];
+          b.addEventListener('click', ()=>{
+            assembled = assembled.filter(x=>x!==idx);
+            renderTiles(); renderStrip();
+          });
+          strip.appendChild(b);
+        });
+      }
+      renderTiles(); renderStrip();
+
+      document.getElementById('ana-check').addEventListener('click', ()=>{
+        const word = assembled.map(idx=>shuffled[idx]).join('');
+        if(word === TARGET_WORD){
+          document.getElementById('p2-clue').innerHTML =
+            '<div class="clue-reveal">🗝️ <div><b>Petunjuk 2:</b> Kata sandi terpecahkan: <b>'+TARGET_WORD+'</b>. Warna bendera sang ksatria <b>BUKAN claret</b>.</div></div>';
+          unlock(2);
+        } else {
+          const fb = document.getElementById('p2-feedback');
+          fb.className = 'feedback bad';
+          fb.textContent = 'Belum tepat — coba susun ulang keenam huruf itu.';
+        }
+      });
+    }
+  }
+
+  /* ============ PETUNJUK 3 : true/false area comparison ============ */
+  function renderP3(){
+    const card = document.createElement('div');
+    card.className = 'puzzle-card locked';
+    card.id = 'puzzle-3';
+    let rows = '';
+    tfRows.forEach((r,i)=>{
+      rows += `<div class="tf-row" id="tf-row-${i}">
+        <div class="tf-shapes">
+          <div class="tf-shape">Bangun 1<br>${r.s1.w}&times;${r.s1.h}cm<br><input type="number" id="tf-a1-${i}"></div>
+          <div class="tf-shape">Bangun 2<br>${r.s2.w}&times;${r.s2.h}cm<br><input type="number" id="tf-a2-${i}"></div>
+        </div>
+        <div class="tf-choice" id="tf-choice-${i}">
+          <button class="tf-btn" data-val="true">Sama</button>
+          <button class="tf-btn" data-val="false">Beda</button>
+        </div>
+      </div>`;
+    });
+    card.innerHTML = `
+      <div class="puzzle-head"><div class="badge-num">3</div><div class="puzzle-title">Petunjuk 3: Bangun dengan Luas yang Sama</div></div>
+      <div class="puzzle-body">
+        <p class="instruction">Hitung luas Bangun 1 dan Bangun 2 pada tiap baris, lalu pilih apakah luasnya <b>Sama</b> atau <b>Beda</b>.</p>
+        ${rows}
+        <button class="btn-check" id="p3-check">Periksa Jawaban</button>
+        <div class="feedback" id="p3-feedback"></div>
+        <div id="p3-clue"></div>
+      </div>`;
+    puzzlesEl.appendChild(card);
+
+    tfRows.forEach((r,i)=>{
+      document.querySelectorAll('#tf-choice-'+i+' .tf-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          document.querySelectorAll('#tf-choice-'+i+' .tf-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+    });
+
+    document.getElementById('p3-check').addEventListener('click', ()=>{
+      let allOk = true, trueCount = 0, falseCount = 0;
+      tfRows.forEach((r,i)=>{
+        const a1 = Number(document.getElementById('tf-a1-'+i).value);
+        const a2 = Number(document.getElementById('tf-a2-'+i).value);
+        const correctArea1 = r.s1.w*r.s1.h, correctArea2 = r.s2.w*r.s2.h;
+        const isEqual = correctArea1 === correctArea2;
+        const chosenBtn = document.querySelector('#tf-choice-'+i+' .tf-btn.active');
+        const chosen = chosenBtn ? chosenBtn.dataset.val === 'true' : null;
+        const ok = a1===correctArea1 && a2===correctArea2 && chosen===isEqual;
+        const row = document.getElementById('tf-row-'+i);
+        row.classList.remove('correct','wrong');
+        row.classList.add(ok ? 'correct':'wrong');
+        if(!ok) allOk = false;
+        if(isEqual) trueCount++; else falseCount++;
+      });
+      const fb = document.getElementById('p3-feedback');
+      if(allOk){
+        fb.className = 'feedback ok';
+        fb.textContent = '✓ Semua jawaban benar!';
+        const parity = trueCount > falseCount ? 'GANJIL (ganjil)' : 'GENAP (genap)';
+        document.getElementById('p3-clue').innerHTML =
+          '<div class="clue-reveal">🗝️ <div><b>Petunjuk 3:</b> Lebih banyak jawaban "Sama" ('+trueCount+') daripada "Beda" ('+falseCount+'), jadi berat perlengkapan sang ksatria adalah bilangan <b>'+parity+'</b>.</div></div>';
+        unlock(3);
+      } else {
+        fb.className = 'feedback bad';
+        fb.textContent = 'Ada baris yang belum tepat (luas atau pilihan Sama/Beda), coba periksa lagi.';
+      }
+    });
+  }
+
+  /* ============ PETUNJUK 4 : volumes ============ */
+  function renderP4(){
+    const card = document.createElement('div');
+    card.className = 'puzzle-card locked';
+    card.id = 'puzzle-4';
+    let rows = '';
+    volRows.forEach((r,i)=>{
+      rows += `<div class="vol-row" id="vol-row-${i}">
+        <div class="vol-box" id="vol-left-${i}">
+          <div class="dims">${r.left.l}&times;${r.left.w}&times;${r.left.h}cm</div>
+          <input type="number" id="vol-l-${i}" placeholder="cm&sup3;">
+          <div class="mat-label">besi (iron)</div>
+        </div>
+        <div class="vol-box" id="vol-right-${i}">
+          <div class="dims">${r.right.l}&times;${r.right.w}&times;${r.right.h}cm</div>
+          <input type="number" id="vol-r-${i}" placeholder="cm&sup3;">
+          <div class="mat-label">baja (steel)</div>
+        </div>
+      </div>`;
+    });
+    card.innerHTML = `
+      <div class="puzzle-head"><div class="badge-num">4</div><div class="puzzle-title">Petunjuk 4: Volume Kubus &amp; Balok</div></div>
+      <div class="puzzle-body">
+        <p class="instruction">Hitung volume tiap bangun ruang. Kolom dengan volume terbesar pada tiap baris akan dihitung sebagai "pemenang" baris itu.</p>
+        ${rows}
+        <button class="btn-check" id="p4-check">Periksa Volume</button>
+        <div class="feedback" id="p4-feedback"></div>
+        <div id="p4-clue"></div>
+      </div>`;
+    puzzlesEl.appendChild(card);
+
+    document.getElementById('p4-check').addEventListener('click', ()=>{
+      let allOk = true, ironWins = 0, steelWins = 0;
+      volRows.forEach((r,i)=>{
+        const vl = Number(document.getElementById('vol-l-'+i).value);
+        const vr = Number(document.getElementById('vol-r-'+i).value);
+        const correctL = r.left.l*r.left.w*r.left.h;
+        const correctR = r.right.l*r.right.w*r.right.h;
+        const ok = vl===correctL && vr===correctR;
+        document.getElementById('vol-left-'+i).classList.remove('correct','wrong');
+        document.getElementById('vol-right-'+i).classList.remove('correct','wrong');
+        document.getElementById('vol-left-'+i).classList.add(ok?'correct':'wrong');
+        document.getElementById('vol-right-'+i).classList.add(ok?'correct':'wrong');
+        if(!ok) allOk = false;
+        if(correctL > correctR) ironWins++; else steelWins++;
+      });
+      const fb = document.getElementById('p4-feedback');
+      if(allOk){
+        fb.className = 'feedback ok';
+        fb.textContent = '✓ Semua volume benar!';
+        const material = steelWins > ironWins ? 'BAJA (steel)' : 'BESI (iron)';
+        document.getElementById('p4-clue').innerHTML =
+          '<div class="clue-reveal">🗝️ <div><b>Petunjuk 4:</b> Kolom "'+(steelWins>ironWins?'baja':'besi')+'" menang di lebih banyak baris ('+(steelWins>ironWins?steelWins:ironWins)+' dari 3), jadi baju zirah sang ksatria terbuat dari <b>'+material+'</b>.</div></div>';
+        unlock(4);
+      } else {
+        fb.className = 'feedback bad';
+        fb.textContent = 'Ada volume yang belum tepat, periksa kotak merah.';
+      }
+    });
+  }
+
+  /* ============ PETUNJUK 5 : parallelograms ============ */
+  function renderP5(){
+    const card = document.createElement('div');
+    card.className = 'puzzle-card locked';
+    card.id = 'puzzle-5';
+    card.innerHTML = `
+      <div class="puzzle-head"><div class="badge-num">5</div><div class="puzzle-title">Petunjuk 5: Luas Jajar Genjang</div></div>
+      <div class="puzzle-body">
+        <p class="instruction">Hitung luas kedua jajar genjang berikut.</p>
+        <div class="shape-grid">
+          <div class="shape-box" id="para-box-0">
+            <div class="dims">alas 32cm, tinggi 64cm</div>
+            <div class="field-row"><label>Luas</label><input type="number" id="para-a-0"><span class="unit">cm&sup2;</span></div>
+          </div>
+          <div class="shape-box" id="para-box-1">
+            <div class="dims">alas 55cm, tinggi 24cm</div>
+            <div class="field-row"><label>Luas</label><input type="number" id="para-a-1"><span class="unit">cm&sup2;</span></div>
+          </div>
+        </div>
+        <button class="btn-check" id="p5-check">Periksa Luas</button>
+        <div class="feedback" id="p5-feedback"></div>
+        <p class="instruction" style="margin-top:14px;">Jawaban yang cocok akan dicoret dari tabel di bawah. Kotak yang <b>tidak</b> tercoret akan menjadi petunjuk desain perisai sang ksatria.</p>
+        <div class="shape-grid" id="para-answer-table" style="grid-template-columns:1fr 1fr 1fr;"></div>
+        <div id="p5-clue"></div>
+      </div>`;
+    puzzlesEl.appendChild(card);
+
+    const answerCells = [
+      {area:1320, label:null},
+      {area:2048, label:"an eagle"},
+      {area:1230, label:"a lion"}
+    ];
+
+    document.getElementById('p5-check').addEventListener('click', ()=>{
+      let allOk = true;
+      paras.forEach((p,i)=>{
+        const a = Number(document.getElementById('para-a-'+i).value);
+        const ok = a === p.base*p.height;
+        const box = document.getElementById('para-box-'+i);
+        box.classList.remove('correct','wrong');
+        box.classList.add(ok?'correct':'wrong');
+        if(!ok) allOk = false;
+      });
+      const fb = document.getElementById('p5-feedback');
+      if(allOk){
+        fb.className = 'feedback ok';
+        fb.textContent = '✓ Semua luas benar!';
+        const userAreas = paras.map(p=>p.base*p.height);
+        const tableWrap = document.getElementById('para-answer-table');
+        tableWrap.innerHTML = '';
+        let unmatched = null;
+        answerCells.forEach(cell=>{
+          const matched = userAreas.includes(cell.area);
+          if(!matched) unmatched = cell;
+          const div = document.createElement('div');
+          div.className = 'shape-box';
+          div.style.opacity = matched ? '0.35' : '1';
+          div.style.textDecoration = matched ? 'line-through' : 'none';
+          div.innerHTML = `<div class="dims">luas = ${cell.area}cm&sup2;</div><div class="dims" style="font-style:italic;">${cell.label || '&mdash;'}</div>`;
+          tableWrap.appendChild(div);
+        });
+        if(unmatched){
+          document.getElementById('p5-clue').innerHTML =
+            '<div class="clue-reveal">🗝️ <div><b>Petunjuk 5:</b> Kotak yang tidak tercoret adalah "'+unmatched.label+'" &mdash; desain perisai sang ksatria adalah <b>'+unmatched.label.toUpperCase()+'</b>.</div></div>';
+        }
+        unlock(5);
+      } else {
+        fb.className = 'feedback bad';
+        fb.textContent = 'Ada luas yang belum tepat, periksa kotak merah.';
+      }
+    });
+  }
+
+  /* ============ FINAL: knight table ============ */
+  function renderFinal(){
+    const table = document.getElementById('knightTable');
+    let head = '<tr><th>Nama</th><th>Berat (kg)</th><th>Perisai</th><th>Zirah</th><th>Bendera</th><th>Usia</th></tr>';
+    let body = '';
+    KNIGHTS.forEach(k=>{
+      body += `<tr><td>${k.name}</td><td>${k.weight}</td><td>${k.shield}</td><td>${k.armor}</td><td>${k.flag}</td><td>${k.age}</td></tr>`;
+    });
+    table.innerHTML = head + body;
+
+    const select = document.getElementById('knightSelect');
+    select.innerHTML = '<option value="">— Pilih nama ksatria —</option>' +
+      KNIGHTS.map(k=>`<option value="${k.name}">${k.name}</option>`).join('');
+
+    document.getElementById('finalCheckBtn').addEventListener('click', ()=>{
+      const chosen = select.value;
+      const fb = document.getElementById('finalFeedback');
+      if(!chosen){
+        fb.className = 'feedback bad';
+        fb.textContent = 'Pilih dulu satu nama ksatria dari daftar.';
+        return;
+      }
+      if(chosen === CORRECT_KNIGHT){
+        launchWin();
+      } else {
+        fb.className = 'feedback bad';
+        fb.textContent = '✗ Bukan dia. Coba cocokkan kelima petunjuk lagi dengan tabel di atas.';
+      }
+    });
+  }
+
+  function launchWin(){
+    const winMsg = document.getElementById('winMsg');
+    const k = KNIGHTS.find(k=>k.name===CORRECT_KNIGHT);
+    winMsg.textContent = CORRECT_KNIGHT + ' adalah ksatria yang menyelamatkan Firestone sang naga! Usia '+k.age+' tahun, berperisai '+k.shield+', berzirah '+k.armor+', dan berbendera '+k.flag+'.';
+    document.getElementById('overlay').classList.add('show');
+    spawnConfetti();
+  }
+  function spawnConfetti(){
+    const colors = ['#7A1E2B','#B8892B','#3F5D42','#D9AE55','#5C6B78'];
+    const winCard = document.getElementById('winCard');
+    for(let i=0;i<26;i++){
+      const c = document.createElement('div');
+      c.className='confetti';
+      c.style.left = (Math.random()*100)+'%';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (1.4+Math.random()*1.2)+'s';
+      c.style.animationDelay = (Math.random()*0.4)+'s';
+      winCard.appendChild(c);
+      setTimeout(()=>c.remove(),3200);
+    }
+  }
+  document.getElementById('playAgainBtn').addEventListener('click', ()=> location.reload());
+
+  /* ============ init ============ */
+  buildRecap();
+  renderP1(); renderP2(); renderP3(); renderP4(); renderP5();
+  document.getElementById('puzzle-1').classList.remove('locked');
+  renderFinal();
+})();
+</script>
+</body>
+</html>
