@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Kebun Apel: Petualangan Tupai Koding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#FFF6E9;
+    --board:#EAF4E1;
+    --board-line:#CFE3C0;
+    --apple:#D7263D;
+    --apple-dark:#A81D31;
+    --leaf:#3A5A40;
+    --leaf-mid:#6A994E;
+    --bark:#8B5E3C;
+    --gold:#F2A65A;
+    --sky-accent:#A9D6E5;
+    --ink:#2E2A26;
+    --paper:#FFFFFF;
+    --shadow: 0 6px 0 rgba(58,90,64,0.18);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 8%, #FFEFD1 0%, transparent 45%),
+      radial-gradient(circle at 90% 0%, #DDEFD0 0%, transparent 40%),
+      var(--sky);
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:18px 12px 48px;
+  }
+  .app{
+    width:100%;
+    max-width:520px;
+  }
+  /* ---------- Header ---------- */
+  header{
+    text-align:center;
+    margin-bottom:14px;
+  }
+  .eyebrow{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--leaf-mid);
+  }
+  h1{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:clamp(24px,7vw,32px);
+    margin:2px 0 4px;
+    color:var(--leaf);
+    line-height:1.1;
+  }
+  h1 span.red{color:var(--apple);}
+  .subtitle{
+    font-size:14px;
+    color:#5B6B58;
+    margin:0;
+  }
+
+  /* ---------- Status bar ---------- */
+  .statusbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--paper);
+    border:3px solid var(--leaf);
+    border-radius:18px;
+    padding:10px 14px;
+    margin:16px 0 14px;
+    box-shadow:var(--shadow);
+  }
+  .status-item{display:flex;flex-direction:column;align-items:center;flex:1;}
+  .status-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#8A968A;font-weight:700;}
+  .status-value{font-family:'Baloo 2';font-weight:700;font-size:18px;color:var(--leaf);}
+  .basket-row{display:flex;gap:3px;min-height:20px;align-items:center;justify-content:center;flex-wrap:wrap;max-width:120px;}
+  .basket-row .mini-apple{font-size:15px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.15));}
+  .divider-dot{width:6px;height:6px;border-radius:50%;background:var(--board-line);}
+
+  /* ---------- Timer ---------- */
+  .timerwrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--paper);
+    border:2.5px solid var(--leaf);
+    border-radius:14px;
+    padding:7px 12px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .timer-icon{font-size:15px;flex:0 0 auto;}
+  .timer-track{
+    flex:1;
+    height:9px;
+    background:var(--sky);
+    border-radius:999px;
+    overflow:hidden;
+    border:1px solid var(--board-line);
+  }
+  .timer-fill{
+    height:100%;
+    width:100%;
+    background:var(--leaf-mid);
+    border-radius:999px;
+    transition: width .25s linear, background-color .3s ease;
+  }
+  .timer-fill.warn{ background:var(--gold); }
+  .timer-fill.danger{ background:var(--apple); }
+  .timer-text{
+    font-family:'Baloo 2';
+    font-weight:700;
+    font-size:13px;
+    color:var(--leaf);
+    flex:0 0 auto;
+    min-width:30px;
+    text-align:right;
+  }
+  .timerwrap.danger{ animation: pulseTimer .6s ease infinite; }
+  .timerwrap.danger .timer-text{ color:var(--apple); }
+  @keyframes pulseTimer{
+    0%,100%{ box-shadow:var(--shadow); }
+    50%{ box-shadow:0 6px 0 rgba(215,38,61,0.25); }
+  }
+
+  /* ---------- Board ---------- */
+  .board-wrap{
+    position:relative;
+    background:linear-gradient(180deg,#F3FBEC, var(--board));
+    border:3px solid var(--leaf);
+    border-radius:22px;
+    padding:10px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+    overflow:hidden;
+  }
+  .board-wrap::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(circle, rgba(58,90,64,0.06) 1px, transparent 1px);
+    background-size:14px 14px;
+    pointer-events:none;
+  }
+  .board{
+    position:relative;
+    display:grid;
+    gap:3px;
+    width:100%;
+    aspect-ratio: var(--cols) / var(--rows);
+  }
+  .cell{
+    background:var(--paper);
+    border:1.5px solid var(--board-line);
+    border-radius:8px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cell.start{
+    background:#FFF1DA;
+  }
+  .cell .start-tag{
+    position:absolute;
+    bottom:2px;
+    font-size:8px;
+    font-weight:800;
+    font-family:'Baloo 2';
+    color:var(--bark);
+    letter-spacing:.03em;
+  }
+  .cell .apple-emoji{
+    font-size:calc(14px + 1.6vw);
+    transition: transform .25s ease, opacity .25s ease;
+    filter:drop-shadow(0 2px 1px rgba(0,0,0,.15));
+  }
+  .cell .apple-emoji.collected{
+    transform:scale(1.8) translateY(-14px) rotate(20deg);
+    opacity:0;
+  }
+  .critter{
+    position:absolute;
+    top:0; left:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:calc(14px + 1.8vw);
+    transition: transform .38s cubic-bezier(.5,1.8,.5,1);
+    z-index:5;
+    filter:drop-shadow(0 3px 1px rgba(0,0,0,.2));
+    pointer-events:none;
+  }
+  .critter.bump{ animation: bump .3s ease; }
+  @keyframes bump{
+    0%,100%{ }
+    50%{ filter:drop-shadow(0 3px 1px rgba(0,0,0,.2)) hue-rotate(0deg); transform: var(--bump-transform, none); }
+  }
+  .critter .hop{ display:inline-block; }
+  .critter.hopping .hop{ animation: hop .38s ease; }
+  @keyframes hop{
+    0%{ transform: translateY(0) scale(1,1); }
+    35%{ transform: translateY(-30%) scale(0.92,1.08); }
+    70%{ transform: translateY(4%) scale(1.06,0.94); }
+    100%{ transform: translateY(0) scale(1,1); }
+  }
+
+  /* ---------- Program strip ---------- */
+  .panel{
+    background:var(--paper);
+    border:3px solid var(--leaf);
+    border-radius:20px;
+    padding:14px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+  }
+  .panel-title{
+    font-family:'Baloo 2';
+    font-weight:700;
+    font-size:14px;
+    color:var(--leaf);
+    margin:0 0 8px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .strip{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding:8px;
+    min-height:46px;
+    background:var(--sky);
+    border:2px dashed var(--board-line);
+    border-radius:12px;
+    margin-bottom:12px;
+    align-items:center;
+  }
+  .strip:empty::after{
+    content:"Ketuk panah di bawah untuk menyusun langkah…";
+    font-size:12.5px;
+    color:#A2ADA0;
+    font-style:italic;
+    white-space:nowrap;
+  }
+  .strip-chip{
+    flex:0 0 auto;
+    width:30px;height:30px;
+    border-radius:8px;
+    background:var(--gold);
+    color:#5A3A12;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;
+    font-size:15px;
+    border:none;
+    cursor:pointer;
+  }
+  .strip-chip.n{--r:0deg;} .strip-chip.s{--r:180deg;} .strip-chip.w{--r:-90deg;} .strip-chip.e{--r:90deg;}
+  .strip-chip svg{transform:rotate(var(--r));width:15px;height:15px;}
+
+  /* ---------- Controls: cross pad ---------- */
+  .controls-row{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    justify-content:center;
+  }
+  .crosspad{
+    display:grid;
+    grid-template-columns:52px 52px 52px;
+    grid-template-rows:52px 52px 52px;
+    gap:5px;
+  }
+  .padbtn{
+    border:none;
+    border-radius:12px;
+    background:var(--apple);
+    color:#fff;
+    box-shadow:0 4px 0 var(--apple-dark);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    touch-action:manipulation;
+  }
+  .padbtn:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--apple-dark); }
+  .padbtn svg{width:22px;height:22px;fill:#fff;}
+  .padbtn.up{grid-column:2;grid-row:1;}
+  .padbtn.left{grid-column:1;grid-row:2;}
+  .padbtn.center{grid-column:2;grid-row:2;background:var(--bark);box-shadow:0 4px 0 #5C3D24;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .padbtn.right{grid-column:3;grid-row:2;}
+  .padbtn.down{grid-column:2;grid-row:3;}
+
+  .side-actions{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .mini-btn{
+    font-family:'Nunito';
+    font-weight:700;
+    font-size:12px;
+    padding:9px 10px;
+    border-radius:10px;
+    border:2px solid var(--leaf);
+    background:var(--paper);
+    color:var(--leaf);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .mini-btn:active{transform:translateY(1px);}
+
+  .run-row{
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+  }
+  .btn-run{
+    flex:1;
+    font-family:'Baloo 2';
+    font-weight:700;
+    font-size:16px;
+    padding:13px 10px;
+    border-radius:14px;
+    border:none;
+    background:var(--leaf-mid);
+    color:#fff;
+    box-shadow:0 5px 0 #4C7332;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn-run:active{transform:translateY(3px);box-shadow:0 2px 0 #4C7332;}
+  .btn-run:disabled{opacity:.6;}
+  .btn-reset{
+    font-family:'Baloo 2';
+    font-weight:700;
+    font-size:14px;
+    padding:13px 14px;
+    border-radius:14px;
+    border:2px solid var(--apple);
+    background:#fff;
+    color:var(--apple);
+    cursor:pointer;
+  }
+  .btn-reset:active{transform:translateY(2px);}
+
+  /* ---------- Level chips ---------- */
+  .levels{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+  }
+  .level-chip{
+    font-family:'Baloo 2';
+    font-weight:700;
+    font-size:13px;
+    padding:8px 16px;
+    border-radius:999px;
+    border:2px solid var(--board-line);
+    background:var(--paper);
+    color:#9AA69A;
+    cursor:pointer;
+    position:relative;
+  }
+  .level-chip.active{border-color:var(--apple);color:var(--apple);background:#FFF1F1;}
+  .level-chip.done::after{
+    content:"✓";
+    position:absolute; top:-6px; right:-6px;
+    background:var(--leaf-mid); color:#fff;
+    width:16px;height:16px;border-radius:50%;
+    font-size:10px; display:flex;align-items:center;justify-content:center;
+  }
+  .level-chip.locked{opacity:.5; cursor:not-allowed;}
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;
+    left:50%; bottom:22px;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:12px;
+    font-size:13.5px;
+    font-weight:700;
+    opacity:0;
+    pointer-events:none;
+    transition: all .3s ease;
+    z-index:50;
+    max-width:88vw;
+    text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---------- Win overlay ---------- */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(46,42,38,0.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .overlay.show{display:flex;}
+  .win-card{
+    background:var(--paper);
+    border-radius:24px;
+    padding:28px 24px 22px;
+    text-align:center;
+    max-width:320px;
+    width:100%;
+    box-shadow:0 14px 0 rgba(0,0,0,0.12);
+    position:relative;
+    overflow:hidden;
+  }
+  .win-card.timeout{border:3px solid var(--apple);}
+  .win-card .big-emoji{font-size:50px;display:block;margin-bottom:6px;}
+  .win-card h2{font-family:'Baloo 2';color:var(--leaf);margin:0 0 6px;font-size:22px;}
+  .win-card p{font-size:13.5px;color:#5B6B58;margin:0 0 18px;}
+  .win-actions{display:flex;gap:10px;}
+  .win-actions button{
+    flex:1;
+    font-family:'Baloo 2';
+    font-weight:700;
+    padding:11px 8px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    font-size:13.5px;
+  }
+  .win-actions .primary{background:var(--apple);color:#fff;box-shadow:0 4px 0 var(--apple-dark);}
+  .win-actions .secondary{background:var(--sky);color:var(--leaf);border:2px solid var(--board-line);}
+
+  .confetti{
+    position:absolute;
+    top:-10px;
+    width:8px;height:14px;
+    border-radius:2px;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(340px) rotate(400deg); opacity:0; }
+  }
+
+  footer{
+    text-align:center;
+    margin-top:22px;
+    font-size:11.5px;
+    color:#A2ADA0;
+  }
+
+  @media (max-width:360px){
+    .crosspad{grid-template-columns:46px 46px 46px;grid-template-rows:46px 46px 46px;}
+    .padbtn.center{font-size:15px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">Belajar Coding &amp; Arah</div>
+    <h1>Kebun <span class="red">Apel</span>: Petualangan Tupai</h1>
+    <p class="subtitle">Susun panah, jalankan program, bantu Tupai mengumpulkan apel! 🐿️</p>
+  </header>
+
+  <div class="statusbar">
+    <div class="status-item">
+      <span class="status-label">Level</span>
+      <span class="status-value" id="levelLabel">1</span>
+    </div>
+    <div class="divider-dot"></div>
+    <div class="status-item" style="flex:1.6;">
+      <span class="status-label">Keranjang</span>
+      <div class="basket-row" id="basketRow"></div>
+    </div>
+    <div class="divider-dot"></div>
+    <div class="status-item">
+      <span class="status-label">Target</span>
+      <span class="status-value" id="targetLabel">0/0</span>
+    </div>
+  </div>
+
+  <div class="timerwrap" id="timerwrap">
+    <span class="timer-icon">⏱</span>
+    <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+    <span class="timer-text" id="timerText">60s</span>
+  </div>
+
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+  </div>
+
+  <div class="panel">
+    <p class="panel-title">🧩 Program Tupai</p>
+    <div class="strip" id="strip"></div>
+
+    <div class="controls-row">
+      <div class="crosspad">
+        <button class="padbtn up" data-dir="U" aria-label="Atas">
+          <svg viewBox="0 0 24 24"><path d="M12 4l8 10h-6v6h-4v-6H4z"/></svg>
+        </button>
+        <button class="padbtn left" data-dir="L" aria-label="Kiri">
+          <svg viewBox="0 0 24 24"><path d="M4 12l10-8v6h6v4h-6v6z"/></svg>
+        </button>
+        <div class="padbtn center" aria-hidden="true">🌰</div>
+        <button class="padbtn right" data-dir="R" aria-label="Kanan">
+          <svg viewBox="0 0 24 24"><path d="M20 12L10 4v6H4v4h6v6z"/></svg>
+        </button>
+        <button class="padbtn down" data-dir="D" aria-label="Bawah">
+          <svg viewBox="0 0 24 24"><path d="M12 20l-8-10h6V4h4v6h6z"/></svg>
+        </button>
+      </div>
+      <div class="side-actions">
+        <button class="mini-btn" id="undoBtn">↩︎ Hapus terakhir</button>
+        <button class="mini-btn" id="clearBtn">🗑 Kosongkan</button>
+      </div>
+    </div>
+
+    <div class="run-row">
+      <button class="btn-run" id="runBtn">▶ Jalankan Program</button>
+      <button class="btn-reset" id="resetBtn">Ulangi</button>
+    </div>
+  </div>
+
+  <div class="levels" id="levels"></div>
+
+  <footer>Dibuat untuk kelas Coding &amp; Kecerdasan Artifisial 🍎 — dapat dimainkan di banyak HP sekaligus, tanpa login.</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay">
+  <div class="win-card" id="winCard">
+    <span class="big-emoji" id="winEmoji">🎉</span>
+    <h2 id="winTitle">Hebat!</h2>
+    <p id="winMsg">Semua apel berhasil dikumpulkan.</p>
+    <div class="win-actions">
+      <button class="secondary" id="replayBtn">Main Lagi</button>
+      <button class="primary" id="nextBtn">Level Berikutnya →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const LEVELS = [
+    {
+      rows:4, cols:5,
+      start:{r:3,c:0},
+      apples:[{r:1,c:2},{r:0,c:4}],
+      timeLimit:60
+    },
+    {
+      rows:5, cols:5,
+      start:{r:4,c:0},
+      apples:[{r:3,c:1},{r:2,c:3},{r:1,c:0},{r:0,c:4},{r:2,c:2}],
+      timeLimit:45
+    },
+    {
+      rows:6, cols:6,
+      start:{r:5,c:0},
+      apples:[{r:4,c:1},{r:3,c:3},{r:2,c:0},{r:1,c:4},{r:0,c:2},
+               {r:4,c:4},{r:3,c:0},{r:1,c:1},{r:0,c:5},{r:5,c:3}],
+      timeLimit:30
+    }
+  ];
+
+  const boardEl = document.getElementById('board');
+  const stripEl = document.getElementById('strip');
+  const basketRow = document.getElementById('basketRow');
+  const levelLabel = document.getElementById('levelLabel');
+  const targetLabel = document.getElementById('targetLabel');
+  const levelsEl = document.getElementById('levels');
+  const toastEl = document.getElementById('toast');
+  const overlayEl = document.getElementById('overlay');
+  const winTitle = document.getElementById('winTitle');
+  const winMsg = document.getElementById('winMsg');
+  const winCard = document.getElementById('winCard');
+  const winEmoji = document.getElementById('winEmoji');
+  const nextBtn = document.getElementById('nextBtn');
+  const replayBtn = document.getElementById('replayBtn');
+  const timerwrap = document.getElementById('timerwrap');
+  const timerFill = document.getElementById('timerFill');
+  const timerText = document.getElementById('timerText');
+
+  let levelIndex = 0;
+  let program = [];
+  let pos = {r:0,c:0};
+  let collected = new Set();
+  let running = false;
+  let unlockedCount = 1; // how many levels unlocked
+  let critterEl = null;
+  let audioCtx = null;
+  let timeLeft = 0;
+  let timeTotal = 0;
+  let timerInterval = null;
+  let ended = false; // true once level is won or time has run out
+
+  function beep(freq, dur){
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.frequency.value = freq;
+      o.type = 'triangle';
+      g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + dur);
+    }catch(e){ /* audio not available, ignore */ }
+  }
+
+  function keyOf(r,c){ return r+','+c; }
+
+  function currentLevel(){ return LEVELS[levelIndex]; }
+
+  function stopTimer(){
+    if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function updateTimerDisplay(){
+    const pct = Math.max(0, (timeLeft / timeTotal) * 100);
+    timerFill.style.width = pct + '%';
+    timerText.textContent = Math.ceil(Math.max(0,timeLeft)) + 's';
+    const low = timeLeft <= timeTotal * 0.25;
+    const mid = timeLeft <= timeTotal * 0.5;
+    timerFill.classList.toggle('danger', low);
+    timerFill.classList.toggle('warn', !low && mid);
+    timerwrap.classList.toggle('danger', low && timeLeft > 0);
+  }
+
+  function startTimer(){
+    stopTimer();
+    timeTotal = currentLevel().timeLimit;
+    timeLeft = timeTotal;
+    updateTimerDisplay();
+    const stepMs = 100;
+    timerInterval = setInterval(()=>{
+      timeLeft -= stepMs/1000;
+      if(timeLeft <= 0){
+        timeLeft = 0;
+        updateTimerDisplay();
+        stopTimer();
+        onTimeOut();
+        return;
+      }
+      updateTimerDisplay();
+    }, stepMs);
+  }
+
+  function onTimeOut(){
+    if(ended) return;
+    ended = true;
+    launchTimeout();
+  }
+
+  function buildLevelChips(){
+    levelsEl.innerHTML = '';
+    LEVELS.forEach((lvl, i)=>{
+      const chip = document.createElement('button');
+      chip.className = 'level-chip';
+      chip.textContent = 'Level ' + (i+1) + ' · ' + lvl.apples.length + ' apel';
+      if(i === levelIndex) chip.classList.add('active');
+      if(i < unlockedCount - 1) chip.classList.add('done');
+      if(i > unlockedCount - 1) chip.classList.add('locked');
+      chip.addEventListener('click', ()=>{
+        if(i > unlockedCount - 1) return;
+        levelIndex = i;
+        loadLevel();
+      });
+      levelsEl.appendChild(chip);
+    });
+  }
+
+  function loadLevel(){
+    const lvl = currentLevel();
+    pos = {r:lvl.start.r, c:lvl.start.c};
+    collected = new Set();
+    program = [];
+    running = false;
+    ended = false;
+    document.getElementById('runBtn').disabled = false;
+
+    boardEl.style.setProperty('--rows', lvl.rows);
+    boardEl.style.setProperty('--cols', lvl.cols);
+    boardEl.style.gridTemplateColumns = `repeat(${lvl.cols}, 1fr)`;
+    boardEl.style.gridTemplateRows = `repeat(${lvl.rows}, 1fr)`;
+    boardEl.innerHTML = '';
+
+    for(let r=0;r<lvl.rows;r++){
+      for(let c=0;c<lvl.cols;c++){
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.r = r; cell.dataset.c = c;
+        if(r===lvl.start.r && c===lvl.start.c){
+          cell.classList.add('start');
+          const tag = document.createElement('span');
+          tag.className='start-tag';
+          tag.textContent='MULAI';
+          cell.appendChild(tag);
+        }
+        const apple = lvl.apples.find(a=>a.r===r && a.c===c);
+        if(apple){
+          const span = document.createElement('span');
+          span.className = 'apple-emoji';
+          span.id = 'apple-'+keyOf(r,c);
+          span.textContent = '🍎';
+          cell.appendChild(span);
+        }
+        boardEl.appendChild(cell);
+      }
+    }
+
+    critterEl = document.createElement('div');
+    critterEl.className = 'critter';
+    critterEl.innerHTML = '<span class="hop">🐿️</span>';
+    boardEl.appendChild(critterEl);
+
+    requestAnimationFrame(positionCritter);
+
+    levelLabel.textContent = (levelIndex+1);
+    renderStrip();
+    renderBasket();
+    buildLevelChips();
+    startTimer();
+  }
+
+  function positionCritter(){
+    const lvl = currentLevel();
+    const cellW = boardEl.clientWidth / lvl.cols;
+    const cellH = boardEl.clientHeight / lvl.rows;
+    critterEl.style.width = cellW+'px';
+    critterEl.style.height = cellH+'px';
+    critterEl.style.transform = `translate(${pos.c*cellW}px, ${pos.r*cellH}px)`;
+  }
+  window.addEventListener('resize', positionCritter);
+
+  function renderStrip(){
+    stripEl.innerHTML = '';
+    program.forEach((dir, idx)=>{
+      const btn = document.createElement('button');
+      btn.className = 'strip-chip ' + dirClass(dir);
+      btn.innerHTML = arrowSvg();
+      btn.title = 'Ketuk untuk hapus';
+      btn.addEventListener('click', ()=>{
+        if(running) return;
+        program.splice(idx,1);
+        renderStrip();
+      });
+      stripEl.appendChild(btn);
+    });
+  }
+
+  function dirClass(dir){
+    return {U:'n', D:'s', L:'w', R:'e'}[dir];
+  }
+  function arrowSvg(){
+    return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l8 10h-6v6h-4v-6H4z"/></svg>';
+  }
+
+  function renderBasket(){
+    const lvl = currentLevel();
+    targetLabel.textContent = collected.size + '/' + lvl.apples.length;
+    basketRow.innerHTML = '';
+    for(let i=0;i<collected.size;i++){
+      const s = document.createElement('span');
+      s.className='mini-apple';
+      s.textContent='🍎';
+      basketRow.appendChild(s);
+    }
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> toastEl.classList.remove('show'), 2200);
+  }
+
+  function addDir(dir){
+    if(running) return;
+    program.push(dir);
+    renderStrip();
+    stripEl.scrollLeft = stripEl.scrollWidth;
+  }
+
+  document.querySelectorAll('.padbtn[data-dir]').forEach(btn=>{
+    btn.addEventListener('click', ()=> addDir(btn.dataset.dir));
+  });
+
+  document.getElementById('undoBtn').addEventListener('click', ()=>{
+    if(running) return;
+    program.pop();
+    renderStrip();
+  });
+  document.getElementById('clearBtn').addEventListener('click', ()=>{
+    if(running) return;
+    program = [];
+    renderStrip();
+  });
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    loadLevel();
+  });
+
+  function sleep(ms){ return new Promise(res=>setTimeout(res, ms)); }
+
+  async function runProgram(){
+    const lvl = currentLevel();
+    if(running) return;
+    if(program.length === 0){
+      showToast('Susun beberapa panah dulu, ya!');
+      return;
+    }
+    running = true;
+    document.getElementById('runBtn').disabled = true;
+
+    for(const dir of program){
+      if(ended) break;
+      let {r,c} = pos;
+      if(dir==='U') r--;
+      if(dir==='D') r++;
+      if(dir==='L') c--;
+      if(dir==='R') c++;
+
+      const outOfBounds = r<0 || r>=lvl.rows || c<0 || c>=lvl.cols;
+      if(outOfBounds){
+        critterEl.classList.add('bump');
+        beep(140,0.15);
+        await sleep(260);
+        critterEl.classList.remove('bump');
+        continue;
+      }
+
+      pos = {r,c};
+      critterEl.classList.add('hopping');
+      positionCritter();
+      beep(520,0.08);
+      await sleep(380);
+      critterEl.classList.remove('hopping');
+
+      const k = keyOf(r,c);
+      const apple = lvl.apples.find(a=>keyOf(a.r,a.c)===k);
+      if(apple && !collected.has(k)){
+        collected.add(k);
+        const appleEl = document.getElementById('apple-'+k);
+        if(appleEl) appleEl.classList.add('collected');
+        renderBasket();
+        beep(880,0.18);
+        await sleep(160);
+      }
+    }
+
+    running = false;
+    document.getElementById('runBtn').disabled = false;
+
+    if(ended) return; // time already ran out — the timeout screen is already showing
+
+    if(collected.size === lvl.apples.length){
+      launchWin();
+    } else {
+      showToast('Belum semua apel terkumpul — coba susun ulang programnya!');
+    }
+  }
+
+  document.getElementById('runBtn').addEventListener('click', runProgram);
+
+  function launchWin(){
+    ended = true;
+    stopTimer();
+    const isLast = levelIndex === LEVELS.length - 1;
+    unlockedCount = Math.max(unlockedCount, levelIndex + 2);
+    buildLevelChips();
+    winCard.classList.remove('timeout');
+    winEmoji.textContent = '🎉';
+    winTitle.textContent = isLast ? 'Kebun Selesai! 🌳' : 'Level ' + (levelIndex+1) + ' Selesai!';
+    winMsg.textContent = isLast
+      ? 'Tupai berhasil memanen semua apel di kebun. Kamu programmer hebat!'
+      : 'Semua apel berhasil dikumpulkan. Siap untuk tantangan berikutnya?';
+    nextBtn.style.display = isLast ? 'none' : 'block';
+    overlayEl.classList.add('show');
+    spawnConfetti();
+  }
+
+  function launchTimeout(){
+    stopTimer();
+    running = false;
+    document.getElementById('runBtn').disabled = false;
+    winCard.classList.add('timeout');
+    winEmoji.textContent = '⏰';
+    winTitle.textContent = 'Waktu Habis!';
+    const lvl = currentLevel();
+    winMsg.textContent = 'Tupai baru mengumpulkan ' + collected.size + ' dari ' + lvl.apples.length + ' apel. Ayo susun programnya lebih cepat!';
+    nextBtn.style.display = 'none';
+    overlayEl.classList.add('show');
+  }
+
+  function spawnConfetti(){
+    const colors = ['#D7263D','#F2A65A','#6A994E','#A9D6E5','#3A5A40'];
+    for(let i=0;i<26;i++){
+      const c = document.createElement('div');
+      c.className='confetti';
+      c.style.left = (Math.random()*100)+'%';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (1.4 + Math.random()*1.2)+'s';
+      c.style.animationDelay = (Math.random()*0.4)+'s';
+      winCard.appendChild(c);
+      setTimeout(()=> c.remove(), 3200);
+    }
+  }
+
+  replayBtn.addEventListener('click', ()=>{
+    overlayEl.classList.remove('show');
+    loadLevel();
+  });
+  nextBtn.addEventListener('click', ()=>{
+    overlayEl.classList.remove('show');
+    levelIndex = Math.min(levelIndex+1, LEVELS.length-1);
+    loadLevel();
+  });
+
+  loadLevel();
+})();
+</script>
+</body>
+</html>
