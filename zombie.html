@@ -244,8 +244,9 @@
     <div class="panel">
       <h1>PYTHON BLANK: OUTBREAK</h1>
       <p>Zombie merangsek dari kegelapan perpustakaan tua ini. Tembak sebelum mereka mendekat!
-      Setiap peluru yang kena akan memunculkan soal <b>Python</b> (tipe data, perulangan <b>for</b>,
-      <b>list/array</b>, dan <b>if</b>). Jawab benar untuk skor tambahan, salah akan mengurangi darahmu.
+      Setiap peluru yang kena akan memunculkan soal materi <b>Informatika Bab 1: Data, Informasi, dan Validasinya</b>
+      — mulai dari pencarian informasi, dasar Python, tipe data & array, hingga validasi dan hoaks.
+      Jawab benar untuk skor tambahan, salah akan mengurangi darahmu.
       Hati-hati — saat amunisimu tersisa kurang dari 10 butir, sesuatu bisa muncul tiba-tiba di depan wajahmu...</p>
       <p style="font-size:13px;color:#a88;">Klik untuk menembak &nbsp;|&nbsp; Tekan R untuk reload</p>
       <button class="btn" onclick="startGame()">MASUKI KEGELAPAN</button>
@@ -631,49 +632,43 @@ function drawZombie(z){
 
 /* ================= QUIZ ================= */
 const QUESTIONS = [
-  // ===== Perulangan (for) =====
-  {topic:'Perulangan (for)', q:'Output dari kode berikut:\nfor a in range(4):\n  print(a, end="")', opts:['0123','1234','0 1 2 3','01234'], correct:0},
-  {topic:'Perulangan (for)', q:'Output dari kode berikut:\nfor a in range(3):\n  print(a, end="")', opts:['123','012','0123','321'], correct:1},
-  {topic:'Perulangan (for)', q:'Output dari kode berikut:\nfor a in range(1,4):\n  print(a, end="")', opts:['123','012','1234','234'], correct:0},
-  {topic:'Perulangan (for)', q:'Output dari kode berikut:\nfor a in range(2,10,2):\n  print(a, end="")', opts:['2468','246810','13579','24681'], correct:0},
-  {topic:'Perulangan (for)', q:'Output dari kode berikut:\nfor a in range(5,0,-1):\n  print(a, end="")', opts:['12345','54321','5432','04321'], correct:1},
-  {topic:'Perulangan (for)', q:'Output dari kode berikut:\nfor a in range(0,3):\n  print(a, end="-")', opts:['0-1-2-','0-1-2','1-2-3-','0-1-2-3-'], correct:0},
-  {topic:'Perulangan (for)', q:'Apa hasil akhir "total" setelah kode berikut dijalankan?\ntotal = 0\nfor i in range(1,4):\n  total += i\nprint(total)', opts:['3','6','10','4'], correct:1},
-  {topic:'Perulangan (for)', q:'Penulisan "for a in range(4);" pada Python akan menghasilkan?', opts:['Output 0123','SyntaxError, karena seharusnya diakhiri titik dua ( : )','Output 1234','Perulangan tak terhingga'], correct:1},
+  // ===== Pencarian Informasi =====
+  {topic:'Pencarian Informasi', q:'Untuk membatasi hasil pencarian dari peramban web maka bisa menggunakan ....', opts:['jaringan lokal','parameter','pencarian gambar','subscribe'], correct:1},
+  {topic:'Pencarian Informasi', q:'Jika ingin mencari suatu artikel yang hanya dari situs pemerintah maka bisa menggunakan variabel ....', opts:['filetype:','site:','inurl:','intitle:'], correct:1},
+  {topic:'Pencarian Informasi', q:'Mengambil kode program pada website yang berbentuk HTML disebut sebagai ....', opts:['scripting','farming','parsing','library'], correct:2},
+  {topic:'Pencarian Informasi', q:'Untuk mencari artikel yang memuat kata "Java" pada judulnya, variabel pencarian yang tepat digunakan adalah ....', opts:['site:Java','intitle:Java','filetype:Java','inanchor:Java'], correct:1},
+  {topic:'Pencarian Informasi', q:'Untuk mencari artikel yang memuat kata "RAM" di dalam isi teksnya, variabel pencarian yang tepat digunakan adalah ....', opts:['intext:RAM','intitle:RAM','site:RAM','filetype:RAM'], correct:0},
+  {topic:'Pencarian Informasi', q:'Untuk membatasi hasil pencarian hanya dari file berformat PDF, variabel yang tepat digunakan adalah ....', opts:['site:PDF','cache:PDF','filetype:PDF','intitle:PDF'], correct:2},
+  {topic:'Pencarian Informasi', q:'Untuk mencari artikel dari terbitan situs pemerintah (go.id), variabel pencarian yang tepat digunakan adalah ....', opts:['intitle:go.id','filetype:go.id','cache:go.id','site:go.id'], correct:3},
+  {topic:'Pencarian Informasi', q:'Variabel pencarian inurl: digunakan untuk ....', opts:['mencari kata kunci tertentu yang terdapat di dalam URL halaman','membatasi pencarian hanya pada satu situs tertentu','mencari kata dalam judul halaman saja','membatasi pencarian ke jenis file tertentu'], correct:0},
 
-  // ===== Konsep Interpreter =====
-  {topic:'Konsep Interpreter', q:'Python berjalan pada interpreter, yang berarti...', opts:['Kode terlebih dahulu dikompilasi menjadi file .exe sebelum dijalankan','Kode dibaca dan dijalankan langsung baris per baris tanpa dikompilasi menyeluruh terlebih dahulu','Kode hanya bisa dijalankan setelah diterjemahkan ke bahasa C','Kode hanya dapat dijalankan pada sistem operasi tertentu'], correct:1},
-  {topic:'Konsep Interpreter', q:'Salah satu ciri khas bahasa interpreter seperti Python adalah...', opts:['Program harus dikompilasi penuh sebelum error terlihat','Kesalahan pada suatu baris langsung terlihat saat baris itu dieksekusi','Program berjalan lebih cepat dari bahasa terkompilasi','Kode tidak bisa dijalankan tanpa IDE khusus'], correct:1},
-  {topic:'Konsep Interpreter', q:'Berbeda dari bahasa terkompilasi seperti C, bahasa interpreter seperti Python...', opts:['Menghasilkan file executable sebelum dijalankan','Diterjemahkan dan dijalankan langsung saat program berjalan','Tidak dapat menampilkan pesan error','Wajib menggunakan tipe data statis'], correct:1},
+  // ===== Python Dasar =====
+  {topic:'Python Dasar', q:'Bahasa pemrograman Python ditemukan oleh ....', opts:['Charles Babbage','Guido van Rossum','Ada Lovelace','Alan Turing'], correct:1},
+  {topic:'Python Dasar', q:'Yuda ingin menganalisis data yang ia peroleh menjadi bentuk tabel. Oleh karena itu, Yuda dapat menggunakan library Python ....', opts:['Plotly','PyTorch','Matplotlib','Pandas'], correct:3},
+  {topic:'Python Dasar', q:'Perhatikan kode program berikut!\na = 10\nb = 15\nc = b + 1\nd = a + c\nprint(\'Variabel d:\',d)\nOutput program tersebut adalah ....', opts:['Variabel d: 25','Variabel c: 25','Variabel b: 16','Variabel d: 26'], correct:3},
+  {topic:'Python Dasar', q:'Google Colab yang sering digunakan dalam proyek web scraping memiliki karakteristik utama, yaitu ....', opts:['digunakan secara online dan terintegrasi dengan Google Drive','hanya bisa dijalankan secara offline','wajib menggunakan akun berbayar/profesional','tidak mendukung bahasa Python'], correct:0},
+  {topic:'Python Dasar', q:'Kode program Python yang benar untuk menampilkan keluaran "Selamat Pagi" adalah ....', opts:['echo("Selamat Pagi")', 'print("Selamat Pagi")', 'print(Selamat Pagi)', 'Print["Selamat Pagi"]'], correct:1},
 
-  // ===== Tipe Data =====
-  {topic:'Tipe Data', q:'Tipe data yang memberikan respon benar atau salah (True/False) disebut?', opts:['int','str','bool','float'], correct:2},
-  {topic:'Tipe Data', q:'Hasil dari type(True) di Python adalah?', opts:['bool','int','str','list'], correct:0},
-  {topic:'Tipe Data', q:'Berikut merupakan tipe data pada Python, kecuali...', opts:['int','float','str','double'], correct:3},
-  {topic:'Tipe Data', q:'Manakah berikut yang BUKAN tipe data dasar bawaan (built-in) Python?', opts:['list','tuple','dict','array'], correct:3},
-  {topic:'Tipe Data', q:'Tipe data untuk menyimpan kumpulan pasangan key-value disebut?', opts:['list','dict','tuple','bool'], correct:1},
-  {topic:'Tipe Data', q:'Tipe data untuk kumpulan data berurutan yang tidak dapat diubah (immutable) disebut?', opts:['list','tuple','dict','set'], correct:1},
-  {topic:'Tipe Data', q:'Manakah penulisan tipe data float yang benar?', opts:['5','5.0','"5"','[5]'], correct:1},
+  // ===== Tipe Data & Array =====
+  {topic:'Tipe Data & Array', q:'Tipe data yang menyimpan berbagai tipe data berupa pasangan penunjuk dan nilai adalah ....', opts:['list','tuple','dictionary','complex'], correct:2},
+  {topic:'Tipe Data & Array', q:'Budi memiliki array yang di dalamnya terdapat nilai secara berurut [2, 4, 6, 8]. Jika Budi menggunakan perintah append(2) maka susunan array milik Budi sekarang adalah ....', opts:['[2, 4, 8]','[4, 6, 8, 2]','[4, 6, 8]','[2, 4, 6, 8, 2]'], correct:3},
+  {topic:'Tipe Data & Array', q:'Berikut merupakan tipe data bahasa pemrograman Python, kecuali ....', opts:['integer','number','tuple','float'], correct:1},
 
-  // ===== Output (print) =====
-  {topic:'Output (print)', q:'Untuk mencetak data ke layar dalam bahasa Python, perintah yang digunakan adalah?', opts:['echo()','print()','output()','display()'], correct:1},
-  {topic:'Output (print)', q:'Secara default, print("Halo", "Dunia") akan memisahkan dua kata tersebut dengan?', opts:['Koma','Spasi','Tanpa spasi','Baris baru'], correct:1},
-  {topic:'Output (print)', q:'Parameter apa pada print() yang digunakan agar output tidak pindah ke baris baru?', opts:['sep=""','end=""','newline=False','break=""'], correct:1},
-  {topic:'Output (print)', q:'Kode print(5, end="") berbeda dari print(5) biasa karena?', opts:['Tidak menambahkan baris baru di akhir output','Mencetak angka dua kali','Menghasilkan error','Menambahkan spasi ekstra'], correct:0},
+  // ===== Validasi Informasi =====
+  {topic:'Validasi Informasi', q:'Rudi mencari lowongan pekerjaan menggunakan mesin pencari. Dalam pencarian ini, Rudi perlu mempertimbangkan ....', opts:['kecepatan pencarian informasi','jumlah sumber informasi yang diakses oleh mesin pencari','keakuratan dan keandalan informasi yang disajikan','ranking dari hasil pencarian'], correct:2},
+  {topic:'Validasi Informasi', q:'Informasi yang disampaikan sesuai dengan fakta tanpa ada penilaian pribadi maka informasi tersebut bersifat ....', opts:['subjektif','hoaks','objektif','aktual'], correct:2},
+  {topic:'Validasi Informasi', q:'Memeriksa keandalan dan reputasi penerbit informasi termasuk bentuk ....', opts:['verifikasi sumber','pengecekan fakta','analisis data','penalaran data'], correct:0},
+  {topic:'Validasi Informasi', q:'Amel mendapatkan informasi bahwa akan terjadi gerhana matahari pada minggu depan dari postingan di media sosial. Setelah mendapatkan informasi tersebut, sebaiknya Amel melakukan ....', opts:['membagi informasi yang didapatkan ke teman-temannya','memposting ulang video tersebut di akun media sosial pribadinya','cukup mempercayainya dan melanjutkan aktivitas sehari-hari','mencari kebenaran dari informasi yang didapatkan'], correct:3},
+  {topic:'Validasi Informasi', q:'Manakah pernyataan berikut yang TIDAK TEPAT mengenai informasi fakta?', opts:['Informasi fakta harus berdasarkan data yang dapat diverifikasi kebenarannya','Informasi fakta dapat diperoleh dari sumber yang kredibel','Informasi fakta bisa berupa opini pribadi yang sudah pasti benar','Informasi fakta bersifat objektif dan bisa dipertanggungjawabkan'], correct:2},
+  {topic:'Validasi Informasi', q:'Manakah pernyataan berikut yang TIDAK TEPAT mengenai sumber berita?', opts:['Sumber berita yang kredibel biasanya memiliki rekam jejak yang jelas dan dapat dipertanggungjawabkan','Sumber berita dari media sosial bernilai benar','Sumber berita yang baik harus menyajikan informasi dengan akurat, netral, dan tidak menyesatkan','Sumber berita yang kredibel dapat diverifikasi melalui banyak referensi'], correct:1},
+  {topic:'Validasi Informasi', q:'Berikut yang merupakan ciri informasi fakta, kecuali ....', opts:['dapat diverifikasi kebenarannya','didukung oleh data dan bukti','bersifat objektif','berdasarkan opini pribadi tanpa bukti pendukung'], correct:3},
+  {topic:'Validasi Informasi', q:'Manfaat memiliki kemampuan membaca lateral yang baik adalah ....', opts:['dapat memverifikasi kebenaran informasi dengan membandingkan berbagai sumber','mempercepat proses membaca teks yang panjang','meningkatkan kecepatan mengetik','menghafal informasi lebih banyak'], correct:0},
 
-  // ===== Variabel & Operasi =====
-  {topic:'Variabel & Operasi', q:'Jika a=3, kemudian b=a-1, dan c=a+b, maka nilai c setelah dijalankan adalah?', opts:['4','5','6','3'], correct:1},
-  {topic:'Variabel & Operasi', q:'Jika a=10 dan b=a//3 (pembagian bulat), maka nilai b adalah?', opts:['3','3.33','4','30'], correct:0},
-  {topic:'Variabel & Operasi', q:'Jika a=7 dan b=a%2 (operator modulus/sisa bagi), maka nilai b adalah?', opts:['0','1','3','7'], correct:1},
-  {topic:'Variabel & Operasi', q:'Jika a=2, b=3, dan c=a**b (operator pangkat), maka nilai c adalah?', opts:['5','6','8','9'], correct:2},
-  {topic:'Variabel & Operasi', q:'Jika x=5 dan y=x*2-1, maka nilai y adalah?', opts:['9','10','8','4'], correct:0},
-
-  // ===== Array / List =====
-  {topic:'Array/List', q:'Sebuah list bernilai ["api","angin","tanah","air"]. Jika dilakukan .append("listrik"), hasil list tersebut menjadi?', opts:['["listrik","api","angin","tanah","air"]','["api","angin","tanah","air","listrik"]','["api","angin","listrik","tanah","air"]','Error, append tidak bisa dipakai pada list'], correct:1},
-  {topic:'Array/List', q:'List [1,2,3] setelah dijalankan .append(4) akan menjadi?', opts:['[1,2,3,4]','[4,1,2,3]','[1,2,3]','[1,2,4,3]'], correct:0},
-  {topic:'Array/List', q:'List ["a","b","c"] jika dijalankan .pop() tanpa argumen, elemen yang terhapus adalah?', opts:['"a" (elemen pertama)','"b" (elemen tengah)','"c" (elemen terakhir)','Semua elemen'], correct:2},
-  {topic:'Array/List', q:'List data=[10,20,30], maka len(data) menghasilkan?', opts:['2','3','30','10'], correct:1},
-  {topic:'Array/List', q:'List kosong = [] kemudian dijalankan kosong.append("x") lalu kosong.append("y"), hasil akhirnya adalah?', opts:['["x","y"]','["y","x"]','["x"]','[]'], correct:0},
+  // ===== Hoaks & Berita Palsu =====
+  {topic:'Hoaks & Berita Palsu', q:'Berita hoaks yang menyajikan informasi dengan konteks yang tidak sesuai dengan fakta atau konteks asli disebut ....', opts:['false connection','misleading content','manipulated content','false context'], correct:3},
+  {topic:'Hoaks & Berita Palsu', q:'Berita hoaks yang dipelintir untuk menjelekkan suatu pihak disebut ... content.', opts:['misleading','manipulated','imposter','fabricated'], correct:1},
+  {topic:'Hoaks & Berita Palsu', q:'Contoh berita atau informasi yang termasuk false connection adalah ....', opts:['artikel ilmiah yang sesuai dengan judul dan isi yang diberikan','laporan berita resmi dari situs terpercaya tanpa perubahan isi','gambar thumbnail yang tidak sesuai dengan isi beritanya','berita yang seluruh isinya benar dan sesuai fakta'], correct:2},
+  {topic:'Hoaks & Berita Palsu', q:'Bilal berhenti menggunakan media sosial karena banyak berita palsu yang menyesatkan. Apakah langkah Bilal sudah tepat?', opts:['Sangat tepat, karena media sosial harus dihindari sepenuhnya','Kurang tepat, sebaiknya Bilal meningkatkan literasi digital dan memverifikasi informasi sebelum memercayainya','Tepat, karena berhenti total adalah satu-satunya solusi','Tidak masalah, karena berita palsu tidak berbahaya'], correct:1},
 ];
 
 let questionQueue = [];
