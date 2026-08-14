@@ -71,6 +71,24 @@
   #scoreboard div { background:rgba(15,0,0,.55); padding:3px 10px; border-radius:3px; color:#eee; border-left:3px solid #6b1717;}
   #scoreboard .kills { color:#ff8f8f; }
   #scoreboard .quiz { color:#d9c26a; }
+  #scoreboard .timer { color:#8fd9ff; font-variant-numeric:tabular-nums; }
+
+  #nameInput {
+    width:100%; margin:6px 0 4px; padding:10px 14px; border-radius:6px; font-size:15px;
+    background:#0f0505; border:2px solid #5a1414; color:#fff; outline:none; text-align:center;
+    letter-spacing:.5px;
+  }
+  #nameInput:focus { border-color:#c40000; }
+  #nameInput::placeholder { color:#8a5a5a; }
+
+  .resultBox {
+    background:rgba(20,4,4,.6); border:1px solid #5a1414; border-radius:8px; padding:14px 18px;
+    margin:10px 0; text-align:left; font-size:14px; color:#e6cccc; line-height:1.8;
+  }
+  .resultBox b { color:#fff; }
+  .btnRow { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .btn.download { background:linear-gradient(160deg,#2a7a3f,#0f3d1f); box-shadow:0 4px 0 #072a12; }
+
 
   #bottomLeft {
     position:absolute; bottom:14px; left:14px; display:flex; align-items:flex-end; gap:10px;
@@ -219,6 +237,7 @@
     <div id="scoreboard">
       <div class="kills">SKOR: <span id="scoreVal">0</span></div>
       <div class="quiz">QUIZ BENAR: <span id="quizVal">0</span></div>
+      <div class="timer">WAKTU: <span id="timerVal">00:00</span></div>
     </div>
 
     <div id="bottomLeft">
@@ -249,6 +268,7 @@
       Jawab benar untuk skor tambahan, salah akan mengurangi darahmu.
       Hati-hati — saat amunisimu tersisa kurang dari 10 butir, sesuatu bisa muncul tiba-tiba di depan wajahmu...</p>
       <p style="font-size:13px;color:#a88;">Klik untuk menembak &nbsp;|&nbsp; Tekan R untuk reload</p>
+      <input type="text" id="nameInput" placeholder="Masukkan nama kamu" maxlength="24">
       <button class="btn" onclick="startGame()">MASUKI KEGELAPAN</button>
     </div>
   </div>
@@ -265,8 +285,16 @@
   <div id="gameOverOverlay" class="overlay hidden">
     <div class="panel">
       <h1>KAU DITERKAM KEGELAPAN</h1>
-      <p>Skor akhir: <span id="finalScore">0</span> &nbsp;|&nbsp; Quiz benar: <span id="finalQuiz">0</span></p>
-      <button class="btn" onclick="restartGame()">COBA LAGI</button>
+      <div class="resultBox">
+        <div>Nama: <b id="finalName">-</b></div>
+        <div>Skor akhir: <b id="finalScore">0</b></div>
+        <div>Quiz benar: <b id="finalQuiz">0</b></div>
+        <div>Waktu bertahan: <b id="finalTime">00:00</b></div>
+      </div>
+      <div class="btnRow">
+        <button class="btn download" onclick="downloadResult()">DOWNLOAD HASIL</button>
+        <button class="btn" onclick="restartGame()">COBA LAGI</button>
+      </div>
     </div>
   </div>
 </div>
@@ -372,6 +400,8 @@ let mouse = {x: window.innerWidth/2, y: window.innerHeight/2};
 let spawnTimer = 0, spawnInterval = 1800;
 let lastTime = 0;
 let jumpscareArmed = true;
+let playerName = 'Pemain Misterius';
+let gameStartTime = 0, elapsedMs = 0, lastDisplayedSecond = -1;
 
 const scoreVal = document.getElementById('scoreVal');
 const quizVal = document.getElementById('quizVal');
@@ -380,6 +410,14 @@ const hpVal = document.getElementById('hpVal');
 const hpBarInner = document.getElementById('hpBarInner');
 const ammoVal = document.getElementById('ammoVal');
 const reloadMsg = document.getElementById('reloadMsg');
+const timerVal = document.getElementById('timerVal');
+
+function formatTime(ms){
+  const totalSec = Math.floor(ms/1000);
+  const mm = String(Math.floor(totalSec/60)).padStart(2,'0');
+  const ss = String(totalSec%60).padStart(2,'0');
+  return mm+':'+ss;
+}
 
 function updateHUD(){
   scoreVal.textContent = score;
@@ -532,6 +570,15 @@ function loop(ts){
 
   ctx.clearRect(0,0,mainCanvas.width, mainCanvas.height);
 
+  if(state==='playing' || state==='quiz'){
+    elapsedMs = Date.now() - gameStartTime;
+    const sec = Math.floor(elapsedMs/1000);
+    if(sec !== lastDisplayedSecond){
+      lastDisplayedSecond = sec;
+      timerVal.textContent = formatTime(elapsedMs);
+    }
+  }
+
   if(state==='playing'){
     spawnTimer += dt;
     if(spawnTimer > spawnInterval && zombies.filter(z=>z.alive).length < 5){
@@ -669,6 +716,37 @@ const QUESTIONS = [
   {topic:'Hoaks & Berita Palsu', q:'Berita hoaks yang dipelintir untuk menjelekkan suatu pihak disebut ... content.', opts:['misleading','manipulated','imposter','fabricated'], correct:1},
   {topic:'Hoaks & Berita Palsu', q:'Contoh berita atau informasi yang termasuk false connection adalah ....', opts:['artikel ilmiah yang sesuai dengan judul dan isi yang diberikan','laporan berita resmi dari situs terpercaya tanpa perubahan isi','gambar thumbnail yang tidak sesuai dengan isi beritanya','berita yang seluruh isinya benar dan sesuai fakta'], correct:2},
   {topic:'Hoaks & Berita Palsu', q:'Bilal berhenti menggunakan media sosial karena banyak berita palsu yang menyesatkan. Apakah langkah Bilal sudah tepat?', opts:['Sangat tepat, karena media sosial harus dihindari sepenuhnya','Kurang tepat, sebaiknya Bilal meningkatkan literasi digital dan memverifikasi informasi sebelum memercayainya','Tepat, karena berhenti total adalah satu-satunya solusi','Tidak masalah, karena berita palsu tidak berbahaya'], correct:1},
+
+  // ===== BAB 2: Algoritma & Flowchart =====
+  {topic:'Algoritma & Flowchart', q:'Penulisan algoritma dengan menggunakan simbol yang terstandar disebut ....', opts:['pseudocode','deskriptif','alami','diagram alir'], correct:3},
+  {topic:'Algoritma & Flowchart', q:'Awal dan akhir pembuatan flowchart harus menggunakan simbol ....', opts:['terminator','flowline','decision','connector'], correct:0},
+  {topic:'Algoritma & Flowchart', q:'Perhatikan gambar simbol flowchart berbentuk jajar genjang (parallelogram). Simbol diagram alir tersebut dinamakan ....', opts:['flowline','terminator','process','input/output'], correct:3},
+  {topic:'Algoritma & Flowchart', q:'Pernyataan berikut yang TIDAK TEPAT mengenai simbol flowchart adalah ....', opts:['Simbol flowline digunakan untuk memasukkan inputan','Simbol decision digunakan untuk membuat pengondisian dengan jawaban iya atau tidak','Simbol process digunakan untuk menjelaskan operasi seperti penjumlahan','Simbol subprogram digunakan ketika ada flowchart lain yang digunakan pada flowchart baru'], correct:0},
+  {topic:'Algoritma & Flowchart', q:'Algoritma dalam ilmu komputer dapat diartikan sebagai ....', opts:['urutan langkah-langkah logis dan sistematis untuk menyelesaikan suatu masalah','kumpulan simbol standar dalam flowchart saja','bahasa pemrograman tingkat tinggi','hasil akhir dari sebuah program komputer'], correct:0},
+  {topic:'Algoritma & Flowchart', q:'Berikut yang merupakan pedoman pembuatan diagram alir (flowchart) yang baik, kecuali ....', opts:['digambar dari atas ke bawah secara berurutan','menggunakan simbol standar yang sudah disepakati','setiap simbol memiliki alur masuk dan keluar yang jelas','boleh menggunakan simbol sesuka hati tanpa aturan standar'], correct:3},
+  {topic:'Algoritma & Flowchart', q:'Anton ingin membuat flowchart untuk menghitung luas persegi panjang. Urutan simbol dan proses yang tepat adalah ....', opts:['Terminator (Mulai) → Input/Output (masukkan panjang & lebar) → Process (luas = panjang × lebar) → Input/Output (tampilkan luas) → Terminator (Selesai)','Terminator (Mulai) → Process (luas = panjang × lebar) → Input/Output (masukkan panjang & lebar) → Terminator (Selesai)','Decision (Mulai) → Input/Output → Process → Decision (Selesai)','Terminator (Mulai) → Input/Output (masukkan panjang & lebar) → Terminator (Selesai)'], correct:0},
+
+  // ===== BAB 2: Tipe Data & Pemrograman C =====
+  {topic:'Tipe Data & Pemrograman C', q:'Dalam pseudocode, bagian untuk menuliskan nama variabel adalah ....', opts:['judul','deklarasi','deskripsi','parameter'], correct:1},
+  {topic:'Tipe Data & Pemrograman C', q:'Nilai 1,183 (satu koma seratus delapan puluh tiga) cocok menggunakan tipe data ....', opts:['int','char','float','short'], correct:2},
+  {topic:'Tipe Data & Pemrograman C', q:'Perhatikan kode program berikut!\n#include <stdio.h>\nint main(){\n  printf("Hallo World!\\n");\n  return 0;\n}\nBagian yang merupakan sebuah header file adalah ....', opts:['#include <stdio.h>','int main()','printf("Hallo World!\\n");','return 0;'], correct:0},
+  {topic:'Tipe Data & Pemrograman C', q:'Berikut merupakan penulisan tipe data yang tepat, kecuali ....', opts:['int umurMurid;','int panjang = 5.5;','char huruf;','float jarak;'], correct:1},
+  {topic:'Tipe Data & Pemrograman C', q:'Perhatikan kode program berikut!\n#include <stdio.h>\nvoid main(){\n  int a, b, c;\n  scanf("%i", &a);\n  scanf("%i", &b);\n  c = a + b;\n  printf("Nilai c: %i", c);\n}\nJika diinputkan nilai a = 7 dan nilai b = 5, nilai c adalah ....', opts:['2','5','7','12'], correct:3},
+  {topic:'Tipe Data & Pemrograman C', q:'Berdasarkan program pada soal sebelumnya (int a, b, c; ... c = a + b;), tipe data yang digunakan untuk nilai a, b, dan c pada program adalah ....', opts:['void','int','char','float'], correct:1},
+  {topic:'Tipe Data & Pemrograman C', q:'Ketentuan berikut yang mengatur penulisan identifier, kecuali ....', opts:['maksimal 32 karakter','bersifat case sensitive','karakter pertama boleh angka','tidak boleh mengandung spasi'], correct:2},
+  {topic:'Tipe Data & Pemrograman C', q:'Manakah contoh penerapan nama variabel dengan tipe data yang TIDAK TEPAT?', opts:['menggunakan tipe data long untuk menampung nilai variabel populasi manusia','menggunakan tipe data float untuk menampung nilai variabel tanggal','menggunakan tipe data short untuk menampung nilai variabel usia','menggunakan tipe data int untuk menampung nilai variabel hari'], correct:1},
+  {topic:'Tipe Data & Pemrograman C', q:'Manakah pernyataan berikut yang TIDAK TEPAT mengenai bahasa pemrograman C?', opts:['Program dalam bahasa C harus memiliki fungsi main() sebagai titik awal eksekusi','Fungsi print() digunakan dalam bahasa C untuk menampilkan teks ke layar','Tipe data char digunakan untuk menyimpan satu karakter, seperti huruf atau simbol','Bahasa C merupakan bahasa pemrograman tingkat menengah'], correct:1},
+  {topic:'Tipe Data & Pemrograman C', q:'Berikut yang termasuk tipe data dasar dalam bahasa pemrograman C adalah ....', opts:['int, float, char, double, dan long','list, tuple, dict, set, dan bool','string, boolean, array, object, dan function','byte, varchar, text, blob, dan enum'], correct:0},
+  {topic:'Tipe Data & Pemrograman C', q:'Manakah pernyataan berikut yang TIDAK TEPAT mengenai fungsi dalam pemrograman?', opts:['Fungsi digunakan untuk memecah program menjadi bagian-bagian kecil agar lebih mudah dibaca dan dikelola','Fungsi dapat dipanggil berulang kali tanpa harus menuliskan kode yang sama secara berulang','Pada bahasa pemrograman C, fungsi tidak boleh memiliki nilai kembalian','Fungsi membantu program menjadi lebih terstruktur dan mudah dipahami'], correct:2},
+
+  // ===== BAB 2: Pengurutan & Pencarian Data =====
+  {topic:'Pengurutan & Pencarian Data', q:'Untuk menjalankan perintah pengulangan yang sudah diketahui jumlah pengulangannya dapat menggunakan ....', opts:['for','while','do ... while','if'], correct:0},
+  {topic:'Pengurutan & Pencarian Data', q:'Metode pengurutan data yang menggunakan teknik pemecahan data menjadi partisi-partisi disebut ....', opts:['bubble sort','selection sort','insertion sort','quick sort'], correct:3},
+  {topic:'Pengurutan & Pencarian Data', q:'Syarat dalam melakukan pencarian data menggunakan metode binary search adalah ....', opts:['data sudah terurut','jumlah data banyak','tidak ada data minus','data bilangan bulat'], correct:0},
+  {topic:'Pengurutan & Pencarian Data', q:'Berikut pernyataan yang benar mengenai algoritma sequential search adalah ....', opts:['menggunakan prinsip divide and conquer','masalah dipartisi menjadi bagian yang lebih kecil','membagi sebuah tabel menjadi dua','data tidak perlu diurutkan'], correct:3},
+  {topic:'Pengurutan & Pencarian Data', q:'Una melakukan pembelian tiket kereta api di loket stasiun. Una datang paling awal sehingga Una menjadi orang yang pertama kali dilayani. Prinsip pembelian tiket yang Una alami menerapkan metode ....', opts:['stack','queue','array','linked list'], correct:1},
+  {topic:'Pengurutan & Pencarian Data', q:'Berikut merupakan contoh model algoritma pencarian yang benar, kecuali ....', opts:['binary search','sequential search','bubble search','linear search'], correct:2},
+  {topic:'Pengurutan & Pencarian Data', q:'Pada metode sequential search, waktu pencarian bergantung pada letak data karena ....', opts:['data diperiksa satu per satu secara berurutan dari awal, sehingga data yang letaknya lebih awal akan lebih cepat ditemukan','seluruh data selalu diperiksa dua kali tanpa memandang letaknya','letak data tidak memengaruhi waktu pencarian sama sekali','pencarian selalu dimulai dari data di tengah tabel'], correct:0},
 ];
 
 let questionQueue = [];
@@ -695,7 +773,10 @@ const quizFeedback = document.getElementById('quizFeedback');
 
 function triggerQuiz(){
   state = 'quiz';
-  const q = pickQuestion();
+  const raw = pickQuestion();
+  const correctText = raw.opts[raw.correct];
+  const shuffledOpts = shuffleArray([...raw.opts]);
+  const q = { topic: raw.topic, q: raw.q, opts: shuffledOpts, correct: shuffledOpts.indexOf(correctText) };
   quizTopic.textContent = q.topic.toUpperCase();
   quizQuestion.textContent = q.q;
   quizOptions.innerHTML = '';
@@ -736,9 +817,14 @@ function answerQuiz(i, q, btnEl){
 
 /* ================= GAME FLOW ================= */
 function startGame(){
+  const nameInput = document.getElementById('nameInput');
+  const typed = nameInput.value.trim();
+  playerName = typed.length ? typed.slice(0,24) : 'Pemain Misterius';
   document.getElementById('startOverlay').classList.add('hidden');
   resetState();
   state = 'playing';
+  gameStartTime = Date.now();
+  lastDisplayedSecond = -1;
   requestAnimationFrame(loop);
 }
 
@@ -746,14 +832,19 @@ function resetState(){
   score=0; quizCorrect=0; round=1; hp=100; ammo=30; maxAmmo=60;
   zombies=[]; particles=[]; spawnTimer=0; spawnInterval=1800;
   jumpscareArmed = true;
+  elapsedMs = 0; lastDisplayedSecond = -1;
+  timerVal.textContent = '00:00';
   refillQueue();
   updateHUD();
 }
 
 function triggerGameOver(){
   state = 'gameover';
+  elapsedMs = Date.now() - gameStartTime;
+  document.getElementById('finalName').textContent = playerName;
   document.getElementById('finalScore').textContent = score;
   document.getElementById('finalQuiz').textContent = quizCorrect;
+  document.getElementById('finalTime').textContent = formatTime(elapsedMs);
   document.getElementById('gameOverOverlay').classList.remove('hidden');
 }
 
@@ -761,6 +852,73 @@ function restartGame(){
   document.getElementById('gameOverOverlay').classList.add('hidden');
   resetState();
   state = 'playing';
+  gameStartTime = Date.now();
+}
+
+/* ---------- downloadable result card ---------- */
+function downloadResult(){
+  const w = 900, h = 560;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const rc = c.getContext('2d');
+
+  let bg = rc.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'#1a0808'); bg.addColorStop(1,'#050202');
+  rc.fillStyle = bg; rc.fillRect(0,0,w,h);
+
+  rc.strokeStyle = '#7a1414'; rc.lineWidth = 6;
+  rc.strokeRect(18,18,w-36,h-36);
+  rc.strokeStyle = '#3a0a0a'; rc.lineWidth = 2;
+  rc.strokeRect(30,30,w-60,h-60);
+
+  rc.textAlign = 'center';
+  rc.fillStyle = '#c40000';
+  rc.font = 'italic 900 46px Arial';
+  rc.shadowColor = 'rgba(180,0,0,.8)'; rc.shadowBlur = 18;
+  rc.fillText('PYTHON BLANK: OUTBREAK', w/2, 105);
+  rc.shadowBlur = 0;
+
+  rc.fillStyle = '#ff8f8f';
+  rc.font = 'bold 20px Arial';
+  rc.fillText('SERTIFIKAT HASIL PERMAINAN', w/2, 140);
+
+  rc.strokeStyle = '#5a1414'; rc.lineWidth = 1;
+  rc.beginPath(); rc.moveTo(80,165); rc.lineTo(w-80,165); rc.stroke();
+
+  rc.fillStyle = '#fff';
+  rc.font = 'bold 30px Arial';
+  rc.fillText(playerName, w/2, 220);
+
+  const rows = [
+    ['Skor Akhir', String(score)],
+    ['Quiz Terjawab Benar', String(quizCorrect)],
+    ['Waktu Bertahan', formatTime(elapsedMs)],
+    ['Tanggal', new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'})],
+  ];
+  rc.textAlign = 'left';
+  let ry = 280;
+  rows.forEach(([label,val])=>{
+    rc.fillStyle = '#c9a8a8';
+    rc.font = '20px Arial';
+    rc.fillText(label, w/2 - 220, ry);
+    rc.fillStyle = '#ffd76a';
+    rc.font = 'bold 24px Arial';
+    rc.textAlign='right';
+    rc.fillText(val, w/2 + 220, ry);
+    rc.textAlign='left';
+    ry += 52;
+  });
+
+  rc.textAlign = 'center';
+  rc.fillStyle = '#7a5a5a';
+  rc.font = 'italic 14px Arial';
+  rc.fillText('Informatika Bab 1 & Bab 2 — Data, Informasi, Algoritma, dan Struktur Data', w/2, h-45);
+
+  const link = document.createElement('a');
+  const safeName = playerName.replace(/[^a-z0-9]+/gi,'_');
+  link.download = `Hasil_PythonBlank_${safeName}.png`;
+  link.href = c.toDataURL('image/png');
+  link.click();
 }
 
 resize();
