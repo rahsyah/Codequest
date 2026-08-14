@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-<title>Ular Tangga Informatika</title>
+<title>✨ Ular Tangga Informatika ✨</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
   html, body {
@@ -150,7 +150,7 @@
 <body>
 <div id="app">
   <div id="header">
-    <h1>✨ Ular Tangga Informatika ✨</h1>
+    <h1>🎮 Ular Tangga Informatika 🎮</h1>
     <div class="sub">Lompat tangga, hindari ular, taklukkan rintangan soal — raih kemenangan di petak 100!</div>
   </div>
 
@@ -167,9 +167,10 @@
   </div>
 
   <div id="legend">
-    <span>❓ Soal: benar +3 langkah, salah -3 langkah</span>
-    <span>🪜 Tangga: benar naik, salah mundur 3</span>
-    <span>🐍 Ular: benar tetap di tempat, salah turun</span>
+    <span>❓ Soal: benar +3 langkah</span>
+    <span>🪜 Tangga: benar naik ke atas</span>
+    <span>🐍 Ular: benar tetap selamat</span>
+    <span>❗ Salah: tetap di tempat, wajib jawab lagi giliran berikutnya — 5x salah balik ke start</span>
   </div>
 </div>
 
@@ -268,8 +269,6 @@ const PLAYER_DEFS = [
 const OFFSETS = [[0.22,0.22],[0.72,0.22],[0.22,0.72],[0.72,0.72]];
 
 let cellPos = {};
-let questionPool = [];
-let qIdx = 0;
 let players = [];
 let positions = {};
 let scores = {};
@@ -281,17 +280,11 @@ let playerCount = 2;
 
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 
-function buildQuestionPool(){
-  questionPool = shuffle(QUESTIONS).map(q => {
-    const order = shuffle(q.o.map((text,i)=>({text,orig:i})));
-    const newCorrect = order.findIndex(x=>x.orig===q.c);
-    return { q: q.q, o: order.map(x=>x.text), c: newCorrect };
-  });
-  qIdx = 0;
-}
 function nextQuestion(){
-  if(qIdx >= questionPool.length) buildQuestionPool();
-  return questionPool[qIdx++];
+  const q = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+  const order = shuffle(q.o.map((text,i)=>({text,orig:i})));
+  const newCorrect = order.findIndex(x=>x.orig===q.c);
+  return { q: q.q, o: order.map(x=>x.text), c: newCorrect };
 }
 
 function buildBoard(){
@@ -356,7 +349,9 @@ function currentPlayer(){ return turnOrder[currentTurnIdx]; }
 function updateTurnBar(){
   const p = currentPlayer();
   document.getElementById('turnDot').style.background = p.color;
-  document.getElementById('turnText').textContent = 'Giliran: ' + p.name;
+  document.getElementById('turnText').textContent = 'Giliran: ' + p.name + (p.stuck ? ' (harus jawab soal dulu)' : '');
+  const btn = document.getElementById('rollBtn');
+  btn.textContent = p.stuck ? '❗ Jawab Soal' : '🎲 Kocok Dadu';
 }
 
 function renderScoreboard(){
@@ -366,8 +361,9 @@ function renderScoreboard(){
   players.forEach(p=>{
     const card = document.createElement('div');
     card.className = 'scoreCard' + (cur && cur.id===p.id ? ' active' : '');
+    const stuckTxt = p.stuck ? ' • terjebak ('+p.wrongCount+'/5)' : '';
     card.innerHTML = '<span class="scoreDot" style="background:'+p.color+'"></span>' +
-      '<span>'+p.name+' • petak '+positions[p.id]+' • skor '+scores[p.id]+'</span>';
+      '<span>'+p.name+' • petak '+positions[p.id]+' • skor '+scores[p.id]+stuckTxt+'</span>';
     wrap.appendChild(card);
   });
 }
@@ -383,6 +379,13 @@ const DICE_FACES = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
 
 function rollDice(){
   if(busy) return;
+  const p = currentPlayer();
+  if(p.stuck){
+    busy = true;
+    document.getElementById('rollBtn').disabled = true;
+    openQuestionModal(p, p.stuckType, p.stuckNum);
+    return;
+  }
   busy = true;
   document.getElementById('rollBtn').disabled = true;
   const display = document.getElementById('diceDisplay');
@@ -455,7 +458,8 @@ function openQuestionModal(p, type, num){
   const qEl = document.getElementById('modalQ');
   const optsWrap = document.getElementById('modalOpts');
   const typeLabel = type==='ladder' ? '🪜 RINTANGAN TANGGA' : (type==='snake' ? '🐍 RINTANGAN ULAR' : '❓ RINTANGAN SOAL');
-  title.textContent = typeLabel + ' — ' + p.name;
+  const attemptTxt = p.stuck ? ' (percobaan ke-'+(p.wrongCount+1)+')' : '';
+  title.textContent = typeLabel + ' — ' + p.name + attemptTxt;
   qEl.textContent = cur.q;
   optsWrap.innerHTML = '';
   const letters=['A','B','C','D','E'];
@@ -503,39 +507,52 @@ function openQuestionModal(p, type, num){
 function closeModal(p, type, num, correct){
   document.getElementById('modalOverlay').classList.remove('show');
   let pos = positions[p.id];
-  if(correct) scores[p.id] += 1;
 
-  if(type === 'ladder'){
-    if(correct){
+  if(correct){
+    scores[p.id] += 1;
+    p.stuck = false;
+    p.wrongCount = 0;
+    p.stuckType = null;
+    p.stuckNum = null;
+
+    if(type === 'ladder'){
       pos = LADDERS[num];
       showFeedback('✅ '+p.name+' menjawab benar! Naik tangga ke petak '+pos+' 🪜');
-    } else {
-      pos = Math.max(1, pos - 3);
-      showFeedback('❌ '+p.name+' salah! Mundur 3 langkah ke petak '+pos);
-    }
-  } else if(type === 'snake'){
-    if(correct){
+    } else if(type === 'snake'){
       showFeedback('✅ '+p.name+' menjawab benar! Tetap di petak '+pos+' (selamat dari ular 🐍)');
     } else {
-      pos = SNAKES[num];
-      showFeedback('❌ '+p.name+' salah! Turun tergigit ular ke petak '+pos+' 🐍');
-    }
-  } else {
-    if(correct){
       pos = Math.min(100, pos + 3);
-      showFeedback('✅ Jawaban benar! Bonus maju 3 langkah!');
+      showFeedback('✅ '+p.name+' menjawab benar! Bonus maju 3 langkah!');
+    }
+
+    positions[p.id] = pos;
+    placeToken(p.id, pos, true);
+    renderScoreboard();
+    setTimeout(()=>{
+      if(pos >= 100){ endGame(p); } else { endTurn(); }
+    }, 550);
+  } else {
+    p.wrongCount += 1;
+    if(p.wrongCount >= 5){
+      p.stuck = false;
+      p.wrongCount = 0;
+      p.stuckType = null;
+      p.stuckNum = null;
+      pos = 1;
+      showFeedback('💥 '+p.name+' sudah 5 kali salah! Kembali ke petak start (1).');
+      positions[p.id] = pos;
+      placeToken(p.id, pos, true);
+      renderScoreboard();
+      setTimeout(endTurn, 600);
     } else {
-      pos = Math.max(1, pos - 3);
-      showFeedback('❌ Jawaban salah! Mundur 3 langkah.');
+      p.stuck = true;
+      p.stuckType = type;
+      p.stuckNum = num;
+      showFeedback('❌ '+p.name+' salah! ('+p.wrongCount+'/5) Tetap di petak '+pos+', harus jawab lagi.');
+      renderScoreboard();
+      setTimeout(endTurn, 700);
     }
   }
-
-  positions[p.id] = pos;
-  placeToken(p.id, pos, true);
-  renderScoreboard();
-  setTimeout(()=>{
-    if(pos >= 100){ endGame(p); } else { endTurn(); }
-  }, 550);
 }
 
 function confettiBurst(){
@@ -571,7 +588,6 @@ function initGame(){
   busy = false;
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('rollBtn').disabled = false;
-  buildQuestionPool();
   buildBoard();
   players.forEach(p=> placeToken(p.id, 1, false));
   updateTurnBar();
@@ -611,7 +627,7 @@ function startGame(){
     const def = PLAYER_DEFS[i];
     const input = document.getElementById('nameInput_' + i);
     const name = (input && input.value.trim()) ? input.value.trim() : def.defaultName;
-    players.push({ id: def.id, name: name, color: def.color, textColor: def.textColor, emoji: def.emoji });
+    players.push({ id: def.id, name: name, color: def.color, textColor: def.textColor, emoji: def.emoji, stuck:false, wrongCount:0, stuckType:null, stuckNum:null });
   }
   document.getElementById('setupOverlay').classList.remove('show');
   initGame();
