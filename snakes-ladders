@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-<title>Ular Tangga Kemerdekaan 🇮🇩</title>
+<title>Ular Tangga Informatika</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
   html, body {
@@ -150,8 +150,8 @@
 <body>
 <div id="app">
   <div id="header">
-    <h1>🇮🇩 Ular Tangga Kemerdekaan 🇮🇩</h1>
-    <div class="sub">Lompat tangga, hindari ular, taklukkan rintangan soal — raih kemerdekaan di petak 100!</div>
+    <h1>✨ Ular Tangga Informatika ✨</h1>
+    <div class="sub">Lompat tangga, hindari ular, taklukkan rintangan soal — raih kemenangan di petak 100!</div>
   </div>
 
   <div id="turnBar"><span id="turnDot" style="background:#e24b4a;"></span><span id="turnText">Giliran: -</span></div>
@@ -163,7 +163,7 @@
 
   <div id="controls">
     <div id="diceDisplay">⚀</div>
-    <button id="rollBtn">🎲 Kocok Dadu</button>
+    <button id="rollBtn">🎲 Lempar Cube</button>
   </div>
 
   <div id="legend">
