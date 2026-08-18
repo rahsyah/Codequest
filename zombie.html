@@ -111,11 +111,26 @@
   #bottomRight {
     position:absolute; bottom:20px; right:24px; text-align:right; color:#fff;
   }
+  #ammoRow { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
   #ammo { font-size:34px; font-weight:900; letter-spacing:1px; text-shadow:2px 2px 0 #000; }
   #ammo.low { color:#ff3030; animation: ammoPulse .6s infinite; }
   @keyframes ammoPulse { 0%,100%{ text-shadow:2px 2px 0 #000,0 0 6px rgba(255,0,0,.4);} 50%{ text-shadow:2px 2px 0 #000,0 0 18px rgba(255,0,0,1);} }
   #ammo .max { font-size:16px; color:#999; }
   #reloadMsg { font-size:12px; color:#d9c26a; height:16px; }
+
+  #reloadBtn {
+    pointer-events:auto; width:52px; height:52px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4a1414, #1a0505 70%);
+    border:2px solid #7a1414; color:#e0a0a0; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; touch-action:manipulation; box-shadow:0 3px 0 #2a0808, 0 0 10px rgba(120,0,0,.5);
+    transition:transform .1s, opacity .2s;
+  }
+  #reloadBtn:active { transform:translateY(2px) scale(.94); }
+  #reloadBtn.urge { border-color:#c40000; color:#fff; animation:reloadUrge .7s infinite; }
+  @keyframes reloadUrge { 0%,100%{ box-shadow:0 3px 0 #2a0808,0 0 10px rgba(200,0,0,.5);} 50%{ box-shadow:0 3px 0 #2a0808,0 0 22px rgba(255,0,0,.9);} }
+  #reloadBtn.spinning svg { animation: reloadSpin .9s linear infinite; }
+  @keyframes reloadSpin { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+  #reloadBtn:disabled { opacity:.35; cursor:default; }
 
   /* crosshair */
   #crosshair {
@@ -264,7 +279,14 @@
     </div>
 
     <div id="bottomRight">
-      <div id="ammo"><span id="ammoVal">30</span><span class="max"> / 60</span></div>
+      <div id="ammoRow">
+        <button id="reloadBtn" title="Reload">
+          <svg viewBox="0 0 24 24" width="26" height="26">
+            <path fill="currentColor" d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+          </svg>
+        </button>
+        <div id="ammo"><span id="ammoVal">30</span><span class="max"> / 60</span></div>
+      </div>
       <div id="reloadMsg"></div>
     </div>
   </div>
@@ -442,6 +464,7 @@ function updateHUD(){
   hpBarInner.style.width = Math.max(0,hp) + '%';
   ammoVal.textContent = ammo;
   ammoEl.classList.toggle('low', ammo < 10);
+  reloadBtn.classList.toggle('urge', ammo < 10 && !reloading);
 }
 
 /* ---------- zombie factory ---------- */
@@ -541,13 +564,22 @@ document.querySelectorAll('.overlay, .overlay *').forEach(el=>{
   el.addEventListener('touchstart', (e)=> e.stopPropagation());
 });
 
+/* reload button — needed on Android since there's no physical keyboard for R */
+const reloadBtn = document.getElementById('reloadBtn');
+reloadBtn.addEventListener('click', (e)=>{ e.stopPropagation(); reload(); });
+reloadBtn.addEventListener('touchstart', (e)=>{
+  e.stopPropagation(); e.preventDefault(); reload();
+}, {passive:false});
+
 function reload(){
   if(reloading || ammo===maxAmmo || state!=='playing') return;
   reloading = true;
+  reloadBtn.classList.add('spinning');
   reloadMsg.textContent = 'RELOADING...';
   setTimeout(()=>{
     ammo = maxAmmo;
     reloading = false;
+    reloadBtn.classList.remove('spinning');
     reloadMsg.textContent = '';
     if(ammo >= 10) jumpscareArmed = true;
     updateHUD();
@@ -608,7 +640,13 @@ const JUMPSCARE_FACE = `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000
   <path d="M210 130 Q230 110 215 95" stroke="#4a0000" stroke-width="6" fill="none"/>
 </svg>`;
 
-function triggerJumpscare(){
+let jumpscareActive = false;
+let dangerTimer = 0, nextDangerScare = 1400;
+
+function triggerJumpscare(dmg){
+  if(jumpscareActive) return;
+  jumpscareActive = true;
+  if(dmg === undefined) dmg = 5;
   jumpscareOverlay.innerHTML = JUMPSCARE_FACE;
   jumpscareOverlay.classList.remove('active'); void jumpscareOverlay.offsetWidth;
   jumpscareOverlay.classList.add('active');
@@ -616,13 +654,14 @@ function triggerJumpscare(){
   jumpscareText.classList.add('active');
   gameEl.classList.remove('shake'); void gameEl.offsetWidth; gameEl.classList.add('shake');
   bloodVignette.style.opacity = '1';
-  hp -= 5;
+  hp -= dmg;
   updateHUD();
   setTimeout(()=>{
     jumpscareOverlay.classList.remove('active');
     jumpscareText.classList.remove('active');
     gameEl.classList.remove('shake');
     bloodVignette.style.opacity = '0';
+    jumpscareActive = false;
     if(hp<=0) triggerGameOver();
   }, 900);
 }
@@ -644,6 +683,18 @@ function loop(ts){
   }
 
   if(state==='playing'){
+    // mode bahaya: HP kritis + amunisi menipis -> jumpscare sering muncul mendadak
+    if(hp > 0 && hp < 30 && ammo <= 10 && !jumpscareActive){
+      dangerTimer += dt;
+      if(dangerTimer > nextDangerScare){
+        dangerTimer = 0;
+        nextDangerScare = 1300 + Math.random()*1600; // 1.3-2.9 detik, terasa mendadak & sering
+        triggerJumpscare(3); // damage lebih kecil per jumpscare supaya tidak instant mati
+      }
+    } else {
+      dangerTimer = 0;
+    }
+
     spawnTimer += dt;
     if(spawnTimer > spawnInterval && zombies.filter(z=>z.alive).length < 5){
       spawnTimer = 0;
