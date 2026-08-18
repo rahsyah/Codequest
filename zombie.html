@@ -227,7 +227,13 @@
   }
   .btn:active { transform:translateY(3px); box-shadow:0 1px 0 #3a0000; }
 
-  #quizTopic { display:inline-block; background:#6b1717; color:#fff; font-size:12px; padding:3px 10px; border-radius:20px; margin-bottom:10px; letter-spacing:1px; }
+  #quizTopRow { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  #quizTopic { display:inline-block; background:#6b1717; color:#fff; font-size:12px; padding:3px 10px; border-radius:20px; letter-spacing:1px; }
+  #quizTimerNum { font-weight:900; font-size:18px; color:#ffd76a; font-variant-numeric:tabular-nums; min-width:26px; text-align:right; }
+  #quizTimerBar { width:100%; height:8px; background:#2a0808; border-radius:4px; overflow:hidden; margin-bottom:16px; }
+  #quizTimerFill { height:100%; width:100%; background:linear-gradient(90deg,#ffd76a,#ff9a3b); }
+  #quizTimerFill.warn { background:linear-gradient(90deg,#ff5a3b,#c40000); animation:timerWarnPulse .5s infinite; }
+  @keyframes timerWarnPulse { 0%,100%{ opacity:1;} 50%{ opacity:.55;} }
   #quizQuestion {
     font-size:clamp(15px,4.4vw,19px); margin:8px 0 18px; color:#fff; font-weight:bold; line-height:1.45;
     white-space:pre-line; overflow-wrap:anywhere; text-align:left;
@@ -312,7 +318,11 @@
 
   <div id="quizOverlay" class="overlay hidden">
     <div class="panel" id="quizPanel">
-      <div id="quizTopic">TOPIK</div>
+      <div id="quizTopRow">
+        <div id="quizTopic">TOPIK</div>
+        <div id="quizTimerNum">15</div>
+      </div>
+      <div id="quizTimerBar"><div id="quizTimerFill"></div></div>
       <div id="quizQuestion">Pertanyaan</div>
       <div id="quizOptions"></div>
       <div id="quizFeedback"></div>
@@ -897,6 +907,37 @@ const quizTopic = document.getElementById('quizTopic');
 const quizQuestion = document.getElementById('quizQuestion');
 const quizOptions = document.getElementById('quizOptions');
 const quizFeedback = document.getElementById('quizFeedback');
+const quizTimerFill = document.getElementById('quizTimerFill');
+const quizTimerNum = document.getElementById('quizTimerNum');
+
+const QUIZ_TIME_MS = 15000; // 15 detik per soal
+let quizTimeoutId = null, quizIntervalId = null;
+let currentQuiz = null;
+
+function clearQuizTimer(){
+  if(quizTimeoutId){ clearTimeout(quizTimeoutId); quizTimeoutId = null; }
+  if(quizIntervalId){ clearInterval(quizIntervalId); quizIntervalId = null; }
+}
+
+function startQuizTimer(){
+  clearQuizTimer();
+  quizTimerFill.classList.remove('warn');
+  quizTimerFill.style.transition = 'none';
+  quizTimerFill.style.width = '100%';
+  void quizTimerFill.offsetWidth;
+  quizTimerFill.style.transition = `width ${QUIZ_TIME_MS}ms linear`;
+  quizTimerFill.style.width = '0%';
+
+  let remaining = Math.ceil(QUIZ_TIME_MS/1000);
+  quizTimerNum.textContent = remaining;
+  quizIntervalId = setInterval(()=>{
+    remaining -= 1;
+    quizTimerNum.textContent = Math.max(remaining,0);
+    if(remaining <= 5) quizTimerFill.classList.add('warn');
+  }, 1000);
+
+  quizTimeoutId = setTimeout(quizTimeUp, QUIZ_TIME_MS);
+}
 
 function triggerQuiz(){
   state = 'quiz';
@@ -904,6 +945,7 @@ function triggerQuiz(){
   const correctText = raw.opts[raw.correct];
   const shuffledOpts = shuffleArray([...raw.opts]);
   const q = { topic: raw.topic, q: raw.q, opts: shuffledOpts, correct: shuffledOpts.indexOf(correctText) };
+  currentQuiz = q;
   quizTopic.textContent = q.topic.toUpperCase();
   quizQuestion.textContent = q.q;
   quizOptions.innerHTML = '';
@@ -916,9 +958,11 @@ function triggerQuiz(){
     quizOptions.appendChild(btn);
   });
   quizOverlay.classList.remove('hidden');
+  startQuizTimer();
 }
 
 function answerQuiz(i, q, btnEl){
+  clearQuizTimer();
   const allBtns = quizOptions.querySelectorAll('.opt');
   allBtns.forEach(b=>b.onclick=null);
   if(i === q.correct){
@@ -934,6 +978,23 @@ function answerQuiz(i, q, btnEl){
     quizFeedback.textContent = 'SALAH! -10 HP. Jawaban benar disorot hijau.';
     hp -= 10;
   }
+  updateHUD();
+  setTimeout(()=>{
+    quizOverlay.classList.add('hidden');
+    if(hp<=0){ triggerGameOver(); return; }
+    state = 'playing';
+  }, 1400);
+}
+
+function quizTimeUp(){
+  quizTimeoutId = null; quizIntervalId = null;
+  if(!currentQuiz) return;
+  const allBtns = quizOptions.querySelectorAll('.opt');
+  allBtns.forEach(b=>b.onclick=null);
+  if(allBtns[currentQuiz.correct]) allBtns[currentQuiz.correct].classList.add('correct');
+  quizFeedback.style.color = '#ff5a5a';
+  quizFeedback.textContent = 'WAKTU HABIS! -10 HP. Jawaban benar disorot hijau.';
+  hp -= 10;
   updateHUD();
   setTimeout(()=>{
     quizOverlay.classList.add('hidden');
@@ -958,9 +1019,11 @@ function startGame(){
 function resetState(){
   score=0; quizCorrect=0; round=1; hp=100; ammo=30; maxAmmo=60;
   zombies=[]; particles=[]; spawnTimer=0; spawnInterval=1800;
-  jumpscareArmed = true;
+  jumpscareArmed = true; dangerTimer = 0;
   elapsedMs = 0; lastDisplayedSecond = -1;
   timerVal.textContent = '00:00';
+  clearQuizTimer();
+  quizOverlay.classList.add('hidden');
   refillQueue();
   updateHUD();
 }
