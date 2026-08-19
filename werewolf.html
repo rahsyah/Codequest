@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Penjaga Desa: Perburuan Serigala Dusta</title>
+<title>Penjaga Desa: Perburuan Serigala Berbulu Domba</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -225,10 +225,11 @@
     <p class="lede">Setiap malam, desas-desus menyusup masuk desa berwujud pesan berantai, video lawas, dan klaim "ahli" di media sosial. Sebagai <em>Penjaga Desa</em>, tugasmu memeriksa setiap kabar dengan kerangka <em>CRAAP</em> &mdash; Currency, Relevance, Authority, Accuracy, Purpose &mdash; sebelum kabut kebohongan menelan desa.</p>
     <div class="panel">
       <ul class="rules">
-        <li><span class="mark">I</span> 20 desas-desus akan diuji, satu per satu di sepanjang ronda malam.</li>
+        <li><span class="mark">I</span> 20 desas-desus akan diuji, dimulai dari yang paling mudah dikenali hingga yang paling licik.</li>
         <li><span class="mark">II</span> Kamu memiliki 3 obor. Setiap jawaban keliru memadamkan satu obor.</li>
         <li><span class="mark">III</span> Bulan akan membesar setiap kali kamu benar mengenali kebenaran &mdash; dan memerah bila kamu tertipu.</li>
         <li><span class="mark">IV</span> Habiskan obormu, dan kabut menelan desa sebelum fajar tiba.</li>
+        <li><span class="mark">V</span> Setiap ronda diacak ulang — urutan pilihan jawaban selalu berbeda, jadi hafalan tak akan berguna.</li>
       </ul>
       <button class="btn" id="btnStart">Mulai Ronda Malam</button>
     </div>
@@ -287,102 +288,102 @@
 const QUESTIONS = [
 {q:"\u201cBesok sekolah diliburkan karena cuaca ekstrem. Informasi ini sudah dikonfirmasi oleh banyak orang tua.\u201d\nPesan tersebut telah diteruskan ke beberapa grup. Tindakan pertama yang paling tepat adalah ...",
  opts:["Mempercayainya karena sudah dikonfirmasi oleh banyak orang tua.","Menanyakan kepada pengirim siapa orang pertama yang menyebarkan informasi tersebut.","Membandingkan informasi dengan pengumuman resmi sekolah atau sumber berwenang.","Menunggu sampai sebagian besar anggota grup menyatakan informasi tersebut benar.","Menganggapnya benar jika isi pesan mencantumkan tanggal dan alasan yang masuk akal."],
- correct:2, tag:"Verifikasi Sumber",
+ correct:2, tier:1, tag:"Verifikasi Sumber",
  note:"Kabar penting selalu dicocokkan ke sumber resmi yang berwenang mengumumkannya, bukan ke banyaknya orang yang meneruskannya."},
 
 {q:"\u201cBeginilah kondisi jalan kota kita setelah hujan semalam!\u201d\nSeorang siswa langsung menyimpulkan bahwa video tersebut benar-benar terjadi di kotanya.\nKesalahan utama dalam proses berpikir siswa tersebut adalah ...",
  opts:["Tidak memeriksa kualitas video.","Tidak memeriksa apakah video tersebut pernah digunakan sebelumnya dalam konteks berbeda.","Tidak membaca komentar pengguna lain.","Tidak menghitung jumlah orang yang membagikan video tersebut.","Tidak membandingkan kualitas kamera dengan video lain."],
- correct:1, tag:"Accuracy",
+ correct:1, tier:3, tag:"Accuracy",
  note:"Video lama yang didaur ulang dengan klaim baru adalah pola hoaks umum \u2014 selalu telusuri asal-usul dan konteks aslinya sebelum percaya."},
 
 {q:"Siswa menemukan dua artikel mengenai dampak penggunaan AI dalam pendidikan. Artikel pertama diterbitkan tahun 2026 oleh lembaga penelitian pendidikan. Artikel kedua diterbitkan tahun 2021 oleh blog pribadi.\nJika kedua artikel memiliki kesimpulan yang berbeda, aspek CRAAP yang paling awal perlu diperhatikan untuk menjelaskan kemungkinan perbedaan relevansi informasi adalah ...",
  opts:["Purpose","Authority","Currency","Accuracy","Relevance"],
- correct:2, tag:"Currency",
+ correct:2, tier:3, tag:"Currency",
  note:"Selisih waktu terbit lima tahun pada topik yang bergerak cepat seperti AI membuat Currency (kebaruan informasi) menjadi hal pertama yang perlu dicek."},
 
 {q:"\u201cSaya ahli keamanan siber selama 15 tahun, jadi semua informasi tentang keamanan digital yang saya sampaikan pasti benar.\u201d\nAkun tersebut memiliki 500.000 pengikut.\nKesimpulan yang paling tepat adalah ...",
  opts:["Informasinya dapat dipercaya karena pengalaman lebih penting daripada sumber lain.","Informasinya kemungkinan benar karena memiliki banyak pengikut.","Klaim keahlian perlu diverifikasi melalui identitas, rekam jejak, dan sumber pendukung.","Informasinya salah karena disampaikan melalui media sosial.","Jumlah pengikut dapat digunakan sebagai bukti utama otoritas seseorang."],
- correct:2, tag:"Authority",
+ correct:2, tier:2, tag:"Authority",
  note:"Klaim keahlian dan jumlah pengikut bukan bukti otoritas dengan sendirinya \u2014 identitas dan rekam jejak tetap perlu ditelusuri."},
 
 {q:"Sebuah berita memiliki judul:\n\u201cTERBUKTI! Bermain Game 2 Jam Sehari Membuat IQ Turun Drastis!\u201d\nKetika artikel dibaca, ternyata penelitian hanya menemukan hubungan antara pola penggunaan game tertentu dan beberapa indikator kognitif pada kelompok tertentu.\nMasalah utama judul tersebut adalah ...",
  opts:["Informasi menggunakan bahasa Indonesia yang terlalu emosional.","Kesimpulan judul lebih luas daripada bukti penelitian yang dijelaskan.","Penelitian seharusnya selalu menggunakan judul yang netral.","Artikel tidak dapat dipercaya karena membahas game.","Semua penelitian tentang IQ harus dilakukan di sekolah."],
- correct:1, tag:"Accuracy",
+ correct:1, tier:3, tag:"Accuracy",
  note:"Judul yang mengklaim \u2018terbukti\u2019 dan \u2018drastis\u2019 melampaui apa yang benar-benar ditemukan penelitian \u2014 klaim harus sepadan dengan buktinya."},
 
 {q:"Sebuah situs menjelaskan:\n\u201cProduk kami adalah solusi terbaik untuk meningkatkan keamanan rumah. Berdasarkan penelitian kami, 98% pengguna merasa produk ini sangat efektif.\u201d\nSitus tersebut juga menyediakan tombol \u201cBeli Sekarang\u201d di hampir setiap bagian halaman.\nAspek CRAAP yang paling perlu dicermati adalah ...",
  opts:["Currency","Relevance","Authority","Accuracy","Purpose"],
- correct:4, tag:"Purpose",
+ correct:4, tier:1, tag:"Purpose",
  note:"Halaman yang dipenuhi tombol \u2018Beli Sekarang\u2019 punya tujuan komersial \u2014 Purpose situs mengarahkan kita untuk skeptis pada angka yang disajikan sendiri oleh penjual."},
 
 {q:"Seorang siswa melakukan penelitian tentang kebiasaan penggunaan internet siswa SMK di sekolahnya.\nManakah yang merupakan data primer paling tepat?",
  opts:["Artikel jurnal tentang penggunaan internet remaja.","Statistik penggunaan internet dari BPS.","Data hasil kuesioner yang diberikan kepada siswa sekolah tersebut.","Infografis dari sebuah perusahaan teknologi.","Artikel berita mengenai perilaku digital remaja."],
- correct:2, tag:"Metodologi Riset",
+ correct:2, tier:1, tag:"Metodologi Riset",
  note:"Data primer diperoleh langsung dari subjek penelitian \u2014 kuesioner ke siswa sekolah itu sendiri, bukan hasil rangkuman pihak lain."},
 
 {q:"Seorang siswa mengatakan:\n\u201cSaya tidak perlu melakukan survei. Saya sudah menemukan data dari internet yang menunjukkan bahwa 70% remaja menggunakan media sosial setiap hari.\u201d\nGuru bertanya apakah data tersebut dapat langsung digunakan untuk menyimpulkan kondisi siswa di sekolahnya.\nJawaban paling tepat adalah ...",
  opts:["Bisa, karena data internet selalu lebih luas daripada survei sekolah.","Bisa, selama persentasenya terlihat masuk akal.","Tidak selalu, karena populasi, metode, waktu, dan konteks pengambilan data perlu dibandingkan.","Tidak bisa, karena data internet bukan data ilmiah.","Tidak bisa, karena penelitian siswa wajib menggunakan data primer."],
- correct:2, tag:"Relevance",
+ correct:2, tier:4, tag:"Relevance",
  note:"Data dari populasi dan konteks lain tidak otomatis berlaku untuk populasi yang sedang diteliti \u2014 kecocokan konteksnya wajib diperiksa dulu."},
 
 {q:"Siswa menemukan dua sumber tentang keamanan password.\nSumber A: Blog pribadi tanpa identitas penulis.\nSumber B: Dokumentasi resmi lembaga keamanan siber dengan penulis dan tanggal publikasi yang jelas.\nJika isi keduanya hampir sama, sumber B lebih kuat terutama karena ...",
  opts:["Bahasanya lebih formal.","Situs resmi selalu benar dalam semua keadaan.","Identitas dan otoritas sumber lebih mudah diverifikasi.","Blog pribadi tidak boleh digunakan dalam penelitian.","Situs pemerintah atau lembaga resmi tidak mungkin melakukan kesalahan."],
- correct:2, tag:"Authority",
+ correct:2, tier:2, tag:"Authority",
  note:"Kejelasan identitas penulis dan lembaga penerbit membuat otoritas sumber B jauh lebih mudah diverifikasi dibanding blog anonim."},
 
 {q:"Sebuah unggahan menyatakan:\n\u201cPenelitian membuktikan bahwa belajar sambil mendengarkan musik meningkatkan nilai ujian.\u201d\nKetika ditelusuri, sumber penelitian sebenarnya hanya mengatakan bahwa sebagian peserta merasa lebih nyaman belajar sambil mendengarkan musik.\nAspek CRAAP yang paling bermasalah adalah ...",
  opts:["Currency","Relevance","Authority","Accuracy","Purpose"],
- correct:3, tag:"Accuracy",
+ correct:3, tier:3, tag:"Accuracy",
  note:"Klaim \u2018terbukti meningkatkan nilai\u2019 tidak sesuai dengan temuan asli yang hanya soal kenyamanan \u2014 ini pelanggaran Accuracy yang jelas."},
 
 {q:"Seorang siswa menggunakan artikel tahun 2015 untuk menjelaskan:\n\u201cTeknologi AI yang paling populer digunakan siswa saat ini.\u201d\nGuru meminta siswa mengevaluasi kembali sumber tersebut.\nAlasan paling kuat adalah ...",
  opts:["Semua sumber lama otomatis salah.","Informasi teknologi dapat berubah cepat sehingga data lama mungkin tidak merepresentasikan kondisi saat ini.","Artikel lama tidak boleh digunakan untuk penelitian.","Teknologi tidak dapat diteliti menggunakan artikel ilmiah.","Sumber baru selalu lebih benar daripada sumber lama."],
- correct:1, tag:"Currency",
+ correct:1, tier:2, tag:"Currency",
  note:"Bukan soal \u2018lama pasti salah\u2019, tapi topik yang cepat berubah seperti teknologi butuh sumber yang cukup mutakhir agar tetap relevan."},
 
 {q:"Siswa ingin mengetahui:\n\u201cApakah penggunaan chatbot AI membantu siswa kelas X memahami materi Informatika?\u201d\nIa menemukan artikel tentang penggunaan AI oleh dokter di rumah sakit.\nMenurut aspek Relevance, masalah utama sumber tersebut adalah ...",
  opts:["Artikel tersebut pasti tidak akurat.","Artikel tersebut tidak memiliki data.","Konteks subjek penelitian berbeda dengan masalah yang sedang dikaji.","Artikel tentang kesehatan tidak boleh digunakan dalam penelitian pendidikan.","Penelitian tersebut pasti menggunakan teknologi yang berbeda."],
- correct:2, tag:"Relevance",
+ correct:2, tier:3, tag:"Relevance",
  note:"Sumber bisa saja akurat, tapi konteksnya (dokter vs siswa) berbeda dari pertanyaan penelitian, sehingga relevansinya lemah."},
 
 {q:"Sebuah artikel mempunyai: logo universitas, desain profesional, banyak grafik, bahasa akademik, tetapi tidak mencantumkan referensi penelitian.\nKesimpulan yang paling tepat adalah ...",
  opts:["Artikel pasti ilmiah karena menggunakan logo universitas.","Artikel pasti benar karena memiliki grafik.","Artikel dapat dipercaya karena tampilannya profesional.","Tampilan profesional belum cukup; klaim tetap perlu ditelusuri ke bukti dan sumber yang dapat diverifikasi.","Artikel harus dianggap palsu karena tidak memiliki referensi."],
- correct:3, tag:"Authority & Accuracy",
+ correct:3, tier:4, tag:"Authority & Accuracy",
  note:"Tampilan meyakinkan bukan pengganti bukti \u2014 tanpa referensi yang bisa ditelusuri, klaim akademisnya belum bisa diverifikasi."},
 
 {q:"Sebuah akun menyatakan:\n\u201cIndonesia adalah negara dengan pengguna media sosial terbanyak di dunia.\u201d\nUntuk memeriksa klaim tersebut secara serius, langkah paling tepat adalah ...",
  opts:["Melihat jumlah komentar pada unggahan tersebut.","Mencari unggahan lain yang mengatakan hal serupa.","Mencari data statistik terbaru dari sumber terpercaya dan memeriksa definisi serta periode datanya.","Mempercayai klaim jika akun tersebut memiliki banyak pengikut.","Menggunakan jumlah pengguna media sosial Indonesia dari tahun berapa pun."],
- correct:2, tag:"Accuracy",
+ correct:2, tier:3, tag:"Accuracy",
  note:"Klaim statistik hanya bisa diverifikasi lewat sumber data terpercaya, dengan definisi dan periode data yang jelas \u2014 bukan lewat popularitas unggahan."},
 
 {q:"Sebuah perusahaan menjual aplikasi belajar AI. Dalam websitenya terdapat pernyataan:\n\u201cAplikasi kami terbukti meningkatkan hasil belajar siswa hingga 80%.\u201d\nPerusahaan menyertakan hasil survei terhadap 100 pengguna aplikasinya sendiri.\nApa pertanyaan kritis yang paling tepat?",
  opts:["Mengapa perusahaan menggunakan warna tertentu pada websitenya?","Apakah jumlah pengguna aplikasi cukup banyak untuk disebut populer?","Siapa yang melakukan penelitian, bagaimana sampelnya dipilih, dan apakah terdapat pembanding?","Apakah aplikasinya memiliki desain modern?","Apakah 80% merupakan angka yang besar?"],
- correct:2, tag:"Purpose",
+ correct:2, tier:4, tag:"Purpose",
  note:"Survei oleh perusahaan terhadap penggunanya sendiri rawan bias \u2014 pertanyaan kritis harus menyasar metodologi, sampel, dan kelompok pembanding."},
 
 {q:"Seorang siswa menemukan berita tentang gempa dari akun media sosial yang tidak dikenal. Untuk memastikan informasi tersebut, ia menemukan tiga akun lain yang menyalin berita yang sama.\nIa kemudian menyimpulkan:\n\u201cBerarti berita tersebut benar karena ada empat sumber.\u201d\nEvaluasi terhadap kesimpulan tersebut adalah ...",
  opts:["Benar, karena empat sumber lebih kuat daripada satu sumber.","Benar, selama keempat akun menggunakan bahasa yang berbeda.","Belum tentu benar karena empat akun tersebut mungkin hanya mengutip satu sumber awal yang sama.","Salah karena informasi media sosial tidak boleh dipercaya.","Salah karena pemeriksaan fakta hanya membutuhkan satu sumber resmi."],
- correct:2, tag:"Accuracy",
+ correct:2, tier:4, tag:"Accuracy",
  note:"Menyalin bukan mengonfirmasi \u2014 empat akun yang mengutip satu sumber awal yang sama tetaplah satu titik kegagalan, bukan empat bukti independen."},
 
 {q:"Seorang siswa mendapatkan artikel dengan kondisi berikut: diterbitkan dua minggu lalu; penulis memiliki gelar yang relevan; mencantumkan 15 referensi; membahas topik yang sesuai dengan penelitian; tetapi artikel tersebut dibuat untuk mempromosikan produk perusahaan.\nAspek yang perlu dianalisis secara bersamaan, bukan hanya satu, adalah ...",
  opts:["Currency dan Relevance saja.","Authority dan Accuracy saja.","Purpose saja karena artikel promosi pasti salah.","Seluruh unsur CRAAP untuk melihat kualitas sumber secara menyeluruh.","Jumlah referensi karena banyak referensi berarti pasti valid."],
- correct:3, tag:"Semua Aspek CRAAP",
+ correct:3, tier:5, tag:"Semua Aspek CRAAP",
  note:"Sumber ini kuat di banyak aspek tapi punya kepentingan komersial \u2014 hanya evaluasi CRAAP menyeluruh yang menangkap gambaran lengkapnya."},
 
 {q:"Guru memberikan dua informasi:\nInformasi A: \u201cMenurut saya, penggunaan AI sangat membantu siswa.\u201d\nInformasi B: \u201cDalam penelitian terhadap 1.200 siswa, kelompok yang menggunakan AI dengan pendampingan guru menunjukkan peningkatan skor rata-rata sebesar 12% dibandingkan kelompok kontrol.\u201d\nInformasi B lebih kuat sebagai dasar argumen ilmiah terutama karena ...",
  opts:["Menggunakan angka sehingga otomatis benar.","Memiliki klaim yang lebih spesifik dan menyertakan informasi mengenai penelitian yang dapat ditelusuri.","Pendapat pribadi tidak pernah boleh digunakan dalam diskusi.","Penelitian dengan kelompok kontrol selalu menghasilkan kebenaran mutlak.","Angka 12% lebih meyakinkan daripada kalimat biasa."],
- correct:1, tag:"Accuracy",
+ correct:1, tier:4, tag:"Accuracy",
  note:"Kekuatan Informasi B bukan sekadar karena ada angka, tapi karena klaimnya spesifik dan metodenya bisa ditelusuri dan diperiksa ulang."},
 
 {q:"Anda diminta mencari informasi mengenai aturan perlindungan data pribadi terbaru di Indonesia.\nManakah strategi pencarian yang paling kuat?",
  opts:["Mencari video TikTok terbaru tentang UU tersebut.","Menggunakan artikel blog yang memiliki banyak komentar.","Mengutamakan dokumen regulasi resmi dan kemudian menggunakan sumber akademik/tepercaya untuk membantu memahami konteksnya.","Menggunakan hasil pencarian pertama karena mesin pencari telah melakukan penyaringan.","Memilih artikel dengan jumlah share paling banyak."],
- correct:2, tag:"Authority",
+ correct:2, tier:2, tag:"Authority",
  note:"Dokumen regulasi resmi adalah sumber primer yang paling berwenang, baru dilengkapi sumber akademik untuk membantu memahami konteksnya."},
 
 {q:"\u201cMulai semester depan semua tugas sekolah harus dibuat menggunakan AI. Katanya ini sudah menjadi aturan baru pemerintah.\u201d\nSiswa A langsung percaya karena pesan dikirim oleh ketua kelas.\nSiswa B menolak karena menurutnya AI merusak pendidikan.\nSiswa C mencari dokumen regulasi resmi, memeriksa tanggalnya, melihat lembaga yang menerbitkan, membandingkan dengan berita dari media kredibel, kemudian memeriksa apakah isi pesan sesuai dengan dokumen asli.\nSiapakah yang menunjukkan proses pemeriksaan fakta paling tepat?",
  opts:["Siswa A, karena informasi berasal dari orang yang dipercaya.","Siswa B, karena menggunakan sikap kritis terhadap teknologi.","Siswa C, karena memeriksa klaim melalui sumber primer dan melakukan verifikasi silang.","Siswa A dan B, karena keduanya memiliki pendapat yang berbeda.","Semua benar karena pemeriksaan fakta bergantung pada sudut pandang masing-masing."],
- correct:2, tag:"Verifikasi Silang",
+ correct:2, tier:5, tag:"Verifikasi Silang",
  note:"Siswa C menjalankan seluruh siklus CRAAP: memeriksa Currency, Authority, dan Accuracy lewat sumber primer serta verifikasi silang \u2014 bukan sekadar percaya atau menolak begitu saja."}
 ];
 
@@ -393,8 +394,51 @@ let state = {
   idx: 0,
   lives: MAX_LIVES,
   correct: 0,
-  log: [] // {tag, wasCorrect}
+  log: [], // {tag, wasCorrect}
+  questions: [] // built fresh each game via buildSessionQuestions()
 };
+
+// Fisher-Yates shuffle, returns a new array (does not mutate input)
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Builds a fresh randomized set of questions for this playthrough:
+// - questions are grouped by difficulty tier (1 = easiest ... 5 = hardest)
+// - order WITHIN each tier is shuffled every run, but tiers themselves
+//   always play in ascending order, so difficulty still ramps up
+// - each question's answer options are independently shuffled too,
+//   so the correct letter never sits in a memorizable position
+function buildSessionQuestions(){
+  const byTier = {};
+  QUESTIONS.forEach(q=>{
+    if(!byTier[q.tier]) byTier[q.tier] = [];
+    byTier[q.tier].push(q);
+  });
+  const tierKeys = Object.keys(byTier).map(Number).sort((a,b)=>a-b);
+
+  let ordered = [];
+  tierKeys.forEach(t=>{
+    ordered = ordered.concat(shuffleArray(byTier[t]));
+  });
+
+  return ordered.map(q=>{
+    const optionObjs = q.opts.map((text, i)=>({text, isCorrect: i === q.correct}));
+    const shuffledOpts = shuffleArray(optionObjs);
+    return {
+      q: q.q,
+      tag: q.tag,
+      note: q.note,
+      options: shuffledOpts,
+      correctIdx: shuffledOpts.findIndex(o=>o.isCorrect)
+    };
+  });
+}
 
 // ---------------- stars ----------------
 (function makeStars(){
@@ -465,13 +509,13 @@ function renderTorches(){
 }
 
 function startGame(){
-  state = {idx:0, lives:MAX_LIVES, correct:0, log:[]};
+  state = {idx:0, lives:MAX_LIVES, correct:0, log:[], questions: buildSessionQuestions()};
   showScreen('game');
   renderQuestion();
 }
 
 function renderQuestion(){
-  const q = QUESTIONS[state.idx];
+  const q = state.questions[state.idx];
   document.getElementById('qIndex').textContent = (state.idx+1);
   document.getElementById('rumorTag').textContent = 'Desas-desus malam ke-' + (state.idx+1);
   document.getElementById('questionText').textContent = q.q;
@@ -482,10 +526,10 @@ function renderQuestion(){
 
   const optBox = document.getElementById('options');
   optBox.innerHTML = '';
-  q.opts.forEach((text, i)=>{
+  q.options.forEach((opt, i)=>{
     const btn = document.createElement('button');
     btn.className = 'option';
-    btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span><span>' + text + '</span>';
+    btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span><span>' + opt.text + '</span>';
     btn.addEventListener('click', ()=>selectAnswer(i));
     optBox.appendChild(btn);
   });
@@ -495,14 +539,14 @@ function renderQuestion(){
 }
 
 function selectAnswer(i){
-  const q = QUESTIONS[state.idx];
-  const wasCorrect = (i === q.correct);
+  const q = state.questions[state.idx];
+  const wasCorrect = (i === q.correctIdx);
   const optBtns = document.querySelectorAll('#options .option');
   optBtns.forEach((btn, idx)=>{
     btn.disabled = true;
-    if(idx === q.correct) btn.classList.add('correct');
+    if(idx === q.correctIdx) btn.classList.add('correct');
     if(idx === i && !wasCorrect) btn.classList.add('wrong');
-    if(idx !== i && idx !== q.correct) btn.classList.add('dim');
+    if(idx !== i && idx !== q.correctIdx) btn.classList.add('dim');
   });
 
   if(wasCorrect){
@@ -532,7 +576,7 @@ function selectAnswer(i){
       return;
     }
     state.idx++;
-    if(state.idx >= QUESTIONS.length){
+    if(state.idx >= state.questions.length){
       endGame('victory');
     } else {
       renderQuestion();
@@ -597,7 +641,7 @@ function endGame(kind){
 document.getElementById('btnStart').addEventListener('click', startGame);
 document.getElementById('btnRestart').addEventListener('click', ()=>{
   showScreen('start');
-  state = {idx:0, lives:MAX_LIVES, correct:0, log:[]};
+  state = {idx:0, lives:MAX_LIVES, correct:0, log:[], questions:[]};
   updateMoon();
 });
 
