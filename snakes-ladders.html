@@ -36,22 +36,6 @@
   .scoreDot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
   #boardWrap { position: relative; width: min(94vw, 560px); aspect-ratio: 1 / 1; }
-
-  #startBox {
-    width: min(94vw, 560px); display: flex; align-items: center; justify-content: space-between;
-    gap: 8px; background: linear-gradient(45deg,#333 25%,#fff 25%,#fff 50%,#333 50%,#333 75%,#fff 75%);
-    background-size: 16px 16px; border-radius: 10px; padding: 8px 12px; margin-bottom: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,.3); border: 2px solid #222;
-  }
-  #startBoxLabel {
-    font-weight: 800; font-size: clamp(11px,2.2vw,14px); color: #fff; background: rgba(0,0,0,.65);
-    padding: 4px 10px; border-radius: 8px; letter-spacing: 1px; flex-shrink: 0;
-  }
-  #startBoxTokens { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; flex: 1; }
-  .startTokenBadge {
-    width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.4);
-    display: flex; align-items: center; justify-content: center; font-size: 12px;
-  }
   #board {
     position: relative; width: 100%; height: 100%;
     display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr);
@@ -173,11 +157,6 @@
   <div id="turnBar"><span id="turnDot" style="background:#e24b4a;"></span><span id="turnText">Giliran: -</span></div>
   <div id="scoreboard"></div>
 
-  <div id="startBox">
-    <div id="startBoxLabel">🚦 START</div>
-    <div id="startBoxTokens"></div>
-  </div>
-
   <div id="boardWrap">
     <div id="board"></div>
   </div>
@@ -188,10 +167,10 @@
   </div>
 
   <div id="legend">
-    <span>❓ Rintangan: benar +3 langkah, salah -3 langkah</span>
-    <span>🪜 Tangga: benar naik ke atas, salah tetap di tempat</span>
-    <span>🐍 Ular: langsung turun tanpa soal — makin tinggi petak, makin jauh turunnya</span>
-    <span>❗ Gagal di tangga/rintangan: giliran berikutnya wajib jawab benar dulu sebelum boleh lempar dadu</span>
+    <span>❓ Soal: benar +3 langkah</span>
+    <span>🪜 Tangga: benar naik ke atas</span>
+    <span>🐍 Ular: benar tetap selamat</span>
+    <span>❗ Salah: tetap di tempat, wajib jawab lagi giliran berikutnya — 5x salah balik ke start</span>
   </div>
 </div>
 
@@ -278,8 +257,8 @@ const QUESTIONS = [
 ];
 
 const LADDERS = {1:38, 4:14, 9:31, 21:42, 28:84, 36:44, 51:67, 71:91};
-const SNAKES = {17:12, 26:18, 43:30, 52:33, 61:40, 69:46, 77:50, 86:55, 94:60, 99:62};
-const QUESTION_SQUARES = new Set([3,7,13,19,25,32,39,45,54,59,63,66,73,78,84,88,90,97]);
+const SNAKES = {16:6, 47:26, 49:11, 56:53, 62:19, 64:60, 87:24, 93:73, 95:75, 98:78};
+const QUESTION_SQUARES = new Set([7,13,19,25,32,39,45,54,59,66,73,78,84,90,97]);
 
 const PLAYER_DEFS = [
   { id:'p1', color:'#e24b4a', textColor:'#fff', emoji:'🔴', defaultName:'Tim Merah' },
@@ -351,12 +330,6 @@ function placeToken(playerId, num, animate){
   const idx = players.indexOf(p);
   const el = document.getElementById('token_' + playerId);
   if(!el) return;
-  if(num <= 0){
-    el.style.display = 'none';
-    renderStartArea();
-    return;
-  }
-  el.style.display = 'flex';
   const board = document.getElementById('board');
   const cell = board.querySelector('[data-num="'+num+'"]');
   if(!cell) return;
@@ -369,23 +342,6 @@ function placeToken(playerId, num, animate){
   el.style.left = left + '%';
   el.style.top = top + '%';
   if(!animate) requestAnimationFrame(()=>{ el.style.transition = ''; });
-  renderStartArea();
-}
-
-function renderStartArea(){
-  const wrap = document.getElementById('startBoxTokens');
-  if(!wrap) return;
-  wrap.innerHTML = '';
-  players.forEach(p=>{
-    if(positions[p.id] <= 0){
-      const b = document.createElement('div');
-      b.className = 'startTokenBadge';
-      b.style.background = p.color;
-      b.style.color = p.textColor;
-      b.textContent = p.emoji;
-      wrap.appendChild(b);
-    }
-  });
 }
 
 function currentPlayer(){ return turnOrder[currentTurnIdx]; }
@@ -405,10 +361,9 @@ function renderScoreboard(){
   players.forEach(p=>{
     const card = document.createElement('div');
     card.className = 'scoreCard' + (cur && cur.id===p.id ? ' active' : '');
-    const posLabel = positions[p.id] <= 0 ? 'START' : positions[p.id];
-    const stuckTxt = p.stuck ? ' • terjebak (percobaan ke-'+(p.wrongCount+1)+')' : '';
+    const stuckTxt = p.stuck ? ' • terjebak ('+p.wrongCount+'/5)' : '';
     card.innerHTML = '<span class="scoreDot" style="background:'+p.color+'"></span>' +
-      '<span>'+p.name+' • petak '+posLabel+' • skor '+scores[p.id]+stuckTxt+'</span>';
+      '<span>'+p.name+' • petak '+positions[p.id]+' • skor '+scores[p.id]+stuckTxt+'</span>';
     wrap.appendChild(card);
   });
 }
@@ -425,16 +380,14 @@ const DICE_FACES = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
 function rollDice(){
   if(busy) return;
   const p = currentPlayer();
-  busy = true;
-  document.getElementById('rollBtn').disabled = true;
   if(p.stuck){
-    openQuestionModal(p, 'gate', null);
+    busy = true;
+    document.getElementById('rollBtn').disabled = true;
+    openQuestionModal(p, p.stuckType, p.stuckNum);
     return;
   }
-  actuallyRollDice();
-}
-
-function actuallyRollDice(){
+  busy = true;
+  document.getElementById('rollBtn').disabled = true;
   const display = document.getElementById('diceDisplay');
   let ticks = 0;
   const spin = setInterval(()=>{
@@ -451,7 +404,7 @@ function actuallyRollDice(){
 
 function movePlayer(steps){
   const p = currentPlayer();
-  let pos = Math.max(0, positions[p.id]);
+  let pos = positions[p.id];
   let target = Math.min(100, pos + steps);
   let cur = pos;
   const stepMove = () => {
@@ -480,14 +433,7 @@ function resolveLanding(p, num){
     return;
   }
   if(SNAKES[num]){
-    const tail = SNAKES[num];
-    setTimeout(()=>{
-      showFeedback('🐍 '+p.name+' kena ular! Turun langsung ke petak '+tail);
-      positions[p.id] = tail;
-      placeToken(p.id, tail, true);
-      renderScoreboard();
-      setTimeout(endTurn, 550);
-    }, 300);
+    setTimeout(()=> openQuestionModal(p, 'snake', num), 300);
     return;
   }
   if(QUESTION_SQUARES.has(num)){
@@ -511,7 +457,7 @@ function openQuestionModal(p, type, num){
   const title = document.getElementById('modalTitle');
   const qEl = document.getElementById('modalQ');
   const optsWrap = document.getElementById('modalOpts');
-  const typeLabel = type==='ladder' ? '🪜 RINTANGAN TANGGA' : (type==='gate' ? '🔒 KUNCI GILIRAN' : '❓ RINTANGAN SOAL');
+  const typeLabel = type==='ladder' ? '🪜 RINTANGAN TANGGA' : (type==='snake' ? '🐍 RINTANGAN ULAR' : '❓ RINTANGAN SOAL');
   const attemptTxt = p.stuck ? ' (percobaan ke-'+(p.wrongCount+1)+')' : '';
   title.textContent = typeLabel + ' — ' + p.name + attemptTxt;
   qEl.textContent = cur.q;
@@ -562,64 +508,50 @@ function closeModal(p, type, num, correct){
   document.getElementById('modalOverlay').classList.remove('show');
   let pos = positions[p.id];
 
-  if(type === 'gate'){
-    if(correct){
-      scores[p.id] += 1;
-      p.stuck = false;
-      p.wrongCount = 0;
-      showFeedback('✅ '+p.name+' menjawab benar! Boleh lempar dadu lagi 🎲');
-      renderScoreboard();
-      setTimeout(()=> actuallyRollDice(), 500);
-    } else {
-      p.wrongCount += 1;
-      showFeedback('❌ '+p.name+' masih salah! Coba lagi giliran berikutnya.');
-      renderScoreboard();
-      setTimeout(endTurn, 700);
-    }
-    return;
-  }
-
-  if(type === 'ladder'){
-    if(correct){
-      scores[p.id] += 1;
-      p.stuck = false;
-      p.wrongCount = 0;
-      pos = LADDERS[num];
-      showFeedback('✅ '+p.name+' menjawab benar! Naik tangga ke petak '+pos+' 🪜');
-      positions[p.id] = pos;
-      placeToken(p.id, pos, true);
-      renderScoreboard();
-      setTimeout(()=>{ if(pos >= 100){ endGame(p); } else { endTurn(); } }, 550);
-    } else {
-      p.stuck = true;
-      p.wrongCount = 1;
-      showFeedback('❌ '+p.name+' salah! Tetap di petak '+pos+'. Giliran berikutnya wajib jawab dulu sebelum lempar dadu.');
-      renderScoreboard();
-      setTimeout(endTurn, 750);
-    }
-    return;
-  }
-
-  // type === 'question' (rintangan)
   if(correct){
     scores[p.id] += 1;
     p.stuck = false;
     p.wrongCount = 0;
-    pos = Math.min(100, pos + 3);
-    showFeedback('✅ '+p.name+' menjawab benar! Maju 3 langkah ke petak '+pos);
+    p.stuckType = null;
+    p.stuckNum = null;
+
+    if(type === 'ladder'){
+      pos = LADDERS[num];
+      showFeedback('✅ '+p.name+' menjawab benar! Naik tangga ke petak '+pos+' 🪜');
+    } else if(type === 'snake'){
+      showFeedback('✅ '+p.name+' menjawab benar! Tetap di petak '+pos+' (selamat dari ular 🐍)');
+    } else {
+      pos = Math.min(100, pos + 3);
+      showFeedback('✅ '+p.name+' menjawab benar! Bonus maju 3 langkah!');
+    }
+
     positions[p.id] = pos;
     placeToken(p.id, pos, true);
     renderScoreboard();
-    setTimeout(()=>{ if(pos >= 100){ endGame(p); } else { endTurn(); } }, 550);
+    setTimeout(()=>{
+      if(pos >= 100){ endGame(p); } else { endTurn(); }
+    }, 550);
   } else {
-    pos = Math.max(1, pos - 3);
-    p.stuck = true;
-    p.wrongCount = 1;
-    showFeedback('❌ '+p.name+' salah! Mundur 3 langkah ke petak '+pos+'. Giliran berikutnya wajib jawab dulu sebelum lempar dadu.');
-    positions[p.id] = pos;
-    placeToken(p.id, pos, true);
-    renderScoreboard();
-    setTimeout(endTurn, 750);
+    p.wrongCount += 1;
+    if(p.wrongCount >= 5){
+      p.stuck = false;
+      p.wrongCount = 0;
+      p.stuckType = null;
+      p.stuckNum = null;
+      pos = 1;
+      showFeedback('💥 '+p.name+' sudah 5 kali salah! Kembali ke petak start (1).');
+      positions[p.id] = pos;
+      placeToken(p.id, pos, true);
+      renderScoreboard();
+      setTimeout(endTurn, 600);
+    } else {
+      p.stuck = true;
+      p.stuckType = type;
+      p.stuckNum = num;
+      showFeedback('❌ '+p.name+' salah! ('+p.wrongCount+'/5) Tetap di petak '+pos+', harus jawab lagi.');
+      renderScoreboard();
+      setTimeout(endTurn, 700);
+    }
   }
 }
 
@@ -650,14 +582,14 @@ function endGame(winner){
 
 function initGame(){
   positions = {}; scores = {};
-  players.forEach(p=>{ positions[p.id] = 0; scores[p.id] = 0; p.stuck=false; p.wrongCount=0; });
+  players.forEach(p=>{ positions[p.id] = 1; scores[p.id] = 0; });
   turnOrder = players.slice();
   currentTurnIdx = 0;
   busy = false;
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('rollBtn').disabled = false;
   buildBoard();
-  players.forEach(p=> placeToken(p.id, 0, false));
+  players.forEach(p=> placeToken(p.id, 1, false));
   updateTurnBar();
   renderScoreboard();
 }
@@ -695,7 +627,7 @@ function startGame(){
     const def = PLAYER_DEFS[i];
     const input = document.getElementById('nameInput_' + i);
     const name = (input && input.value.trim()) ? input.value.trim() : def.defaultName;
-    players.push({ id: def.id, name: name, color: def.color, textColor: def.textColor, emoji: def.emoji, stuck:false, wrongCount:0 });
+    players.push({ id: def.id, name: name, color: def.color, textColor: def.textColor, emoji: def.emoji, stuck:false, wrongCount:0, stuckType:null, stuckNum:null });
   }
   document.getElementById('setupOverlay').classList.remove('show');
   initGame();
