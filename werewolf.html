@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penjaga Desa: Perburuan Serigala Dusta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night-void:#0a0b16;
+    --night-deep:#12142a;
+    --night-fog:#1b1e3a;
+    --moon-glow:#eae6d6;
+    --moon-glow-dim:#c9c4ac;
+    --blood-moon:#b3273f;
+    --blood-moon-glow:rgba(179,39,63,.45);
+    --truth-gold:#d1a537;
+    --truth-gold-glow:rgba(209,165,55,.4);
+    --parchment:#cfd2e8;
+    --parchment-dim:#8a8db3;
+    --line:#2c2f52;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, #1f2348 0%, transparent 60%),
+      linear-gradient(180deg, var(--night-void) 0%, #0d0f20 55%, #08091a 100%);
+    color:var(--parchment);
+    font-family:'Spectral', serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* stars */
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.7;}
+  .stars span{position:absolute;width:2px;height:2px;background:var(--moon-glow);border-radius:50%;animation:twinkle 4s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.15;}50%{opacity:.9;}}
+  @media (prefers-reduced-motion: reduce){
+    .stars span{animation:none;opacity:.4;}
+    *{animation-duration:.001ms !important;}
+  }
+
+  /* rooftop silhouette */
+  .village-line{
+    position:fixed;bottom:0;left:0;width:100%;height:16vh;min-height:110px;
+    z-index:1;pointer-events:none;
+  }
+  .village-line svg{width:100%;height:100%;display:block;}
+
+  .wrap{position:relative;z-index:2;max-width:760px;margin:0 auto;padding:36px 20px 64px;min-height:100vh;display:flex;flex-direction:column;}
+
+  /* ---------- moon (signature element) ---------- */
+  .moon-stage{display:flex;justify-content:center;margin-bottom:10px;}
+  .moon{
+    width:104px;height:104px;border-radius:50%;position:relative;
+    background: radial-gradient(circle at 38% 34%, var(--moon-glow) 0%, var(--moon-glow-dim) 55%, #7d7a63 100%);
+    box-shadow: 0 0 26px 6px var(--truth-gold-glow), 0 0 70px 14px rgba(209,165,55,.12);
+    transition: box-shadow .6s ease, filter .6s ease;
+  }
+  .moon.wounded{
+    background: radial-gradient(circle at 38% 34%, #d8b9ba 0%, #9a5461 50%, #55212c 100%);
+    box-shadow: 0 0 26px 8px var(--blood-moon-glow), 0 0 70px 16px rgba(179,39,63,.18);
+  }
+  .moon::after{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    background:rgba(10,11,22, calc(1 - var(--phase, 0.15)));
+    clip-path: inset(0 0 0 0);
+    transform: translateX(calc(var(--phase, 0.15) * 40%));
+    transition: transform .8s ease, background .6s ease;
+  }
+  .moon-caption{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--parchment-dim);margin-top:10px;}
+
+  /* ---------- header bits ---------- */
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--truth-gold);text-align:center;margin-bottom:8px;
+  }
+  h1{
+    font-family:'Cinzel',serif;font-weight:900;text-align:center;
+    font-size:clamp(28px,5vw,44px);line-height:1.1;letter-spacing:.01em;
+    margin:0 0 14px;color:var(--moon-glow);
+    text-shadow:0 0 24px rgba(234,230,214,.18);
+  }
+  .lede{text-align:center;color:var(--parchment-dim);font-size:16px;max-width:520px;margin:0 auto 30px;line-height:1.6;}
+  .lede em{color:var(--parchment);font-style:normal;border-bottom:1px dashed var(--line);}
+
+  /* ---------- panel / card ---------- */
+  .panel{
+    background:linear-gradient(180deg, var(--night-fog), var(--night-deep));
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:28px 26px;
+    position:relative;
+  }
+  .panel::before{
+    content:"";position:absolute;inset:0;border-radius:4px;pointer-events:none;
+    box-shadow: inset 0 0 40px rgba(0,0,0,.4);
+  }
+
+  /* ---------- start screen ---------- */
+  .rules{list-style:none;margin:22px 0 28px;padding:0;display:grid;gap:12px;}
+  .rules li{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;color:var(--parchment);}
+  .rules .mark{font-family:'Cinzel',serif;color:var(--truth-gold);font-weight:700;flex:none;width:22px;text-align:center;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-family:'Cinzel',serif;font-weight:700;letter-spacing:.04em;font-size:15px;
+    color:var(--night-void);background:linear-gradient(180deg,#e6c765,var(--truth-gold));
+    border:none;border-radius:3px;padding:14px 26px;cursor:pointer;
+    box-shadow:0 0 0 1px rgba(0,0,0,.2), 0 8px 22px rgba(209,165,55,.25);
+    transition:transform .15s ease, box-shadow .15s ease;
+    width:100%;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(0,0,0,.2), 0 12px 26px rgba(209,165,55,.35);}
+  .btn:focus-visible{outline:3px solid var(--moon-glow);outline-offset:3px;}
+  .btn.ghost{
+    background:transparent;color:var(--parchment);
+    border:1px solid var(--line);box-shadow:none;
+  }
+  .btn.ghost:hover{border-color:var(--truth-gold);color:var(--truth-gold);}
+
+  /* ---------- HUD ---------- */
+  .hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:14px;}
+  .hud-block{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--parchment-dim);letter-spacing:.08em;}
+  .hud-count{color:var(--moon-glow);font-size:14px;}
+  .torches{display:flex;gap:6px;}
+  .torch{width:16px;height:22px;position:relative;}
+  .torch svg{width:100%;height:100%;}
+  .torch.out svg .flame{opacity:.12;}
+  .torch.out svg .glow{opacity:0;}
+  .progress-track{height:4px;background:var(--night-void);border-radius:2px;overflow:hidden;margin-bottom:26px;border:1px solid var(--line);}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--truth-gold),var(--moon-glow));width:0%;transition:width .5s ease;}
+
+  /* ---------- question card ---------- */
+  .rumor-tag{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--parchment-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  }
+  .rumor-tag::before{content:"🐺";filter:grayscale(1) brightness(1.4);}
+  .question-text{font-size:18px;line-height:1.55;color:var(--moon-glow);margin:0 0 22px;white-space:pre-line;}
+  .options{display:grid;gap:10px;}
+  .option{
+    text-align:left;background:rgba(255,255,255,.02);
+    border:1px solid var(--line);border-radius:3px;
+    padding:13px 16px;font-family:'Spectral',serif;font-size:15px;color:var(--parchment);
+    cursor:pointer;display:flex;gap:12px;align-items:flex-start;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .option:hover:not(:disabled){border-color:var(--parchment-dim);background:rgba(255,255,255,.05);}
+  .option:focus-visible{outline:3px solid var(--moon-glow);outline-offset:2px;}
+  .option .letter{
+    font-family:'Cinzel',serif;font-weight:700;color:var(--truth-gold);flex:none;width:18px;
+  }
+  .option:disabled{cursor:default;}
+  .option.correct{border-color:var(--truth-gold);background:rgba(209,165,55,.1);}
+  .option.correct .letter{color:var(--truth-gold);}
+  .option.wrong{border-color:var(--blood-moon);background:rgba(179,39,63,.1);}
+  .option.wrong .letter{color:var(--blood-moon);}
+  .option.dim{opacity:.45;}
+
+  .feedback{
+    margin-top:20px;padding:16px 18px;border-radius:3px;
+    border:1px solid var(--line);background:rgba(0,0,0,.2);
+    display:none;
+  }
+  .feedback.show{display:block;animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  .feedback .verdict{font-family:'Cinzel',serif;font-weight:700;font-size:14px;letter-spacing:.03em;margin-bottom:6px;}
+  .feedback.win .verdict{color:var(--truth-gold);}
+  .feedback.lose .verdict{color:var(--blood-moon);}
+  .feedback .badge{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--night-void);background:var(--parchment-dim);
+    padding:2px 8px;border-radius:2px;margin-bottom:10px;
+  }
+  .feedback p{margin:0;font-size:14.5px;color:var(--parchment);line-height:1.6;}
+
+  .next-row{margin-top:20px;display:none;}
+  .next-row.show{display:block;}
+
+  /* ---------- end screen ---------- */
+  .end-icon{text-align:center;font-size:46px;margin-bottom:6px;}
+  .end-title{font-family:'Cinzel',serif;font-weight:900;text-align:center;font-size:clamp(24px,4.5vw,32px);color:var(--moon-glow);margin:0 0 10px;}
+  .end-sub{text-align:center;color:var(--parchment-dim);margin:0 0 26px;font-size:15px;}
+  .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:26px;}
+  .stat{border:1px solid var(--line);border-radius:3px;padding:16px;text-align:center;background:rgba(255,255,255,.02);}
+  .stat .num{font-family:'Cinzel',serif;font-size:28px;color:var(--truth-gold);display:block;}
+  .stat .lbl{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--parchment-dim);}
+  .recap{margin:0 0 26px;padding:16px;border:1px solid var(--line);border-radius:3px;background:rgba(0,0,0,.15);}
+  .recap-title{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--parchment-dim);margin-bottom:10px;}
+  .recap ul{margin:0;padding-left:18px;color:var(--parchment);font-size:13.5px;line-height:1.9;}
+
+  .screen{display:none;}
+  .screen.active{display:block;animation:fadein .4s ease;}
+
+  footer{text-align:center;margin-top:auto;padding-top:36px;color:var(--parchment-dim);font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.08em;}
+
+  @media (max-width:480px){
+    .panel{padding:22px 18px;}
+    .stat-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="village-line">
+  <svg viewBox="0 0 1200 160" preserveAspectRatio="none">
+    <polygon points="0,160 0,90 40,90 40,60 80,60 80,95 130,95 130,50 150,30 170,50 170,95 230,95 230,70 270,70 270,100 320,100 320,55 345,35 370,55 370,100 430,100 430,80 470,80 470,110 530,110 530,60 555,40 580,60 580,110 650,110 650,85 700,85 700,115 760,115 760,65 785,45 810,65 810,115 880,115 880,90 930,90 930,120 1000,120 1000,70 1025,50 1050,70 1050,120 1120,120 1120,95 1160,95 1160,125 1200,125 1200,160"
+      fill="#05060d" stroke="#1b1e3a" stroke-width="1"/>
+  </svg>
+</div>
+
+<div class="wrap">
+
+  <div class="moon-stage"><div class="moon" id="moon" style="--phase:0.15"></div></div>
+  <div class="moon-caption" id="moonCaption">bulan sabit &mdash; belum ada ronda</div>
+
+  <!-- START SCREEN -->
+  <section class="screen active" id="screen-start">
+    <div class="eyebrow">Ronda Malam Desa</div>
+    <h1>Penjaga Desa: Perburuan Serigala Dusta</h1>
+    <p class="lede">Setiap malam, desas-desus menyusup masuk desa berwujud pesan berantai, video lawas, dan klaim "ahli" di media sosial. Sebagai <em>Penjaga Desa</em>, tugasmu memeriksa setiap kabar dengan kerangka <em>CRAAP</em> &mdash; Currency, Relevance, Authority, Accuracy, Purpose &mdash; sebelum kabut kebohongan menelan desa.</p>
+    <div class="panel">
+      <ul class="rules">
+        <li><span class="mark">I</span> 20 desas-desus akan diuji, satu per satu di sepanjang ronda malam.</li>
+        <li><span class="mark">II</span> Kamu memiliki 3 obor. Setiap jawaban keliru memadamkan satu obor.</li>
+        <li><span class="mark">III</span> Bulan akan membesar setiap kali kamu benar mengenali kebenaran &mdash; dan memerah bila kamu tertipu.</li>
+        <li><span class="mark">IV</span> Habiskan obormu, dan kabut menelan desa sebelum fajar tiba.</li>
+      </ul>
+      <button class="btn" id="btnStart">Mulai Ronda Malam</button>
+    </div>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section class="screen" id="screen-game">
+    <div class="hud">
+      <div class="hud-block">DESAS-DESUS <span class="hud-count" id="qIndex">1</span> / 20</div>
+      <div class="torches" id="torches"></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="panel">
+      <div class="rumor-tag" id="rumorTag">Desas-desus malam ke-1</div>
+      <p class="question-text" id="questionText"></p>
+      <div class="options" id="options"></div>
+
+      <div class="feedback" id="feedback">
+        <span class="badge" id="feedbackBadge">CRAAP</span>
+        <div class="verdict" id="feedbackVerdict"></div>
+        <p id="feedbackText"></p>
+      </div>
+
+      <div class="next-row" id="nextRow">
+        <button class="btn" id="btnNext">Lanjutkan Ronda &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- END SCREEN -->
+  <section class="screen" id="screen-end">
+    <div class="end-icon" id="endIcon">🌕</div>
+    <div class="end-title" id="endTitle">Fajar Tiba</div>
+    <p class="end-sub" id="endSub"></p>
+    <div class="panel">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="statCorrect">0</span><span class="lbl">Terungkap Benar</span></div>
+        <div class="stat"><span class="num" id="statTorches">0</span><span class="lbl">Obor Tersisa</span></div>
+      </div>
+      <div class="recap">
+        <div class="recap-title">Catatan Ronda</div>
+        <ul id="recapList"></ul>
+      </div>
+      <button class="btn" id="btnRestart">Ronda Ulang dari Awal</button>
+    </div>
+  </section>
+
+  <footer>Latihan literasi digital &middot; kerangka evaluasi CRAAP</footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------
+// Data: 20 soal literasi digital (CRAAP) dari materi yang diunggah
+// ---------------------------------------------------------------
+const QUESTIONS = [
+{q:"\u201cBesok sekolah diliburkan karena cuaca ekstrem. Informasi ini sudah dikonfirmasi oleh banyak orang tua.\u201d\nPesan tersebut telah diteruskan ke beberapa grup. Tindakan pertama yang paling tepat adalah ...",
+ opts:["Mempercayainya karena sudah dikonfirmasi oleh banyak orang tua.","Menanyakan kepada pengirim siapa orang pertama yang menyebarkan informasi tersebut.","Membandingkan informasi dengan pengumuman resmi sekolah atau sumber berwenang.","Menunggu sampai sebagian besar anggota grup menyatakan informasi tersebut benar.","Menganggapnya benar jika isi pesan mencantumkan tanggal dan alasan yang masuk akal."],
+ correct:2, tag:"Verifikasi Sumber",
+ note:"Kabar penting selalu dicocokkan ke sumber resmi yang berwenang mengumumkannya, bukan ke banyaknya orang yang meneruskannya."},
+
+{q:"\u201cBeginilah kondisi jalan kota kita setelah hujan semalam!\u201d\nSeorang siswa langsung menyimpulkan bahwa video tersebut benar-benar terjadi di kotanya.\nKesalahan utama dalam proses berpikir siswa tersebut adalah ...",
+ opts:["Tidak memeriksa kualitas video.","Tidak memeriksa apakah video tersebut pernah digunakan sebelumnya dalam konteks berbeda.","Tidak membaca komentar pengguna lain.","Tidak menghitung jumlah orang yang membagikan video tersebut.","Tidak membandingkan kualitas kamera dengan video lain."],
+ correct:1, tag:"Accuracy",
+ note:"Video lama yang didaur ulang dengan klaim baru adalah pola hoaks umum \u2014 selalu telusuri asal-usul dan konteks aslinya sebelum percaya."},
+
+{q:"Siswa menemukan dua artikel mengenai dampak penggunaan AI dalam pendidikan. Artikel pertama diterbitkan tahun 2026 oleh lembaga penelitian pendidikan. Artikel kedua diterbitkan tahun 2021 oleh blog pribadi.\nJika kedua artikel memiliki kesimpulan yang berbeda, aspek CRAAP yang paling awal perlu diperhatikan untuk menjelaskan kemungkinan perbedaan relevansi informasi adalah ...",
+ opts:["Purpose","Authority","Currency","Accuracy","Relevance"],
+ correct:2, tag:"Currency",
+ note:"Selisih waktu terbit lima tahun pada topik yang bergerak cepat seperti AI membuat Currency (kebaruan informasi) menjadi hal pertama yang perlu dicek."},
+
+{q:"\u201cSaya ahli keamanan siber selama 15 tahun, jadi semua informasi tentang keamanan digital yang saya sampaikan pasti benar.\u201d\nAkun tersebut memiliki 500.000 pengikut.\nKesimpulan yang paling tepat adalah ...",
+ opts:["Informasinya dapat dipercaya karena pengalaman lebih penting daripada sumber lain.","Informasinya kemungkinan benar karena memiliki banyak pengikut.","Klaim keahlian perlu diverifikasi melalui identitas, rekam jejak, dan sumber pendukung.","Informasinya salah karena disampaikan melalui media sosial.","Jumlah pengikut dapat digunakan sebagai bukti utama otoritas seseorang."],
+ correct:2, tag:"Authority",
+ note:"Klaim keahlian dan jumlah pengikut bukan bukti otoritas dengan sendirinya \u2014 identitas dan rekam jejak tetap perlu ditelusuri."},
+
+{q:"Sebuah berita memiliki judul:\n\u201cTERBUKTI! Bermain Game 2 Jam Sehari Membuat IQ Turun Drastis!\u201d\nKetika artikel dibaca, ternyata penelitian hanya menemukan hubungan antara pola penggunaan game tertentu dan beberapa indikator kognitif pada kelompok tertentu.\nMasalah utama judul tersebut adalah ...",
+ opts:["Informasi menggunakan bahasa Indonesia yang terlalu emosional.","Kesimpulan judul lebih luas daripada bukti penelitian yang dijelaskan.","Penelitian seharusnya selalu menggunakan judul yang netral.","Artikel tidak dapat dipercaya karena membahas game.","Semua penelitian tentang IQ harus dilakukan di sekolah."],
+ correct:1, tag:"Accuracy",
+ note:"Judul yang mengklaim \u2018terbukti\u2019 dan \u2018drastis\u2019 melampaui apa yang benar-benar ditemukan penelitian \u2014 klaim harus sepadan dengan buktinya."},
+
+{q:"Sebuah situs menjelaskan:\n\u201cProduk kami adalah solusi terbaik untuk meningkatkan keamanan rumah. Berdasarkan penelitian kami, 98% pengguna merasa produk ini sangat efektif.\u201d\nSitus tersebut juga menyediakan tombol \u201cBeli Sekarang\u201d di hampir setiap bagian halaman.\nAspek CRAAP yang paling perlu dicermati adalah ...",
+ opts:["Currency","Relevance","Authority","Accuracy","Purpose"],
+ correct:4, tag:"Purpose",
+ note:"Halaman yang dipenuhi tombol \u2018Beli Sekarang\u2019 punya tujuan komersial \u2014 Purpose situs mengarahkan kita untuk skeptis pada angka yang disajikan sendiri oleh penjual."},
+
+{q:"Seorang siswa melakukan penelitian tentang kebiasaan penggunaan internet siswa SMK di sekolahnya.\nManakah yang merupakan data primer paling tepat?",
+ opts:["Artikel jurnal tentang penggunaan internet remaja.","Statistik penggunaan internet dari BPS.","Data hasil kuesioner yang diberikan kepada siswa sekolah tersebut.","Infografis dari sebuah perusahaan teknologi.","Artikel berita mengenai perilaku digital remaja."],
+ correct:2, tag:"Metodologi Riset",
+ note:"Data primer diperoleh langsung dari subjek penelitian \u2014 kuesioner ke siswa sekolah itu sendiri, bukan hasil rangkuman pihak lain."},
+
+{q:"Seorang siswa mengatakan:\n\u201cSaya tidak perlu melakukan survei. Saya sudah menemukan data dari internet yang menunjukkan bahwa 70% remaja menggunakan media sosial setiap hari.\u201d\nGuru bertanya apakah data tersebut dapat langsung digunakan untuk menyimpulkan kondisi siswa di sekolahnya.\nJawaban paling tepat adalah ...",
+ opts:["Bisa, karena data internet selalu lebih luas daripada survei sekolah.","Bisa, selama persentasenya terlihat masuk akal.","Tidak selalu, karena populasi, metode, waktu, dan konteks pengambilan data perlu dibandingkan.","Tidak bisa, karena data internet bukan data ilmiah.","Tidak bisa, karena penelitian siswa wajib menggunakan data primer."],
+ correct:2, tag:"Relevance",
+ note:"Data dari populasi dan konteks lain tidak otomatis berlaku untuk populasi yang sedang diteliti \u2014 kecocokan konteksnya wajib diperiksa dulu."},
+
+{q:"Siswa menemukan dua sumber tentang keamanan password.\nSumber A: Blog pribadi tanpa identitas penulis.\nSumber B: Dokumentasi resmi lembaga keamanan siber dengan penulis dan tanggal publikasi yang jelas.\nJika isi keduanya hampir sama, sumber B lebih kuat terutama karena ...",
+ opts:["Bahasanya lebih formal.","Situs resmi selalu benar dalam semua keadaan.","Identitas dan otoritas sumber lebih mudah diverifikasi.","Blog pribadi tidak boleh digunakan dalam penelitian.","Situs pemerintah atau lembaga resmi tidak mungkin melakukan kesalahan."],
+ correct:2, tag:"Authority",
+ note:"Kejelasan identitas penulis dan lembaga penerbit membuat otoritas sumber B jauh lebih mudah diverifikasi dibanding blog anonim."},
+
+{q:"Sebuah unggahan menyatakan:\n\u201cPenelitian membuktikan bahwa belajar sambil mendengarkan musik meningkatkan nilai ujian.\u201d\nKetika ditelusuri, sumber penelitian sebenarnya hanya mengatakan bahwa sebagian peserta merasa lebih nyaman belajar sambil mendengarkan musik.\nAspek CRAAP yang paling bermasalah adalah ...",
+ opts:["Currency","Relevance","Authority","Accuracy","Purpose"],
+ correct:3, tag:"Accuracy",
+ note:"Klaim \u2018terbukti meningkatkan nilai\u2019 tidak sesuai dengan temuan asli yang hanya soal kenyamanan \u2014 ini pelanggaran Accuracy yang jelas."},
+
+{q:"Seorang siswa menggunakan artikel tahun 2015 untuk menjelaskan:\n\u201cTeknologi AI yang paling populer digunakan siswa saat ini.\u201d\nGuru meminta siswa mengevaluasi kembali sumber tersebut.\nAlasan paling kuat adalah ...",
+ opts:["Semua sumber lama otomatis salah.","Informasi teknologi dapat berubah cepat sehingga data lama mungkin tidak merepresentasikan kondisi saat ini.","Artikel lama tidak boleh digunakan untuk penelitian.","Teknologi tidak dapat diteliti menggunakan artikel ilmiah.","Sumber baru selalu lebih benar daripada sumber lama."],
+ correct:1, tag:"Currency",
+ note:"Bukan soal \u2018lama pasti salah\u2019, tapi topik yang cepat berubah seperti teknologi butuh sumber yang cukup mutakhir agar tetap relevan."},
+
+{q:"Siswa ingin mengetahui:\n\u201cApakah penggunaan chatbot AI membantu siswa kelas X memahami materi Informatika?\u201d\nIa menemukan artikel tentang penggunaan AI oleh dokter di rumah sakit.\nMenurut aspek Relevance, masalah utama sumber tersebut adalah ...",
+ opts:["Artikel tersebut pasti tidak akurat.","Artikel tersebut tidak memiliki data.","Konteks subjek penelitian berbeda dengan masalah yang sedang dikaji.","Artikel tentang kesehatan tidak boleh digunakan dalam penelitian pendidikan.","Penelitian tersebut pasti menggunakan teknologi yang berbeda."],
+ correct:2, tag:"Relevance",
+ note:"Sumber bisa saja akurat, tapi konteksnya (dokter vs siswa) berbeda dari pertanyaan penelitian, sehingga relevansinya lemah."},
+
+{q:"Sebuah artikel mempunyai: logo universitas, desain profesional, banyak grafik, bahasa akademik, tetapi tidak mencantumkan referensi penelitian.\nKesimpulan yang paling tepat adalah ...",
+ opts:["Artikel pasti ilmiah karena menggunakan logo universitas.","Artikel pasti benar karena memiliki grafik.","Artikel dapat dipercaya karena tampilannya profesional.","Tampilan profesional belum cukup; klaim tetap perlu ditelusuri ke bukti dan sumber yang dapat diverifikasi.","Artikel harus dianggap palsu karena tidak memiliki referensi."],
+ correct:3, tag:"Authority & Accuracy",
+ note:"Tampilan meyakinkan bukan pengganti bukti \u2014 tanpa referensi yang bisa ditelusuri, klaim akademisnya belum bisa diverifikasi."},
+
+{q:"Sebuah akun menyatakan:\n\u201cIndonesia adalah negara dengan pengguna media sosial terbanyak di dunia.\u201d\nUntuk memeriksa klaim tersebut secara serius, langkah paling tepat adalah ...",
+ opts:["Melihat jumlah komentar pada unggahan tersebut.","Mencari unggahan lain yang mengatakan hal serupa.","Mencari data statistik terbaru dari sumber terpercaya dan memeriksa definisi serta periode datanya.","Mempercayai klaim jika akun tersebut memiliki banyak pengikut.","Menggunakan jumlah pengguna media sosial Indonesia dari tahun berapa pun."],
+ correct:2, tag:"Accuracy",
+ note:"Klaim statistik hanya bisa diverifikasi lewat sumber data terpercaya, dengan definisi dan periode data yang jelas \u2014 bukan lewat popularitas unggahan."},
+
+{q:"Sebuah perusahaan menjual aplikasi belajar AI. Dalam websitenya terdapat pernyataan:\n\u201cAplikasi kami terbukti meningkatkan hasil belajar siswa hingga 80%.\u201d\nPerusahaan menyertakan hasil survei terhadap 100 pengguna aplikasinya sendiri.\nApa pertanyaan kritis yang paling tepat?",
+ opts:["Mengapa perusahaan menggunakan warna tertentu pada websitenya?","Apakah jumlah pengguna aplikasi cukup banyak untuk disebut populer?","Siapa yang melakukan penelitian, bagaimana sampelnya dipilih, dan apakah terdapat pembanding?","Apakah aplikasinya memiliki desain modern?","Apakah 80% merupakan angka yang besar?"],
+ correct:2, tag:"Purpose",
+ note:"Survei oleh perusahaan terhadap penggunanya sendiri rawan bias \u2014 pertanyaan kritis harus menyasar metodologi, sampel, dan kelompok pembanding."},
+
+{q:"Seorang siswa menemukan berita tentang gempa dari akun media sosial yang tidak dikenal. Untuk memastikan informasi tersebut, ia menemukan tiga akun lain yang menyalin berita yang sama.\nIa kemudian menyimpulkan:\n\u201cBerarti berita tersebut benar karena ada empat sumber.\u201d\nEvaluasi terhadap kesimpulan tersebut adalah ...",
+ opts:["Benar, karena empat sumber lebih kuat daripada satu sumber.","Benar, selama keempat akun menggunakan bahasa yang berbeda.","Belum tentu benar karena empat akun tersebut mungkin hanya mengutip satu sumber awal yang sama.","Salah karena informasi media sosial tidak boleh dipercaya.","Salah karena pemeriksaan fakta hanya membutuhkan satu sumber resmi."],
+ correct:2, tag:"Accuracy",
+ note:"Menyalin bukan mengonfirmasi \u2014 empat akun yang mengutip satu sumber awal yang sama tetaplah satu titik kegagalan, bukan empat bukti independen."},
+
+{q:"Seorang siswa mendapatkan artikel dengan kondisi berikut: diterbitkan dua minggu lalu; penulis memiliki gelar yang relevan; mencantumkan 15 referensi; membahas topik yang sesuai dengan penelitian; tetapi artikel tersebut dibuat untuk mempromosikan produk perusahaan.\nAspek yang perlu dianalisis secara bersamaan, bukan hanya satu, adalah ...",
+ opts:["Currency dan Relevance saja.","Authority dan Accuracy saja.","Purpose saja karena artikel promosi pasti salah.","Seluruh unsur CRAAP untuk melihat kualitas sumber secara menyeluruh.","Jumlah referensi karena banyak referensi berarti pasti valid."],
+ correct:3, tag:"Semua Aspek CRAAP",
+ note:"Sumber ini kuat di banyak aspek tapi punya kepentingan komersial \u2014 hanya evaluasi CRAAP menyeluruh yang menangkap gambaran lengkapnya."},
+
+{q:"Guru memberikan dua informasi:\nInformasi A: \u201cMenurut saya, penggunaan AI sangat membantu siswa.\u201d\nInformasi B: \u201cDalam penelitian terhadap 1.200 siswa, kelompok yang menggunakan AI dengan pendampingan guru menunjukkan peningkatan skor rata-rata sebesar 12% dibandingkan kelompok kontrol.\u201d\nInformasi B lebih kuat sebagai dasar argumen ilmiah terutama karena ...",
+ opts:["Menggunakan angka sehingga otomatis benar.","Memiliki klaim yang lebih spesifik dan menyertakan informasi mengenai penelitian yang dapat ditelusuri.","Pendapat pribadi tidak pernah boleh digunakan dalam diskusi.","Penelitian dengan kelompok kontrol selalu menghasilkan kebenaran mutlak.","Angka 12% lebih meyakinkan daripada kalimat biasa."],
+ correct:1, tag:"Accuracy",
+ note:"Kekuatan Informasi B bukan sekadar karena ada angka, tapi karena klaimnya spesifik dan metodenya bisa ditelusuri dan diperiksa ulang."},
+
+{q:"Anda diminta mencari informasi mengenai aturan perlindungan data pribadi terbaru di Indonesia.\nManakah strategi pencarian yang paling kuat?",
+ opts:["Mencari video TikTok terbaru tentang UU tersebut.","Menggunakan artikel blog yang memiliki banyak komentar.","Mengutamakan dokumen regulasi resmi dan kemudian menggunakan sumber akademik/tepercaya untuk membantu memahami konteksnya.","Menggunakan hasil pencarian pertama karena mesin pencari telah melakukan penyaringan.","Memilih artikel dengan jumlah share paling banyak."],
+ correct:2, tag:"Authority",
+ note:"Dokumen regulasi resmi adalah sumber primer yang paling berwenang, baru dilengkapi sumber akademik untuk membantu memahami konteksnya."},
+
+{q:"\u201cMulai semester depan semua tugas sekolah harus dibuat menggunakan AI. Katanya ini sudah menjadi aturan baru pemerintah.\u201d\nSiswa A langsung percaya karena pesan dikirim oleh ketua kelas.\nSiswa B menolak karena menurutnya AI merusak pendidikan.\nSiswa C mencari dokumen regulasi resmi, memeriksa tanggalnya, melihat lembaga yang menerbitkan, membandingkan dengan berita dari media kredibel, kemudian memeriksa apakah isi pesan sesuai dengan dokumen asli.\nSiapakah yang menunjukkan proses pemeriksaan fakta paling tepat?",
+ opts:["Siswa A, karena informasi berasal dari orang yang dipercaya.","Siswa B, karena menggunakan sikap kritis terhadap teknologi.","Siswa C, karena memeriksa klaim melalui sumber primer dan melakukan verifikasi silang.","Siswa A dan B, karena keduanya memiliki pendapat yang berbeda.","Semua benar karena pemeriksaan fakta bergantung pada sudut pandang masing-masing."],
+ correct:2, tag:"Verifikasi Silang",
+ note:"Siswa C menjalankan seluruh siklus CRAAP: memeriksa Currency, Authority, dan Accuracy lewat sumber primer serta verifikasi silang \u2014 bukan sekadar percaya atau menolak begitu saja."}
+];
+
+const LETTERS = ["A","B","C","D","E"];
+const MAX_LIVES = 3;
+
+let state = {
+  idx: 0,
+  lives: MAX_LIVES,
+  correct: 0,
+  log: [] // {tag, wasCorrect}
+};
+
+// ---------------- stars ----------------
+(function makeStars(){
+  const box = document.getElementById('stars');
+  const n = 70;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = Math.random()*70 + '%';
+    s.style.animationDelay = (Math.random()*4) + 's';
+    s.style.opacity = (0.2 + Math.random()*0.6).toFixed(2);
+    box.appendChild(s);
+  }
+})();
+
+function torchSVG(){
+  return '<svg viewBox="0 0 16 22" fill="none"><path class="glow" d="M8 2c1.2 2 2.4 3.4 2.4 5.2C10.4 8.6 9.3 9.6 8 9.6S5.6 8.6 5.6 7.2C5.6 5.4 6.8 4 8 2z" fill="#d1a537"/><path class="flame" d="M8 3.4c.9 1.6 1.7 2.7 1.7 4 0 1-.8 1.7-1.7 1.7s-1.7-.7-1.7-1.7c0-1.3.8-2.4 1.7-4z" fill="#eae6d6"/><rect x="6.8" y="9.4" width="2.4" height="10.6" rx="1" fill="#4a3524"/><rect x="5.6" y="18.6" width="4.8" height="2.4" rx="1" fill="#2c2013"/></svg>';
+}
+
+function screens(){
+  return {
+    start: document.getElementById('screen-start'),
+    game: document.getElementById('screen-game'),
+    end: document.getElementById('screen-end')
+  };
+}
+function showScreen(name){
+  const s = screens();
+  Object.values(s).forEach(el=>el.classList.remove('active'));
+  s[name].classList.add('active');
+}
+
+function updateMoon(){
+  const moon = document.getElementById('moon');
+  const cap = document.getElementById('moonCaption');
+  const phase = Math.max(0.05, 1 - (state.correct / 20)); // 1=new moon(dark) ... 0=full
+  moon.style.setProperty('--phase', phase.toFixed(2));
+
+  const woundRatio = (MAX_LIVES - state.lives) / MAX_LIVES;
+  if(woundRatio > 0){
+    moon.classList.add('wounded');
+  } else {
+    moon.classList.remove('wounded');
+  }
+
+  if(state.correct === 0 && state.lives === MAX_LIVES){
+    cap.textContent = 'bulan sabit — belum ada ronda';
+  } else if(state.lives === 0){
+    cap.textContent = 'bulan darah — desa dalam bahaya';
+  } else if(state.correct >= 16){
+    cap.textContent = 'purnama nyaris sempurna — desa hampir aman';
+  } else if(woundRatio > 0){
+    cap.textContent = 'bulan menggeliat — beberapa obor padam';
+  } else {
+    cap.textContent = 'bulan membesar — kebenaran terungkap';
+  }
+}
+
+function renderTorches(){
+  const box = document.getElementById('torches');
+  box.innerHTML = '';
+  for(let i=0;i<MAX_LIVES;i++){
+    const d = document.createElement('div');
+    d.className = 'torch' + (i < state.lives ? '' : ' out');
+    d.innerHTML = torchSVG();
+    box.appendChild(d);
+  }
+}
+
+function startGame(){
+  state = {idx:0, lives:MAX_LIVES, correct:0, log:[]};
+  showScreen('game');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[state.idx];
+  document.getElementById('qIndex').textContent = (state.idx+1);
+  document.getElementById('rumorTag').textContent = 'Desas-desus malam ke-' + (state.idx+1);
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('progressFill').style.width = ((state.idx)/20*100) + '%';
+
+  renderTorches();
+  updateMoon();
+
+  const optBox = document.getElementById('options');
+  optBox.innerHTML = '';
+  q.opts.forEach((text, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span><span>' + text + '</span>';
+    btn.addEventListener('click', ()=>selectAnswer(i));
+    optBox.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextRow').className = 'next-row';
+}
+
+function selectAnswer(i){
+  const q = QUESTIONS[state.idx];
+  const wasCorrect = (i === q.correct);
+  const optBtns = document.querySelectorAll('#options .option');
+  optBtns.forEach((btn, idx)=>{
+    btn.disabled = true;
+    if(idx === q.correct) btn.classList.add('correct');
+    if(idx === i && !wasCorrect) btn.classList.add('wrong');
+    if(idx !== i && idx !== q.correct) btn.classList.add('dim');
+  });
+
+  if(wasCorrect){
+    state.correct++;
+  } else {
+    state.lives = Math.max(0, state.lives - 1);
+  }
+  state.log.push({tag:q.tag, wasCorrect});
+
+  renderTorches();
+  updateMoon();
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (wasCorrect ? 'win' : 'lose');
+  document.getElementById('feedbackBadge').textContent = q.tag;
+  document.getElementById('feedbackVerdict').textContent = wasCorrect
+    ? 'Kebenaran terungkap. Sang penyesat tersingkir.'
+    : 'Kabut mengelabuimu. Satu obor padam.';
+  document.getElementById('feedbackText').textContent = q.note;
+
+  document.getElementById('nextRow').className = 'next-row show';
+  document.getElementById('progressFill').style.width = ((state.idx+1)/20*100) + '%';
+
+  document.getElementById('btnNext').onclick = ()=>{
+    if(state.lives <= 0){
+      endGame('defeat');
+      return;
+    }
+    state.idx++;
+    if(state.idx >= QUESTIONS.length){
+      endGame('victory');
+    } else {
+      renderQuestion();
+    }
+  };
+}
+
+function endGame(kind){
+  showScreen('end');
+  const icon = document.getElementById('endIcon');
+  const title = document.getElementById('endTitle');
+  const sub = document.getElementById('endSub');
+
+  document.getElementById('statCorrect').textContent = state.correct + ' / 20';
+  document.getElementById('statTorches').textContent = state.lives + ' / ' + MAX_LIVES;
+
+  if(kind === 'defeat'){
+    icon.textContent = '🐺';
+    title.textContent = 'Kabut Menelan Desa';
+    sub.textContent = 'Ketiga obor padam sebelum fajar. Sang penyesat berhasil bersembunyi di antara warga.';
+  } else if(state.correct >= 18){
+    icon.textContent = '🌕';
+    title.textContent = 'Detektif Paling Dipercaya Desa';
+    sub.textContent = 'Nyaris setiap desas-desus berhasil kau bongkar dengan kerangka CRAAP. Desa aman berkat kejelianmu.';
+  } else if(state.correct >= 14){
+    icon.textContent = '🌔';
+    title.textContent = 'Penjaga Desa yang Andal';
+    sub.textContent = 'Sebagian besar kebohongan berhasil kau ungkap. Masih ada beberapa celah untuk diasah.';
+  } else {
+    icon.textContent = '🌓';
+    title.textContent = 'Fajar Tiba, Namun Belum Tenang';
+    sub.textContent = 'Kau berhasil bertahan hingga akhir, tapi beberapa desas-desus masih lolos dari pemeriksaanmu.';
+  }
+
+  const recap = document.getElementById('recapList');
+  recap.innerHTML = '';
+  const seen = {};
+  state.log.forEach(entry=>{
+    if(!entry.wasCorrect){
+      seen[entry.tag] = (seen[entry.tag]||0) + 1;
+    }
+  });
+  const tags = Object.keys(seen);
+  if(tags.length === 0){
+    const li = document.createElement('li');
+    li.textContent = 'Tidak ada aspek CRAAP yang terlewat — kerja bagus.';
+    recap.appendChild(li);
+  } else {
+    tags.forEach(t=>{
+      const li = document.createElement('li');
+      li.textContent = 'Perlu diasah lagi: ' + t + ' (' + seen[t] + 'x meleset)';
+      recap.appendChild(li);
+    });
+  }
+
+  const moon = document.getElementById('moon');
+  document.getElementById('moonCaption').textContent = kind === 'defeat'
+    ? 'bulan darah — desa kalah malam ini'
+    : 'purnama — ronda malam usai';
+}
+
+document.getElementById('btnStart').addEventListener('click', startGame);
+document.getElementById('btnRestart').addEventListener('click', ()=>{
+  showScreen('start');
+  state = {idx:0, lives:MAX_LIVES, correct:0, log:[]};
+  updateMoon();
+});
+
+updateMoon();
+</script>
+</body>
+</html>
