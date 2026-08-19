@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#100a24">
+<meta name="format-detection" content="telephone=no">
+<title>Slice & Solve — Kuis Informatika</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#100a24;
+    --bg-mid:#1c1140;
+    --lime:#c6ff3d;
+    --pink:#ff3d7f;
+    --mango:#ffb020;
+    --ink:#f4f0ff;
+    --ink-dim:#a89bd6;
+    --panel:#180f36;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; user-select:none; -webkit-user-select:none; }
+  html,body{
+    margin:0; padding:0; width:100%; height:100%; overflow:hidden;
+    background: radial-gradient(ellipse at 50% 20%, var(--bg-mid), var(--bg-deep) 70%);
+    font-family:'Fredoka', sans-serif;
+    color:var(--ink);
+    touch-action:none;
+    overscroll-behavior:none;
+    position:fixed; inset:0;
+  }
+  #wrap{ position:relative; width:100%; height:100%; }
+  canvas{ display:block; width:100%; height:100%; touch-action:none; }
+
+  #hud{
+    position:absolute; top:0; left:0; right:0;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 0 calc(16px + env(safe-area-inset-left));
+    pointer-events:none; z-index:5;
+  }
+  #scoreBox{
+    font-family:'Baloo 2', sans-serif; font-weight:800; font-size:30px;
+    color:var(--lime); text-shadow:0 0 14px rgba(198,255,61,.5), 0 2px 0 rgba(0,0,0,.4);
+    display:flex; align-items:baseline; gap:8px;
+  }
+  #scoreBox span.lbl{ font-size:12px; font-weight:600; letter-spacing:.14em; color:var(--ink-dim); text-transform:uppercase; }
+  #livesBox{ display:flex; gap:6px; }
+  .heart{ font-size:24px; filter:drop-shadow(0 0 6px rgba(255,61,127,.6)); transition:transform .2s; }
+  .heart.lost{ opacity:.18; filter:none; transform:scale(.85); }
+
+  #streakChip{
+    position:absolute; top:calc(60px + env(safe-area-inset-top)); left:calc(18px + env(safe-area-inset-left)); z-index:5;
+    background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.4);
+    padding:4px 12px; border-radius:20px; font-size:13px; color:var(--mango);
+    opacity:0; transition:opacity .25s; pointer-events:none;
+  }
+  #streakChip.show{ opacity:1; }
+
+  .overlay{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:rgba(8,4,20,.72); backdrop-filter:blur(6px); z-index:10;
+    opacity:0; pointer-events:none; transition:opacity .3s;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+
+  .card{
+    background:linear-gradient(165deg, var(--panel), #0f0928);
+    border:1px solid rgba(198,255,61,.18);
+    border-radius:22px; padding:30px 26px; width:min(420px,88vw);
+    max-height:88vh; max-height:88dvh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .card h1{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:30px; margin:0 0 6px;
+    background:linear-gradient(90deg, var(--lime), var(--mango));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .card p{ color:var(--ink-dim); font-size:14px; line-height:1.6; margin:10px 0 20px; }
+  .card p b{ color:var(--pink); }
+  .btn{
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:17px;
+    background:linear-gradient(90deg, var(--lime), #8fe000); color:#0c2400;
+    border:none; padding:13px 30px; border-radius:14px; cursor:pointer;
+    box-shadow:0 8px 0 #6fa300, 0 12px 20px rgba(198,255,61,.25);
+    transition:transform .08s;
+  }
+  .btn:active{ transform:translateY(6px); box-shadow:0 2px 0 #6fa300; }
+  .btn.secondary{
+    background:linear-gradient(90deg, var(--pink), #c21556); color:#2a0010;
+    box-shadow:0 8px 0 #8f0d3d, 0 12px 20px rgba(255,61,127,.25);
+  }
+
+  .legend{ display:flex; justify-content:center; gap:14px; margin:14px 0 4px; font-size:22px; }
+  .legend span small{ display:block; font-size:9px; color:var(--ink-dim); margin-top:2px; }
+
+  #finalScore{ font-family:'Baloo 2',sans-serif; font-size:52px; font-weight:800; color:var(--mango); margin:6px 0; text-shadow:0 0 20px rgba(255,176,32,.4); }
+
+  /* Quiz modal */
+  #quizCard{ width:min(480px,90vw); text-align:left; }
+  #quizTag{
+    display:inline-block; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:#100a24; background:var(--lime); padding:3px 10px; border-radius:20px; font-weight:700; margin-bottom:12px;
+  }
+  #quizQ{ font-size:17px; line-height:1.5; margin:0 0 16px; color:var(--ink); font-family:'Fredoka'; font-weight:500; }
+  .opt{
+    display:flex; align-items:center; gap:10px; width:100%; min-height:46px;
+    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+    color:var(--ink); text-align:left; padding:12px 14px; margin-bottom:9px;
+    border-radius:12px; font-family:'Fredoka'; font-size:14px; cursor:pointer;
+    transition:background .15s, border-color .15s, transform .1s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .opt:active{ transform:scale(.98); }
+  .opt:hover{ background:rgba(198,255,61,.08); border-color:rgba(198,255,61,.3); }
+  .opt .k{
+    flex:0 0 24px; height:24px; border-radius:7px; background:rgba(255,255,255,.08);
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--ink-dim);
+  }
+  .opt.correct{ background:rgba(198,255,61,.18); border-color:var(--lime); }
+  .opt.correct .k{ background:var(--lime); color:#0c2400; }
+  .opt.wrong{ background:rgba(255,61,127,.18); border-color:var(--pink); }
+  .opt.wrong .k{ background:var(--pink); color:#2a0010; }
+  .opt.disabled{ pointer-events:none; opacity:.65; }
+  #quizResult{ text-align:center; font-family:'Baloo 2'; font-weight:700; font-size:15px; height:20px; margin-top:6px; }
+  #quizTimerBar{ height:4px; border-radius:4px; background:rgba(255,255,255,.08); margin-bottom:14px; overflow:hidden; }
+  #quizTimerFill{ height:100%; background:linear-gradient(90deg,var(--pink),var(--mango)); width:100%; transform-origin:left; }
+
+  #floatScores{ position:absolute; inset:0; pointer-events:none; z-index:6; }
+  .floatText{
+    position:absolute; font-family:'Baloo 2'; font-weight:800; font-size:22px;
+    animation:floatUp 0.9s ease-out forwards; text-shadow:0 2px 8px rgba(0,0,0,.5);
+  }
+  @keyframes floatUp{
+    0%{ opacity:1; transform:translateY(0) scale(1); }
+    100%{ opacity:0; transform:translateY(-46px) scale(1.15); }
+  }
+
+  #hint{
+    position:absolute; bottom:calc(12px + env(safe-area-inset-bottom)); left:0; right:0; text-align:center;
+    font-size:12px; color:var(--ink-dim); letter-spacing:.04em; z-index:4; pointer-events:none;
+    padding:0 16px;
+  }
+
+  @media (max-width:420px){
+    #scoreBox{ font-size:24px; }
+    .heart{ font-size:20px; }
+    .card{ padding:24px 20px; }
+    .card h1{ font-size:25px; }
+    #hint{ font-size:10.5px; }
+  }
+  @media (max-height:560px){
+    #hint{ display:none; }
+    .card{ padding:16px 18px; }
+    .card h1{ font-size:22px; margin-bottom:2px; }
+    .card p{ margin:6px 0 10px; font-size:12.5px; }
+    .legend{ margin:8px 0 0; font-size:18px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game"></canvas>
+
+  <div id="hud">
+    <div id="scoreBox"><span class="lbl">Skor</span><span id="scoreVal">0</span></div>
+    <div id="livesBox"></div>
+  </div>
+  <div id="streakChip">🔥 Beruntun!</div>
+  <div id="floatScores"></div>
+  <div id="hint">Geser jari / mouse untuk mengiris buah — hati‑hati, jangan sampai buah jatuh</div>
+
+  <!-- Start screen -->
+  <div class="overlay show" id="startOverlay">
+    <div class="card">
+      <h1>SLICE &amp; SOLVE</h1>
+      <p>Iris buah sebanyak mungkin! Tapi awas — kalau kena <b>🍓 stroberi</b>, sebuah soal Informatika akan muncul. Jawab benar dapat bonus poin, jawab salah skor <b>berkurang 3</b>.</p>
+      <div class="legend">
+        <span>🍉<small>+2</small></span>
+        <span>🍊<small>+1</small></span>
+        <span>🍎<small>+1</small></span>
+        <span>🍋<small>+1</small></span>
+        <span>🍓<small>Kuis!</small></span>
+      </div>
+      <button class="btn" id="startBtn">MULAI MAIN</button>
+    </div>
+  </div>
+
+  <!-- Quiz overlay -->
+  <div class="overlay" id="quizOverlay">
+    <div class="card" id="quizCard">
+      <span id="quizTag">🍓 Soal Stroberi</span>
+      <div id="quizTimerBar"><div id="quizTimerFill"></div></div>
+      <p id="quizQ">Pertanyaan...</p>
+      <div id="quizOpts"></div>
+      <div id="quizResult"></div>
+    </div>
+  </div>
+
+  <!-- Game over -->
+  <div class="overlay" id="overOverlay">
+    <div class="card">
+      <h1>GAME OVER</h1>
+      <p>Nyawa habis! Ini hasil akhirmu:</p>
+      <div id="finalScore">0</div>
+      <p id="finalStat" style="margin-top:-6px;"></p>
+      <button class="btn" id="restartBtn">MAIN LAGI</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Bank soal ---------------- */
+  const QUESTIONS = [
+    ["Profesi bidang IT yang bertugas melakukan pengujian perangkat lunak dan bertanggung jawab atas kebenaran serta fungsinya adalah ….",["System analyst atau system integrator","Konsultan IT","Computer network atau data communication","Software engineer","Software Tester"],4],
+    ["Perangkat lunak yang telah direkomendasikan oleh seorang … disebut hasil rekomendasi profesi tersebut.",["Computer network atau data communication engineer","Software tester","System analyst atau system integrator","Software engineer","Konsultan IT"],4],
+    ["Berikut merupakan aturan presentasi yang baik, kecuali…",["Bercerita","Mengesankan","Tidak ada jawaban yang benar","Deskriptif","Informatif"],3],
+    ["Kegiatan mengikuti langkah-langkah yang telah dibuat untuk menyelesaikan permasalahan tertentu disebut…",["Abstraksi","Pengenalan pola","Algoritma","Dekomposisi","Tidak ada jawaban yang benar"],2],
+    ["Aplikasi untuk mengetahui kesuburan tanah, harga pasar, dan pengelolaan tanaman adalah pemanfaatan TIK di bidang…",["Pendidikan","Peternakan","Perbankan","Pertanian","Transportasi"],3],
+    ["Instruksi kode program printf digunakan untuk…",["Terminate program","Running program","Menampilkan nilai/teks/kata/kalimat","Menyimpan nilai ke dalam variabel","Membuat variabel baru"],2],
+    ["Urutan yang benar dalam berpikir komputasi (Abstraksi, Dekomposisi, Pengenalan Pola, Desain Algoritma) adalah…",["2,3,1,4","2,4,3,1","1,3,2,4","3,1,4,2","1,2,3,4"],0],
+    ["Do...while merupakan instruksi untuk…",["Pengulangan","Selection process","Seleksi","Sequence process","Urutan langkah"],0],
+    ["Mengembangkan petunjuk pemecahan masalah tahap demi tahap agar orang lain bisa memakainya disebut…",["Semuanya benar","Dekomposisi","Desain algoritma","Pengenalan pola","Abstraksi"],2],
+    ["Segala kegiatan pemrosesan, manipulasi, dan transfer informasi antar media disebut…",["Teknologi informasi","Teknologi komunikasi","Teknologi informasi dan komunikasi","Sistem komunikasi","Sistem informasi"],2],
+    ["Komponen komputer yang memproses data angka dan logika seperti matematika dan statistika adalah…",["CPU","CU","ALU","ROM","Register"],2],
+    ["Fungsi pada kelompok ribbon Page Layout yang TIDAK termasuk fungsi watermark adalah…",["Membuat tulisan remang-remang di belakang teks","Memberi pesan tertentu di halaman latar","Membuat dokumen sebagai contoh dari aslinya","Menghilangkan tanda air yang telah disematkan","Membuat banner satu halaman penuh"],4],
+    ["Jika toolbar ribbon Word tersembunyi, perintah untuk menampilkannya kembali adalah…",["Customize the ribbon","Minimize the ribbon","Maximize the ribbon","Show the ribbon","View the ribbon"],1],
+    ["Kecepatan transfer data pada jaringan nirkabel umumnya adalah…",["0,23 Mbps","1 s.d. 2 Mbps","10 Mbps","4 s.d. 16 Mbps","100 Mbps"],1],
+    ["Berikut yang TIDAK dapat dilakukan menggunakan internet banking adalah…",["Setor tunai","Informasi rekening","Transfer uang","Pemindahbukuan","Pembayaran tagihan"],0],
+    ["#include artinya…",["Komputer membaca file header 'include' dan membuka folder 'stdio.h'","Komputer menampilkan folder 'include' dan membuka folder 'stdio.h'","Komputer menampilkan instruksi dalam file stdio.h","Komputer masuk ke file include dan menjalankan instruksi di file header stdio.h","Komputer membuka folder 'include' dan membaca file header 'stdio.h'"],4],
+    ["Komunikasi kolaboratif yang dibutuhkan masyarakat digital adalah…",["Komunikasi secara terbuka","Komunikasi antara atasan dan bawahan","Komunikasi secara tertutup","Komunikasi memakai perangkat komunikasi kapan pun dan di mana pun","Tidak ada jawaban yang benar"],3],
+    ["Bidang kesehatan berisi riwayat kesehatan pribadi pasien (penyakit, obat, diagnosis dokter) disebut…",["Penelitian","Tidak ada jawaban yang benar","Bidang farmasi","Rekam medik","Bidang administrasi"],3],
+    ["Sistem komputer untuk merancang bangunan tinggi dan mengetahui kekuatan terhadap gempa adalah pemanfaatan TIK di bidang…",["Teknik dan teknologi","Pendidikan","Pertanian","Pemerintahan","Transportasi"],0],
+    ["Profesi IT yang mengembangkan software untuk berbagai keperluan, termasuk simulasi teknologi, adalah…",["Software tester","Computer network atau data communication engineer","Konsultan IT","Software engineer","System analyst atau system integrator"],3],
+    ["Profesi IT yang merancang arsitektur, membangun, merawat, dan mengelola jaringan perusahaan adalah…",["Konsultan IT","Computer network atau data communication engineer","Software tester","System analyst atau system integrator","Software engineer"],1],
+    ["Menyajikan hanya informasi yang dibutuhkan dan memperhatikan HAKI termasuk aturan presentasi yang baik yaitu…",["Tidak ada jawaban yang benar","Mengesankan","Bercerita","Menghibur","Informatif"],0],
+    ["Berikut manfaat transaksi jual beli online, KECUALI…",["Kemudahan bertransaksi dengan pembeli","Kemudahan mempromosikan produk","Kemudahan mencari suatu barang","Pendataan dalam berdagang menjadi lebih sulit","Target pemasaran luas"],3],
+    ["Kemampuan melihat persamaan, perbedaan pola, dan keteraturan dalam data disebut…",["Semuanya benar","Abstraksi","Dekomposisi","Pengenalan pola","Desain algoritma"],3],
+    ["Cara mendukung pemecahan masalah sehari-hari menjadi solusi berbasis komputer disebut…",["Brainware","Aplikasi komputer","Perangkat komputer","Computational thinking","Suatu disiplin ilmu"],3],
+    ["E-government sebagai pemanfaatan TIK pada pemerintah memiliki arti…",["Hubungan pemerintah dengan pihak lain","Hubungan pemerintah dengan pengusaha","Hubungan pemerintah dengan pemerintah","Hubungan pemerintah dengan masyarakat","Penggunaan teknologi informasi berkenaan dengan pemerintahan"],4],
+    ["Berikut yang BUKAN manfaat e-learning dalam kegiatan belajar mengajar adalah…",["Lebih menghemat biaya","Tidak memerlukan jaringan internet","Guru dan siswa tidak harus bertatap muka","Mempersingkat waktu pembelajaran","Mempermudah interaksi peserta didik dan materi"],1],
+    ["Pemanfaatan TIK di bidang industri manufaktur pada tahap produksi memakai robot yang dikendalikan komputer menggunakan program…",["CAd","CNC","CAc","DSR","SPECT"],1],
+    ["Aturan presentasi yang baik dengan memberi konten visual seperti gambar, grafik, video, dan gestur disebut…",["Bercerita","Mengesankan","Informatif","Tidak ada jawaban yang benar","Deskriptif"],1],
+    ["E-learning sebagai pemanfaatan TIK di bidang pendidikan adalah…",["Tidak ada jawaban yang benar","Surat elektronik","Membaca buku elektronik","Kegiatan pembelajaran elektronik","Perpustakaan elektronik"],3],
+    ["Sanksi pelanggaran hak cipta menurut Pasal 72 UU Hak Cipta No. 19 Tahun 2002 paling banyak…",["Rp1.000.000.000,00","Rp2.000.000.000,00","Rp3.000.000.000,00","Rp4.000.000.000,00","Rp5.000.000.000,00"],4],
+    ["Instruksi kode program scanf digunakan untuk…",["Menyimpan nilai ke dalam suatu variabel","Menampilkan variabel tipe data string saja","Menampilkan nilai/teks/kata/kalimat","Menampilkan variabel tipe data int saja","Membuat sebuah variabel baru"],0],
+    ["Profesi IT yang membuat aplikasi berbasis mobile dengan bahasa pemrograman Java disebut…",["Mobile Programmer","Software Engineer","SEO","Konsultan IT","Software Tester"],0],
+    ["Kurung kurawal terbuka '{' digunakan untuk menunjukkan…",["Tanda awal program","Deklarasi variabel","Isi program","Program utama","Tanda akhir program"],0],
+    ["Berikut merupakan kelebihan bekerja dalam tim, KECUALI…",["Mendapatkan ide-ide baru","Membagi beban kerja","Mendapatkan pengalaman belajar","Meningkatkan efisiensi","Masalah berkomunikasi"],4],
+    ["Melakukan generalisasi dan mengidentifikasi prinsip umum yang menghasilkan pola, tren, dan keteraturan disebut…",["Semuanya benar","Dekomposisi","Desain algoritma","Abstraksi","Pengenalan pola"],3],
+    ["Pernyataan yang benar tentang printf() dan scanf() adalah…",["printf() menampilkan nilai/teks/kalimat, scanf() menyimpan nilai ke variabel","printf() membuat variabel, scanf() menyimpan nilai ke variabel","printf() menyimpan nilai ke variabel, scanf() menampilkan nilai","printf() menampilkan variabel string, scanf() menampilkan variabel int","Semua jawaban salah"],0],
+    ["Masyarakat yang hidup dengan segala kemudahan dari teknologi disebut…",["Masyarakat modern","Masyarakat tradisional","Masyarakat zaman dulu","Tidak ada jawaban yang benar","Tidak ada jawaban yang salah"],0],
+    ["Contoh file sharing dengan menggunakan aplikasi adalah…",["Jaringan peer-to-peer","Web","Dropbox","Flashdisk","Harddisk eksternal"],2],
+    ["Tindakan yang TIDAK melanggar hak cipta di bidang TIK adalah…",["Menduplikasi tanpa izin pemilik","Memodifikasi sesuai keinginan","Menggunakan software yang asli","Menggunakan untuk tindak kejahatan","Menduplikasi untuk tujuan komersil"],2]
+  ];
+  let quizQueue = [];
+  function refillQueue(){
+    quizQueue = QUESTIONS.map((_,i)=>i);
+    for(let i=quizQueue.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [quizQueue[i],quizQueue[j]] = [quizQueue[j],quizQueue[i]];
+    }
+  }
+  function nextQuestion(){
+    if(quizQueue.length===0) refillQueue();
+    return QUESTIONS[quizQueue.pop()];
+  }
+
+  /* ---------------- Canvas setup ---------------- */
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  let W=0,H=0,DPR=1;
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio||1, 2);
+    const vv = window.visualViewport;
+    W = vv ? vv.width : window.innerWidth;
+    H = vv ? vv.height : window.innerHeight;
+    canvas.width = Math.round(W*DPR); canvas.height = Math.round(H*DPR);
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('orientationchange', ()=>setTimeout(resize,250));
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', resize);
+  }
+  // Cegah pull-to-refresh / bounce-scroll di Android Chrome & iOS Safari,
+  // tapi tetap izinkan scroll di dalam kartu (mis. daftar opsi kuis yang panjang)
+  document.addEventListener('touchmove', function(e){
+    if(e.target.closest && e.target.closest('.card')) return;
+    e.preventDefault();
+  }, {passive:false});
+  document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
+  resize();
+
+  /* ---------------- Game state ---------------- */
+  const FRUIT_TYPES = [
+    { key:'watermelon', emoji:'🍉', points:2, splash:'#ff5a7a', r:44 },
+    { key:'orange',     emoji:'🍊', points:1, splash:'#ffa733', r:34 },
+    { key:'apple',      emoji:'🍎', points:1, splash:'#ff4d4d', r:34 },
+    { key:'lemon',      emoji:'🍋', points:1, splash:'#fff066', r:32 },
+  ];
+  const STRAWBERRY = { key:'strawberry', emoji:'🍓', points:0, splash:'#ff6fa3', r:32 };
+
+  let score = 0, lives = 3, MAX_LIVES = 3, running = false, quizActive = false;
+  let fruits = [], particles = [], trail = [];
+  let spawnTimer = 0, spawnInterval = 1150;
+  let lastTime = 0, streakCount = 0, streakTimer = 0;
+  let rafId = null;
+
+  const scoreVal = document.getElementById('scoreVal');
+  const livesBox = document.getElementById('livesBox');
+  const streakChip = document.getElementById('streakChip');
+  const floatLayer = document.getElementById('floatScores');
+
+  function renderLives(){
+    livesBox.innerHTML = '';
+    for(let i=0;i<MAX_LIVES;i++){
+      const s = document.createElement('span');
+      s.className = 'heart' + (i>=lives ? ' lost' : '');
+      s.textContent = '❤️';
+      livesBox.appendChild(s);
+    }
+  }
+  function setScore(v){
+    score = Math.max(0, v);
+    scoreVal.textContent = score;
+  }
+  function floatText(x,y,text,color){
+    const el = document.createElement('div');
+    el.className = 'floatText';
+    el.textContent = text;
+    el.style.left = x+'px';
+    el.style.top = y+'px';
+    el.style.color = color;
+    floatLayer.appendChild(el);
+    setTimeout(()=>el.remove(), 950);
+  }
+
+  function strawberryChance(){
+    // base 12%, grows with score, capped at 42%
+    return Math.min(0.42, 0.12 + score/260);
+  }
+
+  function spawnFruit(){
+    const isStrawberry = Math.random() < strawberryChance();
+    const type = isStrawberry ? STRAWBERRY : FRUIT_TYPES[Math.floor(Math.random()*FRUIT_TYPES.length)];
+    const x = 60 + Math.random()*(W-120);
+    const speedBoost = Math.min(1.6, 1 + score/220);
+    const vy = -(H*0.016 + Math.random()*3) * speedBoost;
+    const vx = (Math.random()-0.5) * 3.2;
+    fruits.push({
+      type, x, y:H+40, vx, vy,
+      rot:Math.random()*Math.PI, vrot:(Math.random()-0.5)*0.12,
+      r: type.r, sliced:false, missCounted:false
+    });
+  }
+
+  function burst(x,y,color,n){
+    for(let i=0;i<n;i++){
+      const a = Math.random()*Math.PI*2;
+      const sp = 2+Math.random()*5;
+      particles.push({
+        x,y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp - 1,
+        life:1, decay:0.018+Math.random()*0.02,
+        r:2+Math.random()*4, color
+      });
+    }
+  }
+
+  function sliceFruit(f, px, py){
+    if(f.sliced) return;
+    f.sliced = true;
+    burst(px,py, f.type.splash, 16);
+    if(f.type.key === 'strawberry'){
+      openQuiz();
+    } else {
+      setScore(score + f.type.points);
+      streakCount++;
+      floatText(px-14, py-10, '+'+f.type.points, '#c6ff3d');
+      if(streakCount >= 4){
+        streakChip.classList.add('show');
+        clearTimeout(streakTimer);
+        streakTimer = setTimeout(()=>streakChip.classList.remove('show'), 1400);
+      }
+    }
+  }
+
+  /* ---------------- Pointer / swipe handling ---------------- */
+  function getPos(evt){
+    const rect = canvas.getBoundingClientRect();
+    const src = evt.touches ? evt.touches[0] : evt;
+    return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+  }
+  function pointSegDist(px,py, ax,ay, bx,by){
+    const dx=bx-ax, dy=by-ay;
+    const len2 = dx*dx+dy*dy;
+    let t = len2 ? ((px-ax)*dx+(py-ay)*dy)/len2 : 0;
+    t = Math.max(0, Math.min(1,t));
+    const cx = ax+t*dx, cy = ay+t*dy;
+    return Math.hypot(px-cx, py-cy);
+  }
+  const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
+  const SLICE_TOLERANCE = isTouchDevice ? 16 : 6;
+  function checkSlices(ax,ay,bx,by){
+    if(!running || quizActive) return;
+    for(const f of fruits){
+      if(f.sliced) continue;
+      const d = pointSegDist(f.x,f.y, ax,ay, bx,by);
+      if(d < f.r+SLICE_TOLERANCE){
+        sliceFruit(f, f.x, f.y);
+      }
+    }
+  }
+  let pointerDown = false, lastPt = null;
+  function ptrStart(e){
+    pointerDown = true;
+    const p = getPos(e);
+    lastPt = p; trail = [{...p, t:performance.now()}];
+  }
+  function ptrMove(e){
+    if(!pointerDown) return;
+    e.preventDefault && e.preventDefault();
+    const p = getPos(e);
+    if(lastPt) checkSlices(lastPt.x,lastPt.y,p.x,p.y);
+    trail.push({...p, t:performance.now()});
+    if(trail.length>18) trail.shift();
+    lastPt = p;
+  }
+  function ptrEnd(){ pointerDown=false; lastPt=null; }
+  canvas.addEventListener('mousedown', ptrStart);
+  canvas.addEventListener('mousemove', ptrMove);
+  window.addEventListener('mouseup', ptrEnd);
+  canvas.addEventListener('touchstart', ptrStart, {passive:true});
+  canvas.addEventListener('touchmove', ptrMove, {passive:false});
+  window.addEventListener('touchend', ptrEnd);
+
+  /* ---------------- Quiz ---------------- */
+  const quizOverlay = document.getElementById('quizOverlay');
+  const quizQ = document.getElementById('quizQ');
+  const quizOpts = document.getElementById('quizOpts');
+  const quizResult = document.getElementById('quizResult');
+  const quizTimerFill = document.getElementById('quizTimerFill');
+  let quizTimerRaf = null;
+
+  function openQuiz(){
+    quizActive = true;
+    running = false;
+    const [q, opts, correctIdx] = nextQuestion();
+    quizQ.textContent = q;
+    quizOpts.innerHTML = '';
+    quizResult.textContent = '';
+    const letters = ['A','B','C','D','E'];
+    opts.forEach((opt,i)=>{
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.innerHTML = '<span class="k">'+letters[i]+'</span><span>'+opt+'</span>';
+      b.addEventListener('click', ()=> answerQuiz(i, correctIdx, b));
+      quizOpts.appendChild(b);
+    });
+    quizOverlay.classList.add('show');
+    // timer bar (10s) — auto counts as wrong if not answered
+    quizTimerFill.style.transition = 'none';
+    quizTimerFill.style.width = '100%';
+    void quizTimerFill.offsetWidth;
+    quizTimerFill.style.transition = 'width 10s linear';
+    quizTimerFill.style.width = '0%';
+    clearTimeout(quizTimerRaf);
+    quizTimerRaf = setTimeout(()=>{
+      if(quizActive) answerQuiz(-1, correctIdx, null);
+    }, 10000);
+  }
+  function answerQuiz(chosenIdx, correctIdx, btnEl){
+    clearTimeout(quizTimerRaf);
+    const opts = quizOpts.querySelectorAll('.opt');
+    opts.forEach((o,i)=>{
+      o.classList.add('disabled');
+      if(i===correctIdx) o.classList.add('correct');
+      else if(i===chosenIdx) o.classList.add('wrong');
+    });
+    if(chosenIdx === correctIdx){
+      setScore(score + 5);
+      quizResult.textContent = '✅ Benar! +5 poin';
+      quizResult.style.color = 'var(--lime)';
+    } else {
+      setScore(score - 3);
+      quizResult.textContent = chosenIdx===-1 ? '⏱️ Waktu habis! −3 poin' : '❌ Kurang tepat. −3 poin';
+      quizResult.style.color = 'var(--pink)';
+    }
+    setTimeout(()=>{
+      quizOverlay.classList.remove('show');
+      quizActive = false;
+      if(lives>0) running = true;
+    }, 1300);
+  }
+
+  /* ---------------- Main loop ---------------- */
+  function update(dt){
+    spawnTimer += dt;
+    const interval = Math.max(480, spawnInterval - score*4);
+    if(spawnTimer > interval){
+      spawnTimer = 0;
+      spawnFruit();
+    }
+    for(const f of fruits){
+      f.vy += 0.11 * (dt/16.6);
+      f.x += f.vx * (dt/16.6);
+      f.y += f.vy * (dt/16.6);
+      f.rot += f.vrot * (dt/16.6);
+      if(!f.sliced && !f.missCounted && f.y - f.r > H){
+        f.missCounted = true;
+        if(f.type.key !== 'strawberry'){
+          lives = Math.max(0, lives-1);
+          renderLives();
+          if(lives<=0){ endGame(); }
+        }
+      }
+    }
+    fruits = fruits.filter(f => f.y - f.r < H+60 && (!f.sliced || f.y < H+200));
+    for(const p of particles){
+      p.vy += 0.1*(dt/16.6);
+      p.x += p.vx*(dt/16.6);
+      p.y += p.vy*(dt/16.6);
+      p.life -= p.decay*(dt/16.6);
+    }
+    particles = particles.filter(p=>p.life>0);
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // subtle vignette stripes
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    const grad = ctx.createRadialGradient(W/2,H*0.15,10,W/2,H*0.5,H*0.9);
+    grad.addColorStop(0,'rgba(90,60,180,0.10)');
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+    ctx.restore();
+
+    // trail
+    if(trail.length>1){
+      ctx.save();
+      ctx.lineCap='round'; ctx.lineJoin='round';
+      for(let i=1;i<trail.length;i++){
+        const a = trail[i-1], b = trail[i];
+        const alpha = i/trail.length;
+        ctx.strokeStyle = 'rgba(198,255,61,'+(alpha*0.8)+')';
+        ctx.lineWidth = 3+alpha*7;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // fruits
+    for(const f of fruits){
+      if(f.sliced) continue;
+      ctx.save();
+      ctx.translate(f.x,f.y);
+      ctx.rotate(f.rot);
+      if(f.type.key==='strawberry'){
+        ctx.shadowColor = '#ff3d7f'; ctx.shadowBlur = 22;
+      }
+      ctx.font = (f.r*1.9)+'px serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(f.type.emoji, 0, 2);
+      ctx.restore();
+    }
+
+    // particles
+    for(const p of particles){
+      ctx.globalAlpha = Math.max(p.life,0);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function loop(ts){
+    if(!lastTime) lastTime = ts;
+    const dt = Math.min(40, ts-lastTime);
+    lastTime = ts;
+    if(running) update(dt);
+    draw();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function endGame(){
+    running = false;
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('finalStat').textContent = 'Terus berlatih supaya makin jago menjawab soal Informatika!';
+    document.getElementById('overOverlay').classList.add('show');
+  }
+
+  function resetGame(){
+    score=0; lives=MAX_LIVES; fruits=[]; particles=[]; trail=[];
+    spawnTimer=0; streakCount=0;
+    setScore(0); renderLives();
+    refillQueue();
+    quizActive=false;
+    document.getElementById('overOverlay').classList.remove('show');
+    document.getElementById('startOverlay').classList.remove('show');
+    running = true;
+  }
+
+  document.getElementById('startBtn').addEventListener('click', ()=>{
+    document.getElementById('startOverlay').classList.remove('show');
+    resetGame();
+  });
+  document.getElementById('restartBtn').addEventListener('click', resetGame);
+
+  renderLives();
+  refillQueue();
+  rafId = requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
