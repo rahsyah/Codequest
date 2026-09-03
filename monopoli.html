@@ -684,6 +684,7 @@
     currentPlayerIndex = 0;
     isAnimating = false;
     gameOver = false;
+    questionBag = [];
     BOARD.forEach(t => { if(t.type==='property') t.ownerId = null; });
     document.getElementById('logList').innerHTML = '';
     log('Permainan dimulai! Setiap pemain memulai dengan ' + START_BALANCE + ' Koin.', 'info');
@@ -1071,10 +1072,36 @@
 
   /* ============ QUIZ MODAL ============ */
   let quizContext = null; // { player, tile }
+  let questionBag = []; // shuffled, no-repeat-until-exhausted queue of QUESTIONS indices
+
+  function shuffleArray(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function nextQuestionIndex(){
+    if(questionBag.length === 0){
+      questionBag = shuffleArray(QUESTIONS.map((_, i) => i));
+    }
+    return questionBag.pop();
+  }
+
+  function pickShuffledQuestion(){
+    const original = QUESTIONS[nextQuestionIndex()];
+    const order = shuffleArray(original.opts.map((_, i) => i));
+    return {
+      q: original.q,
+      opts: order.map(i => original.opts[i]),
+      correct: order.indexOf(original.correct)
+    };
+  }
 
   function openQuiz(player, tile){
     quizContext = { player, tile };
-    const q = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+    const q = pickShuffledQuestion();
     quizContext.question = q;
 
     document.getElementById('quizTag').textContent = 'PROPERTI BELUM DIMILIKI — ' + tile.name.toUpperCase();
