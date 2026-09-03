@@ -6,6 +6,7 @@
 <title>Kodepoli.AI — Monopoli Edukasi Koding & AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
     --bg-void:#070b13;
@@ -418,6 +419,48 @@
   .name-input:focus{outline:none;border-color:var(--cyan);}
   .setup-hint{font-size:12px;color:var(--text-dim);margin:-6px 0 16px;}
 
+  #screenshotBtn{border-color:var(--violet);color:var(--violet);}
+  #screenshotBtn:hover:not(:disabled){box-shadow:0 0 16px -4px var(--violet);}
+  #finishBtn{border-color:var(--amber);color:var(--amber);}
+  #finishBtn:hover:not(:disabled){box-shadow:0 0 16px -4px var(--amber);}
+
+  .result-box{max-width:600px;}
+  .result-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:18px;
+    font-size:12.5px;
+  }
+  .result-table th, .result-table td{
+    padding:9px 8px;
+    text-align:left;
+    border-bottom:1px solid var(--border-line);
+  }
+  .result-table th{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    color:var(--text-muted);
+    font-weight:600;
+    letter-spacing:0.3px;
+  }
+  .result-table td{color:var(--text-primary);}
+  .result-table tr.rank-1 td{color:var(--lime);font-weight:700;}
+  .result-name{display:flex;align-items:center;gap:7px;font-weight:600;}
+  .result-name .dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 6px 0 currentColor;flex:0 0 auto;}
+  .grade-badge{
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:6px;
+    background:rgba(255,255,255,0.06);
+  }
+  .grade-A{color:var(--lime);}
+  .grade-B{color:var(--cyan);}
+  .grade-C{color:var(--amber);}
+  .grade-D{color:var(--magenta);}
+  .grade-E{color:var(--red);}
+
   @media (max-width:760px){
     .sidebar{width:100%;flex:1 1 100%;}
     .tile-name{font-size:8px;}
@@ -436,6 +479,8 @@
   <div class="controls">
     <button id="rulesBtn">📖 Aturan</button>
     <button id="rollBtn" disabled>🎲 Lempar Dadu</button>
+    <button id="screenshotBtn">📸 Screenshot</button>
+    <button id="finishBtn" disabled>🏁 Selesai</button>
     <button id="resetBtn">↺ Reset</button>
   </div>
 </header>
@@ -492,13 +537,21 @@
   </div>
 </div>
 
-<!-- Winner Modal -->
-<div class="modal-overlay hidden" id="winnerModal">
-  <div class="modal-box">
-    <div class="modal-tag">PERMAINAN SELESAI</div>
-    <h3 id="winnerText">Pemenang akan muncul di sini</h3>
+<!-- Result Modal -->
+<div class="modal-overlay hidden" id="resultModal">
+  <div class="modal-box result-box">
+    <div class="modal-tag" id="resultTag">HASIL AKHIR</div>
+    <h3 id="resultHeadline">Papan peringkat akan muncul di sini</h3>
+    <table class="result-table">
+      <thead>
+        <tr><th>#</th><th>Pemain</th><th>Saldo</th><th>XP</th><th>Kuis Benar</th><th>Nilai</th><th>Predikat</th></tr>
+      </thead>
+      <tbody id="resultTableBody"></tbody>
+    </table>
     <div class="modal-actions">
-      <button class="primary" id="winnerResetBtn">Main Lagi</button>
+      <button id="resultScreenshotBtn">📸 Screenshot Hasil</button>
+      <button id="resultCloseBtn">Tutup</button>
+      <button class="primary" id="resultPlayAgainBtn">Main Lagi</button>
     </div>
   </div>
 </div>
@@ -619,7 +672,9 @@
       properties:[],
       skipTurns:0,
       skipReason:'',
-      bankrupt:false
+      bankrupt:false,
+      quizCorrect:0,
+      quizTotal:0
     }));
   }
 
@@ -637,12 +692,14 @@
     updateOwners();
     updateTurnIndicator();
     document.getElementById('rollBtn').disabled = false;
+    document.getElementById('finishBtn').disabled = false;
   }
 
   function openSetupModal(){
     const inputs = [0,1,2,3].map(i => document.getElementById('nameInput' + i));
     inputs.forEach((el, i) => { el.value = lastNames[i] || ''; });
     document.getElementById('rollBtn').disabled = true;
+    document.getElementById('finishBtn').disabled = true;
     document.getElementById('setupModal').classList.remove('hidden');
     inputs[0].focus();
   }
@@ -814,11 +871,59 @@
     document.getElementById('rollBtn').disabled = true;
     const winner = players.find(p => !p.bankrupt);
     const text = winner
-      ? `${winner.name} memenangkan permainan dengan saldo akhir ${winner.balance} Koin dan ${winner.xp} XP!`
+      ? `${winner.name} memenangkan permainan dengan saldo akhir ${winner.balance} Koin!`
       : 'Permainan berakhir.';
-    document.getElementById('winnerText').textContent = text;
-    document.getElementById('winnerModal').classList.remove('hidden');
     log('🏆 ' + text, 'good');
+    showResults(text);
+  }
+
+  function endGameManual(){
+    if(gameOver) return;
+    gameOver = true;
+    document.getElementById('rollBtn').disabled = true;
+    log('Permainan diakhiri oleh guru/host. Berikut hasil akhir.', 'info');
+    showResults('Permainan diakhiri — berikut hasil akhir setiap pemain.');
+  }
+
+  function gradeFor(nilai){
+    if(nilai >= 90) return { letter:'A', label:'Istimewa' };
+    if(nilai >= 80) return { letter:'B', label:'Baik' };
+    if(nilai >= 70) return { letter:'C', label:'Cukup' };
+    if(nilai >= 60) return { letter:'D', label:'Kurang' };
+    return { letter:'E', label:'Perlu Bimbingan' };
+  }
+
+  function showResults(headlineText){
+    document.getElementById('resultHeadline').textContent = headlineText;
+
+    const ranked = players.slice().sort((a, b) => {
+      const nilaiA = a.quizTotal > 0 ? (a.quizCorrect / a.quizTotal) * 100 : 0;
+      const nilaiB = b.quizTotal > 0 ? (b.quizCorrect / b.quizTotal) * 100 : 0;
+      if(nilaiB !== nilaiA) return nilaiB - nilaiA;
+      if(b.quizCorrect !== a.quizCorrect) return b.quizCorrect - a.quizCorrect;
+      return b.balance - a.balance;
+    });
+
+    const tbody = document.getElementById('resultTableBody');
+    tbody.innerHTML = '';
+    ranked.forEach((p, i) => {
+      const nilai = p.quizTotal > 0 ? Math.round((p.quizCorrect / p.quizTotal) * 100) : 0;
+      const grade = gradeFor(nilai);
+      const tr = document.createElement('tr');
+      if(i === 0) tr.className = 'rank-1';
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td><span class="result-name"><span class="dot" style="background:${p.colorHex};color:${p.colorHex}"></span>${p.name}${p.bankrupt ? ' (Bangkrut)' : ''}</span></td>
+        <td>${p.balance} Koin</td>
+        <td>${p.xp} XP</td>
+        <td>${p.quizCorrect}/${p.quizTotal}</td>
+        <td>${nilai}</td>
+        <td><span class="grade-badge grade-${grade.letter}">${grade.letter} · ${grade.label}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('resultModal').classList.remove('hidden');
   }
 
   /* ============ TURN FLOW ============ */
@@ -1002,6 +1107,9 @@
     const actionsEl = document.getElementById('quizActions');
     actionsEl.innerHTML = '';
 
+    player.quizTotal += 1;
+    if(choiceIndex === question.correct) player.quizCorrect += 1;
+
     if(choiceIndex === question.correct){
       log(`${player.name} menjawab benar soal koding/AI!`, 'good');
       const canAfford = player.balance >= tile.price;
@@ -1089,16 +1197,47 @@
     initGame(names);
   });
   document.getElementById('eventOkBtn').addEventListener('click', resolveEvent);
-  document.getElementById('winnerResetBtn').addEventListener('click', () => {
-    document.getElementById('winnerModal').classList.add('hidden');
-    openSetupModal();
-  });
   document.getElementById('rulesBtn').addEventListener('click', () => {
     document.getElementById('rulesModal').classList.remove('hidden');
   });
   document.getElementById('rulesOkBtn').addEventListener('click', () => {
     document.getElementById('rulesModal').classList.add('hidden');
   });
+  document.getElementById('finishBtn').addEventListener('click', () => {
+    if(gameOver){ showResults(document.getElementById('resultHeadline').textContent); return; }
+    if(confirm('Akhiri permainan sekarang dan lihat hasil akhir?')) endGameManual();
+  });
+  document.getElementById('resultCloseBtn').addEventListener('click', () => {
+    document.getElementById('resultModal').classList.add('hidden');
+  });
+  document.getElementById('resultPlayAgainBtn').addEventListener('click', () => {
+    document.getElementById('resultModal').classList.add('hidden');
+    openSetupModal();
+  });
+  document.getElementById('screenshotBtn').addEventListener('click', takeScreenshot);
+  document.getElementById('resultScreenshotBtn').addEventListener('click', takeScreenshot);
+
+  /* ============ SCREENSHOT ============ */
+  function takeScreenshot(){
+    if(typeof html2canvas === 'undefined'){
+      alert('Fitur screenshot butuh koneksi internet untuk memuat pustaka html2canvas. Coba muat ulang halaman dengan koneksi aktif.');
+      return;
+    }
+    const btns = [document.getElementById('screenshotBtn'), document.getElementById('resultScreenshotBtn')];
+    btns.forEach(b => { if(b){ b.disabled = true; b.textContent = '⏳ Memproses...'; } });
+
+    html2canvas(document.body, { backgroundColor: '#070b13', useCORS: true, scale: 2 }).then(canvas => {
+      const link = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      link.download = 'kodepoli-ai-' + stamp + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }).catch(err => {
+      alert('Gagal mengambil screenshot: ' + err.message);
+    }).finally(() => {
+      btns.forEach(b => { if(b){ b.disabled = false; b.textContent = '📸 ' + (b.id === 'resultScreenshotBtn' ? 'Screenshot Hasil' : 'Screenshot'); } });
+    });
+  }
 
   /* ============ INIT ============ */
   renderBoard();
