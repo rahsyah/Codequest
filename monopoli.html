@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kodepoli.AI — Monopoli Edukasi Koding & AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#070b13;
+    --bg-panel:#0d1420;
+    --bg-panel-alt:#111a2b;
+    --bg-tile:#0b1220;
+    --border-line:#1c2b40;
+    --border-line-soft:#162334;
+    --text-primary:#dce8f5;
+    --text-muted:#6d84a0;
+    --text-dim:#44586f;
+
+    --cyan:#35e7ff;
+    --lime:#a6ff6b;
+    --violet:#b98bff;
+    --amber:#ffb648;
+    --magenta:#ff5cc8;
+    --red:#ff5c6c;
+
+    --p0:#35e7ff;
+    --p1:#ff5cc8;
+    --p2:#ffb648;
+    --p3:#a6ff6b;
+
+    --radius-tile:6px;
+    --radius-panel:14px;
+    --font-mono:'JetBrains Mono', 'Courier New', monospace;
+    --font-sans:'Inter', system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 8%, rgba(53,231,255,0.07), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(255,92,200,0.06), transparent 45%),
+      var(--bg-void);
+    color:var(--text-primary);
+    font-family:var(--font-sans);
+    min-height:100vh;
+    padding:18px;
+  }
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    padding:14px 20px;
+    background:var(--bg-panel);
+    border:1px solid var(--border-line);
+    border-radius:var(--radius-panel);
+    margin-bottom:16px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-badge{
+    font-family:var(--font-mono);
+    font-weight:700;
+    color:var(--bg-void);
+    background:linear-gradient(135deg,var(--cyan),var(--magenta));
+    padding:6px 9px;
+    border-radius:8px;
+    font-size:13px;
+  }
+  .brand h1{
+    font-family:var(--font-mono);
+    font-size:19px;
+    font-weight:800;
+    margin:0;
+    letter-spacing:0.5px;
+    color:var(--text-primary);
+  }
+  .brand h1 span{color:var(--cyan);}
+
+  .turn-indicator{
+    font-family:var(--font-mono);
+    font-size:13px;
+    padding:8px 14px;
+    border-radius:999px;
+    border:1px solid var(--border-line);
+    background:var(--bg-panel-alt);
+    color:var(--text-muted);
+    transition:border-color .3s, color .3s, box-shadow .3s;
+  }
+  .turn-indicator.active-glow{
+    color:var(--turn-color, var(--cyan));
+    border-color:var(--turn-color, var(--cyan));
+    box-shadow:0 0 14px -4px var(--turn-color, var(--cyan));
+  }
+
+  .controls{display:flex;gap:10px;}
+  button{
+    font-family:var(--font-sans);
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+    border-radius:10px;
+    padding:10px 18px;
+    border:1px solid var(--border-line);
+    background:var(--bg-panel-alt);
+    color:var(--text-primary);
+    transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  button:hover:not(:disabled){transform:translateY(-1px);border-color:var(--cyan);}
+  button:disabled{opacity:0.4;cursor:not-allowed;}
+  #rollBtn{
+    background:linear-gradient(135deg, rgba(53,231,255,0.18), rgba(53,231,255,0.05));
+    border-color:var(--cyan);
+    color:var(--cyan);
+  }
+  #rollBtn:hover:not(:disabled){box-shadow:0 0 18px -4px var(--cyan);}
+  #resetBtn{border-color:var(--border-line);color:var(--text-muted);}
+  #rulesBtn{border-color:var(--border-line);color:var(--text-muted);}
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .board-wrap{
+    background:var(--bg-panel);
+    border:1px solid var(--border-line);
+    border-radius:var(--radius-panel);
+    padding:16px;
+    flex:0 0 auto;
+  }
+
+  .board{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    grid-template-rows:repeat(7,1fr);
+    gap:5px;
+    width:min(82vw, 720px);
+    aspect-ratio:1/1;
+  }
+
+  .tile{
+    position:relative;
+    background:var(--bg-tile);
+    border:1px solid var(--border-line-soft);
+    border-radius:var(--radius-tile);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    padding:4px 3px 3px;
+    overflow:hidden;
+    min-width:0;
+    transition:box-shadow .25s ease, border-color .25s ease;
+  }
+  .tile-group-bar{height:6px;width:100%;position:absolute;top:0;left:0;}
+  .tile-name{
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    line-height:1.15;
+    text-align:center;
+    font-weight:600;
+    color:var(--text-primary);
+    margin-top:6px;
+    word-break:break-word;
+  }
+  .tile-price{
+    font-family:var(--font-mono);
+    font-size:8.5px;
+    color:var(--text-muted);
+    margin-top:2px;
+  }
+  .tile-icon{font-size:16px;margin-top:4px;}
+  .tile-owner{
+    width:9px;height:9px;border-radius:50%;
+    margin-top:3px;
+    box-shadow:0 0 6px 0 currentColor;
+  }
+  .tile-pawns{
+    position:absolute;
+    bottom:2px;left:2px;right:2px;
+    display:flex;
+    gap:2px;
+    flex-wrap:wrap;
+    justify-content:center;
+    pointer-events:none;
+  }
+  .pawn-dot{
+    width:9px;height:9px;border-radius:50%;
+    border:1.5px solid rgba(0,0,0,0.5);
+    box-shadow:0 0 6px 1px currentColor;
+    transition:transform .15s ease;
+  }
+  .tile.landed{box-shadow:0 0 0 2px var(--flash-color, var(--cyan)) inset, 0 0 16px -2px var(--flash-color, var(--cyan));}
+
+  .tile.corner{
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .tile.corner .tile-name{font-size:9px;margin-top:2px;}
+  .tile.corner{background:var(--bg-panel-alt);}
+  .tile.start{border-color:var(--lime);}
+  .tile.jail{border-color:var(--amber);}
+  .tile.parking{border-color:var(--cyan);}
+  .tile.gotojail{border-color:var(--red);}
+  .tile.event{background:var(--bg-panel-alt);}
+  .tile.tax{background:var(--bg-panel-alt);}
+  .tile.event .tile-icon, .tile.tax .tile-icon{font-size:15px;margin-top:6px;}
+
+  .groupA .tile-group-bar{background:var(--cyan);}
+  .groupB .tile-group-bar{background:var(--lime);}
+  .groupC .tile-group-bar{background:var(--violet);}
+  .groupD .tile-group-bar{background:var(--amber);}
+  .groupE .tile-group-bar{background:var(--magenta);}
+
+  .board-center{
+    grid-column:2 / 7;
+    grid-row:2 / 7;
+    background:var(--bg-panel-alt);
+    border:1px solid var(--border-line);
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    padding:10px;
+  }
+  .center-logo{
+    font-family:var(--font-mono);
+    font-weight:800;
+    font-size:clamp(16px, 3vw, 26px);
+    letter-spacing:1px;
+    color:var(--text-primary);
+    text-align:center;
+  }
+  .center-logo span{color:var(--magenta);}
+  .dice-area{display:flex;gap:12px;}
+  .die{
+    width:clamp(38px,6vw,54px);
+    height:clamp(38px,6vw,54px);
+    border-radius:10px;
+    background:var(--bg-tile);
+    border:1px solid var(--cyan);
+    color:var(--cyan);
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:clamp(18px,3vw,24px);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 14px -4px var(--cyan);
+  }
+  .status-line{
+    font-family:var(--font-mono);
+    font-size:clamp(10px,1.6vw,12.5px);
+    color:var(--text-muted);
+    text-align:center;
+    max-width:260px;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:300px;
+    flex:0 0 300px;
+  }
+  .players{display:flex;flex-direction:column;gap:10px;}
+  .player-card{
+    background:var(--bg-panel);
+    border:1px solid var(--border-line);
+    border-radius:12px;
+    padding:12px 14px;
+    border-left:4px solid var(--pc, var(--cyan));
+    transition:opacity .3s ease, filter .3s ease;
+  }
+  .player-card.bankrupt{opacity:0.35;filter:grayscale(1);}
+  .player-card.active{box-shadow:0 0 0 1px var(--pc, var(--cyan)), 0 0 16px -4px var(--pc, var(--cyan));}
+  .player-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .player-head .dot{width:10px;height:10px;border-radius:50%;background:var(--pc, var(--cyan));box-shadow:0 0 8px 0 var(--pc, var(--cyan));}
+  .player-head .pname{font-family:var(--font-mono);font-weight:700;font-size:13.5px;flex:1;}
+  .player-head .pxp{font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);}
+  .balance{font-family:var(--font-mono);font-size:19px;font-weight:800;color:var(--text-primary);}
+  .balance small{font-size:11px;color:var(--text-muted);font-weight:500;}
+  .props{margin-top:6px;font-size:11px;color:var(--text-muted);line-height:1.5;min-height:16px;}
+  .props span{
+    display:inline-block;
+    margin:2px 4px 0 0;
+    padding:1px 6px;
+    border-radius:5px;
+    font-family:var(--font-mono);
+    font-size:10px;
+    background:rgba(255,255,255,0.05);
+  }
+
+  .log-panel{
+    background:var(--bg-panel);
+    border:1px solid var(--border-line);
+    border-radius:12px;
+    padding:12px 14px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-height:220px;
+    max-height:420px;
+  }
+  .log-panel h2{
+    font-family:var(--font-mono);
+    font-size:12px;
+    text-transform:none;
+    color:var(--text-muted);
+    margin:0 0 8px;
+    font-weight:600;
+  }
+  #logList{
+    list-style:none;
+    margin:0;padding:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column-reverse;
+    gap:7px;
+  }
+  #logList li{
+    font-size:12px;
+    line-height:1.4;
+    color:var(--text-primary);
+    border-left:2px solid var(--border-line);
+    padding-left:8px;
+  }
+  #logList li.log-good{border-color:var(--lime);}
+  #logList li.log-bad{border-color:var(--red);}
+  #logList li.log-info{border-color:var(--cyan);}
+
+  /* ---------- Modals ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(4,7,13,0.78);
+    backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;
+    z-index:100;
+    padding:16px;
+  }
+  .modal-overlay.hidden{display:none;}
+  .modal-box{
+    background:var(--bg-panel);
+    border:1px solid var(--border-line);
+    border-radius:16px;
+    padding:26px;
+    width:100%;
+    max-width:460px;
+    box-shadow:0 20px 60px -12px rgba(0,0,0,0.6);
+  }
+  .modal-tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--cyan);
+    letter-spacing:0.5px;
+    margin-bottom:6px;
+  }
+  .modal-box h3{
+    margin:0 0 16px;
+    font-size:17px;
+    line-height:1.4;
+    font-weight:700;
+    color:var(--text-primary);
+  }
+  .quiz-options{display:flex;flex-direction:column;gap:9px;margin-bottom:16px;}
+  .quiz-opt{
+    text-align:left;
+    padding:11px 14px;
+    border-radius:10px;
+    border:1px solid var(--border-line);
+    background:var(--bg-panel-alt);
+    color:var(--text-primary);
+    font-size:13.5px;
+    font-weight:500;
+  }
+  .quiz-opt:hover:not(:disabled){border-color:var(--cyan);}
+  .quiz-opt.correct{border-color:var(--lime);background:rgba(166,255,107,0.1);color:var(--lime);}
+  .quiz-opt.wrong{border-color:var(--red);background:rgba(255,92,108,0.1);color:var(--red);}
+
+  .modal-feedback{
+    font-size:13px;
+    line-height:1.5;
+    color:var(--text-muted);
+    margin-bottom:16px;
+    min-height:18px;
+  }
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+  .modal-actions button.primary{border-color:var(--lime);color:var(--lime);}
+  .modal-actions button.primary:hover:not(:disabled){box-shadow:0 0 16px -4px var(--lime);}
+
+  .rules-list{font-size:13px;line-height:1.7;color:var(--text-muted);padding-left:18px;margin:0 0 16px;}
+  .rules-list li{margin-bottom:4px;}
+
+  .setup-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .setup-row .dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 8px 0 currentColor;}
+  .name-input{
+    flex:1;
+    padding:9px 12px;
+    border-radius:8px;
+    border:1px solid var(--border-line);
+    background:var(--bg-panel-alt);
+    color:var(--text-primary);
+    font-family:var(--font-sans);
+    font-size:13.5px;
+  }
+  .name-input:focus{outline:none;border-color:var(--cyan);}
+  .setup-hint{font-size:12px;color:var(--text-dim);margin:-6px 0 16px;}
+
+  @media (max-width:760px){
+    .sidebar{width:100%;flex:1 1 100%;}
+    .tile-name{font-size:8px;}
+    .tile-price{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-badge">&lt;/&gt;</span>
+    <h1>KODEPOLI<span>.AI</span></h1>
+  </div>
+  <div class="turn-indicator" id="turnIndicator">Menyiapkan permainan...</div>
+  <div class="controls">
+    <button id="rulesBtn">📖 Aturan</button>
+    <button id="rollBtn" disabled>🎲 Lempar Dadu</button>
+    <button id="resetBtn">↺ Reset</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="board-wrap">
+    <div class="board" id="board"></div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="players" id="playersPanel"></div>
+    <div class="log-panel">
+      <h2>Log Aktivitas</h2>
+      <ul id="logList"></ul>
+    </div>
+  </aside>
+</main>
+
+<!-- Quiz Modal -->
+<div class="modal-overlay hidden" id="quizModal">
+  <div class="modal-box">
+    <div class="modal-tag" id="quizTag">PROPERTI BELUM DIMILIKI</div>
+    <h3 id="quizQuestion">Pertanyaan akan muncul di sini</h3>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="modal-feedback" id="quizFeedback"></div>
+    <div class="modal-actions" id="quizActions"></div>
+  </div>
+</div>
+
+<!-- Event Modal -->
+<div class="modal-overlay hidden" id="eventModal">
+  <div class="modal-box">
+    <div class="modal-tag" id="eventTag">AI PROMPT — EVENT</div>
+    <h3 id="eventText">Event akan muncul di sini</h3>
+    <div class="modal-actions">
+      <button class="primary" id="eventOkBtn">Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Setup Modal -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal-box">
+    <div class="modal-tag">SIAPKAN PERMAINAN</div>
+    <h3>Masukkan Nama 4 Pemain</h3>
+    <div class="setup-hint">Kosongkan untuk memakai nama default (Pemain 1–4).</div>
+    <div class="setup-row"><span class="dot" style="background:#35e7ff;color:#35e7ff"></span><input type="text" class="name-input" id="nameInput0" maxlength="16" placeholder="Pemain 1"></div>
+    <div class="setup-row"><span class="dot" style="background:#ff5cc8;color:#ff5cc8"></span><input type="text" class="name-input" id="nameInput1" maxlength="16" placeholder="Pemain 2"></div>
+    <div class="setup-row"><span class="dot" style="background:#ffb648;color:#ffb648"></span><input type="text" class="name-input" id="nameInput2" maxlength="16" placeholder="Pemain 3"></div>
+    <div class="setup-row"><span class="dot" style="background:#a6ff6b;color:#a6ff6b"></span><input type="text" class="name-input" id="nameInput3" maxlength="16" placeholder="Pemain 4"></div>
+    <div class="modal-actions">
+      <button class="primary" id="setupStartBtn">Mulai Permainan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Winner Modal -->
+<div class="modal-overlay hidden" id="winnerModal">
+  <div class="modal-box">
+    <div class="modal-tag">PERMAINAN SELESAI</div>
+    <h3 id="winnerText">Pemenang akan muncul di sini</h3>
+    <div class="modal-actions">
+      <button class="primary" id="winnerResetBtn">Main Lagi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rules Modal -->
+<div class="modal-overlay hidden" id="rulesModal">
+  <div class="modal-box">
+    <div class="modal-tag">CARA BERMAIN</div>
+    <h3>Aturan Kodepoli.AI</h3>
+    <ul class="rules-list">
+      <li>4 pemain bergiliran menekan tombol "Lempar Dadu" secara berurutan.</li>
+      <li>Sistem bertindak sebagai bankir: saldo, pembelian, dan sewa dihitung otomatis.</li>
+      <li>Mendarat di properti kosong akan memicu kuis pilihan ganda seputar koding & AI. Jawaban benar membuka opsi membeli properti tersebut. Jawaban salah membuat giliran hangus.</li>
+      <li>Mendarat di properti milik pemain lain otomatis membayar sewa ke pemiliknya.</li>
+      <li>Petak "Server Down" memotong saldo sebagai pajak ke bank.</li>
+      <li>Petak "AI Prompt" memicu event acak yang bisa menguntungkan atau merugikan.</li>
+      <li>Petak "Go To Jail" mengirim pemain ke Runtime Error dan melewatkan 1 giliran.</li>
+      <li>Melewati START memberi bonus 200 Koin + 10 XP.</li>
+      <li>Jika saldo pemain habis, ia dinyatakan bangkrut dan keluar dari permainan.</li>
+      <li>Pemain terakhir yang tersisa memenangkan permainan.</li>
+    </ul>
+    <div class="modal-actions">
+      <button class="primary" id="rulesOkBtn">Mengerti</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ BOARD DATA ============ */
+  // Grid coordinates (row, col) for a 7x7 ring, index-aligned with BOARD below.
+  const COORDS = [
+    {r:7,c:7},{r:7,c:6},{r:7,c:5},{r:7,c:4},{r:7,c:3},{r:7,c:2},{r:7,c:1},
+    {r:6,c:1},{r:5,c:1},{r:4,c:1},{r:3,c:1},{r:2,c:1},{r:1,c:1},
+    {r:1,c:2},{r:1,c:3},{r:1,c:4},{r:1,c:5},{r:1,c:6},{r:1,c:7},
+    {r:2,c:7},{r:3,c:7},{r:4,c:7},{r:5,c:7},{r:6,c:7}
+  ];
+
+  const GROUP_COLOR = { A:'var(--cyan)', B:'var(--lime)', C:'var(--violet)', D:'var(--amber)', E:'var(--magenta)' };
+
+  const BOARD = [
+    { idx:0,  type:'start',    name:'START',            icon:'🏁' },
+    { idx:1,  type:'property', name:'HTML5',             group:'A', price:120, rent:30 },
+    { idx:2,  type:'property', name:'CSS3',              group:'A', price:140, rent:35 },
+    { idx:3,  type:'event',    name:'AI Prompt',         icon:'✨' },
+    { idx:4,  type:'property', name:'JavaScript',        group:'A', price:160, rent:40 },
+    { idx:5,  type:'tax',      name:'Server Down',       icon:'⚡', amount:80 },
+    { idx:6,  type:'jail',     name:'Runtime Error\n(Kunjungan)', icon:'🚧' },
+    { idx:7,  type:'property', name:'Python',            group:'B', price:180, rent:45 },
+    { idx:8,  type:'property', name:'React',             group:'B', price:200, rent:50 },
+    { idx:9,  type:'event',    name:'AI Prompt',         icon:'✨' },
+    { idx:10, type:'property', name:'Node.js',           group:'B', price:220, rent:55 },
+    { idx:11, type:'property', name:'GitHub',            group:'C', price:240, rent:60 },
+    { idx:12, type:'parking',  name:'Cloud Break',       icon:'☁️' },
+    { idx:13, type:'property', name:'Docker',            group:'C', price:260, rent:65 },
+    { idx:14, type:'property', name:'Kubernetes',        group:'C', price:280, rent:70 },
+    { idx:15, type:'event',    name:'AI Prompt',         icon:'✨' },
+    { idx:16, type:'property', name:'Neural Networks',   group:'D', price:300, rent:75 },
+    { idx:17, type:'property', name:'TensorFlow',        group:'D', price:320, rent:80 },
+    { idx:18, type:'gotojail', name:'Go To Jail',        icon:'🚨' },
+    { idx:19, type:'property', name:'Vercel',            group:'D', price:340, rent:85 },
+    { idx:20, type:'property', name:'Next.js',           group:'E', price:360, rent:90 },
+    { idx:21, type:'event',    name:'AI Prompt',         icon:'✨' },
+    { idx:22, type:'property', name:'Vue.js',            group:'E', price:380, rent:95 },
+    { idx:23, type:'property', name:'Netlify',           group:'E', price:400, rent:100 },
+  ];
+  const JAIL_IDX = 6;
+  const BOARD_SIZE = BOARD.length;
+
+  /* ============ QUIZ QUESTIONS ============ */
+  const QUESTIONS = [
+    { q:"Fokus pada informasi yang relevan dan menyembunyikan detail yang tidak penting dalam suatu sistem atau masalah disebut sebagai langkah ....", opts:["Dekomposisi","Pengenalan pola","Enkapsulasi","Abstraksi","Generalisasi"], correct:3 },
+    { q:"Perhatikan pernyataan berikut.<br>1. Menyederhanakan kompleksitas dengan fokus pada fitur-fitur penting.<br>2. Memecah masalah besar menjadi bagian-bagian yang lebih kecil dan terkelola.<br>3. Menyembunyikan detail implementasi yang tidak relevan bagi pengguna.<br>4. Mengulang langkah-langkah tertentu hingga kondisi yang diinginkan tercapai.<br>5. Membuat model atau representasi sederhana dari entitas yang kompleks.<br>Berdasarkan pernyataan di atas, yang menggambarkan konsep abstraksi dalam konteks pemecahan masalah atau pengembangan sistem adalah ....", opts:["1 dan 3","2 dan 3","3 dan 5","4 dan 5"], correct:0 },
+    { q:"Sebuah tim produksi konten sedang merancangkan kampanye pemasaran digital untuk produk minuman kesehatan baru. Mereka mempertimbangkan berbagai jenis media untuk menjangkau audiens yang beragam. Strategi yang paling efektif dalam meningkatkan engagement dan menyampaikan informasi produk secara komprehensif kepada berbagai preferensi konsumen adalah ....", opts:["Hanya menggunakan iklan teks singkat di platform media sosial untuk menjangkau sebanyak mungkin orang","Membuat serangkaian infografis statis yang menampilkan manfaat kesehatan produk dan membagikannya di berbagai platform","Mengembangkan video pendek yang menampilkan testimoni pengguna, animasi yang menjelaskan kandungan produk, dan musik latar yang menarik, serta membagikannya di berbagai kanal dan menyesuaikannya untuk berbagai demografi","Fokus pada produksi podcast yang membahas topik kesehatan dan secara halus menyebutkan manfaat produk","Membuat aplikasi interaktif sederhana yang memungkinkan pengguna melihat informasi produk dan memberikan kupon diskon"], correct:2 },
+    { q:"Sebuah tim produksi multimedia telah menyelesaikan sebuah video dokumenter tentang pelestarian lingkungan. Langkah penting yang harus dilakukan selanjutnya untuk memastikan pesan dokumenter tersebut sampai kepada masyarakat luas dan memicu kesadaran adalah ....", opts:["Menyimpan semua master file video di hard drive yang aman","Membuat thumbnail yang menarik untuk video tersebut","Melakukan diseminasi konten melalui platform media sosial, situs web, festival film dokumenter, dan kerjasama dengan organisasi lingkungan","Meminta feedback dari tim produksi internal mengenai kualitas video","Membuat transkrip lengkap dari dialog dalam video"], correct:2 },
+    { q:"Setiap hari kita berurusan dengan algoritma tanpa kita sadari. Misalnya, ketika Anda membuat langkah-langkah untuk berangkat ke sekolah tepat waktu, atau membuat resep dan cara memasak makanan favorit Anda. Itu semua adalah serangkaian instruksi yang harus dilakukan secara teratur. Komputer pun bekerja dengan cara serupa. Komputer membutuhkan instruksi yang jelas dan terstruktur untuk melakukan tugas apapun. Instruksi-instruksi inilah yang disebut program. Proses menyusun instruksi tersebut disebut pemrograman. Namun, sebelum menulis program dalam bahasa komputer, langkah awal yang harus dilakukan adalah menyusun algoritma yang merupakan resep atau langkah-langkah penyelesaian masalah.<br>Berdasarkan teks di atas, pernyataan yang tepat untuk mendefinisikan algoritma adalah ....", opts:["Serangkaian langkah-langkah terstruktur dan berurutan untuk menyelesaikan suatu masalah.","Sekumpulan kode program yang ditulis dalam bahasa komputer tertentu.","Proses menerjemahkan ide penyelesaian masalah ke dalam bahasa komputer.","Keputusan-keputusan yang diambil secara spontan dalam kehidupan sehari-hari.","Hasil akhir dari proses pemrograman yang siap dijalankan oleh komputer."], correct:0 },
+    { q:"Perhatikan kode berikut.<pre style=\"background:var(--bg-tile);border:1px solid var(--border-line);border-radius:8px;padding:10px 12px;overflow-x:auto;font-family:var(--font-mono);font-size:12px;color:var(--text-primary);margin:10px 0;text-align:left;\">nilai = 75\nif nilai >= 80:\n    hasil = \"A\"\nelif nilai >= 70:\n    hasil = \"B\"\nelse:\n    hasil = \"C\"\nprint(hasil)</pre>Berdasarkan kode di atas, output yang dihasilkan adalah ....", opts:["A, karena 75 dianggap lulus","B, karena 75 memenuhi kondisi nilai >= 70 tetapi tidak >= 80","C, karena 75 tidak memenuhi syarat mendapatkan A","A dan B, karena nilai 75 berada di antara dua kondisi","Eror, karena penulisan kondisi salah"], correct:1 },
+  ];
+
+  const EVENTS = [
+    { text:"Pull Request Anda di-merge tanpa revisi! Bonus +150 Koin & +10 XP.", money:150, xp:10 },
+    { text:"Server crash mendadak saat demo. Anda harus membayar -80 Koin untuk pemulihan.", money:-80, xp:0 },
+    { text:"Model AI Anda viral di komunitas open-source! +120 Koin.", money:120, xp:5 },
+    { text:"Anda lupa push ke GitHub dan kehilangan progres kerja. -60 Koin.", money:-60, xp:0 },
+    { text:"Refactor kode berhasil meningkatkan efisiensi sistem. +90 Koin.", money:90, xp:5 },
+    { text:"Terkena rate limit API eksternal. Anda harus menunggu 1 giliran.", money:0, xp:0, skip:true },
+    { text:"Tim Anda memenangkan hackathon kampus! +200 Koin & +20 XP.", money:200, xp:20 },
+    { text:"Deploy gagal karena build error di pipeline CI/CD. -70 Koin.", money:-70, xp:0 },
+    { text:"Anda menemukan celah keamanan dan melaporkannya (bug bounty). +130 Koin.", money:130, xp:10 },
+    { text:"Laptop kerja terkena malware ringan, biaya perbaikan -90 Koin.", money:-90, xp:0 },
+  ];
+
+  /* ============ GAME STATE ============ */
+  const PLAYER_COLORS = ['var(--p0)','var(--p1)','var(--p2)','var(--p3)'];
+  const PLAYER_COLOR_HEX = ['#35e7ff','#ff5cc8','#ffb648','#a6ff6b'];
+  const START_BALANCE = 1500;
+  const PASS_START_BONUS = 200;
+  const PASS_START_XP = 10;
+  const PARKING_BONUS = 50;
+
+  let players = [];
+  let currentPlayerIndex = 0;
+  let isAnimating = false;
+  let gameOver = false;
+  let lastNames = ['', '', '', ''];
+
+  function freshPlayers(names){
+    return [0,1,2,3].map(i => ({
+      id:i,
+      name:(names && names[i] && names[i].trim()) ? names[i].trim() : ('Pemain ' + (i+1)),
+      color:PLAYER_COLORS[i],
+      colorHex:PLAYER_COLOR_HEX[i],
+      balance:START_BALANCE,
+      xp:0,
+      pos:0,
+      properties:[],
+      skipTurns:0,
+      skipReason:'',
+      bankrupt:false
+    }));
+  }
+
+  function initGame(names){
+    lastNames = names || lastNames;
+    players = freshPlayers(lastNames);
+    currentPlayerIndex = 0;
+    isAnimating = false;
+    gameOver = false;
+    BOARD.forEach(t => { if(t.type==='property') t.ownerId = null; });
+    document.getElementById('logList').innerHTML = '';
+    log('Permainan dimulai! Setiap pemain memulai dengan ' + START_BALANCE + ' Koin.', 'info');
+    renderPlayers();
+    updatePawns();
+    updateOwners();
+    updateTurnIndicator();
+    document.getElementById('rollBtn').disabled = false;
+  }
+
+  function openSetupModal(){
+    const inputs = [0,1,2,3].map(i => document.getElementById('nameInput' + i));
+    inputs.forEach((el, i) => { el.value = lastNames[i] || ''; });
+    document.getElementById('rollBtn').disabled = true;
+    document.getElementById('setupModal').classList.remove('hidden');
+    inputs[0].focus();
+  }
+
+  /* ============ RENDERING: BOARD ============ */
+  function renderBoard(){
+    const board = document.getElementById('board');
+    let html = '';
+    BOARD.forEach((tile, i) => {
+      const pos = COORDS[i];
+      const gridStyle = `grid-column:${pos.c};grid-row:${pos.r};`;
+      const displayName = tile.name.replace('\n','<br>');
+      if(tile.type === 'property'){
+        html += `<div class="tile property group${tile.group}" data-idx="${tile.idx}" style="${gridStyle}">
+          <div class="tile-group-bar" style="background:${GROUP_COLOR[tile.group]}"></div>
+          <div class="tile-name">${displayName}</div>
+          <div class="tile-price">${tile.price} K</div>
+          <div class="tile-owner" id="owner-${tile.idx}" style="opacity:0"></div>
+          <div class="tile-pawns" id="pawns-${tile.idx}"></div>
+        </div>`;
+      } else {
+        const cls = 'tile corner ' + tile.type;
+        html += `<div class="${cls}" data-idx="${tile.idx}" style="${gridStyle}">
+          <div class="tile-icon">${tile.icon || ''}</div>
+          <div class="tile-name">${displayName}</div>
+          <div class="tile-pawns" id="pawns-${tile.idx}"></div>
+        </div>`;
+      }
+    });
+    html += `<div class="board-center">
+      <div class="center-logo">KODEPOLI<span>.AI</span></div>
+      <div class="dice-area"><div class="die" id="die1">–</div><div class="die" id="die2">–</div></div>
+      <div class="status-line" id="statusLine">Klik "Lempar Dadu" untuk memulai permainan.</div>
+    </div>`;
+    board.innerHTML = html;
+  }
+
+  function updatePawns(){
+    BOARD.forEach(tile => {
+      const el = document.getElementById('pawns-' + tile.idx);
+      if(el) el.innerHTML = '';
+    });
+    players.forEach(p => {
+      if(p.bankrupt) return;
+      const el = document.getElementById('pawns-' + p.pos);
+      if(el){
+        const dot = document.createElement('div');
+        dot.className = 'pawn-dot';
+        dot.style.background = p.colorHex;
+        dot.style.color = p.colorHex;
+        el.appendChild(dot);
+      }
+    });
+  }
+
+  function updateOwners(){
+    BOARD.forEach(tile => {
+      if(tile.type !== 'property') return;
+      const el = document.getElementById('owner-' + tile.idx);
+      if(!el) return;
+      if(tile.ownerId === null || tile.ownerId === undefined){
+        el.style.opacity = '0';
+      } else {
+        const owner = players[tile.ownerId];
+        el.style.opacity = '1';
+        el.style.background = owner.colorHex;
+        el.style.color = owner.colorHex;
+      }
+    });
+  }
+
+  function flashTile(idx, colorHex){
+    const el = document.querySelector('.tile[data-idx="' + idx + '"]');
+    if(!el) return;
+    el.style.setProperty('--flash-color', colorHex);
+    el.classList.add('landed');
+    setTimeout(() => el.classList.remove('landed'), 900);
+  }
+
+  /* ============ RENDERING: SIDEBAR ============ */
+  function renderPlayers(){
+    const panel = document.getElementById('playersPanel');
+    let html = '';
+    players.forEach(p => {
+      const propsList = p.properties.length
+        ? p.properties.map(idx => `<span>${BOARD[idx].name}</span>`).join('')
+        : 'Belum ada properti';
+      html += `<div class="player-card ${p.bankrupt ? 'bankrupt':''}" id="player-card-${p.id}" style="--pc:${p.colorHex}">
+        <div class="player-head">
+          <span class="dot"></span>
+          <span class="pname">${p.name}${p.bankrupt ? ' (Bangkrut)':''}</span>
+          <span class="pxp">XP ${p.xp}</span>
+        </div>
+        <div class="balance">${p.balance} <small>Koin</small></div>
+        <div class="props">${propsList}</div>
+      </div>`;
+    });
+    panel.innerHTML = html;
+    highlightActivePlayer();
+  }
+
+  function highlightActivePlayer(){
+    players.forEach(p => {
+      const card = document.getElementById('player-card-' + p.id);
+      if(card) card.classList.toggle('active', p.id === currentPlayerIndex && !gameOver);
+    });
+  }
+
+  function updateTurnIndicator(){
+    const el = document.getElementById('turnIndicator');
+    const p = players[currentPlayerIndex];
+    el.textContent = 'Giliran: ' + p.name;
+    el.style.setProperty('--turn-color', p.colorHex);
+    el.classList.add('active-glow');
+    highlightActivePlayer();
+  }
+
+  function log(msg, kind){
+    const list = document.getElementById('logList');
+    const li = document.createElement('li');
+    li.textContent = msg;
+    if(kind) li.className = 'log-' + kind;
+    list.appendChild(li);
+    while(list.children.length > 60){ list.removeChild(list.firstChild); }
+  }
+
+  /* ============ HELPERS ============ */
+  function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+  function findOwnerPlayer(tile){
+    if(tile.ownerId === null || tile.ownerId === undefined) return null;
+    return players[tile.ownerId];
+  }
+
+  function ownsFullGroup(player, group){
+    const groupTiles = BOARD.filter(t => t.type==='property' && t.group === group);
+    return groupTiles.every(t => t.ownerId === player.id);
+  }
+
+  function nextActivePlayerIndex(fromIndex){
+    let i = fromIndex;
+    for(let k=0;k<players.length;k++){
+      i = (i+1) % players.length;
+      if(!players[i].bankrupt) return i;
+    }
+    return fromIndex;
+  }
+
+  function countActivePlayers(){
+    return players.filter(p => !p.bankrupt).length;
+  }
+
+  function checkBankrupt(player){
+    if(player.balance <= 0 && !player.bankrupt){
+      player.balance = 0;
+      player.bankrupt = true;
+      player.properties.forEach(idx => { BOARD[idx].ownerId = null; });
+      player.properties = [];
+      log(player.name + ' bangkrut dan keluar dari permainan!', 'bad');
+      updateOwners();
+      if(countActivePlayers() <= 1){
+        endGame();
+      }
+    }
+  }
+
+  function endGame(){
+    gameOver = true;
+    document.getElementById('rollBtn').disabled = true;
+    const winner = players.find(p => !p.bankrupt);
+    const text = winner
+      ? `${winner.name} memenangkan permainan dengan saldo akhir ${winner.balance} Koin dan ${winner.xp} XP!`
+      : 'Permainan berakhir.';
+    document.getElementById('winnerText').textContent = text;
+    document.getElementById('winnerModal').classList.remove('hidden');
+    log('🏆 ' + text, 'good');
+  }
+
+  /* ============ TURN FLOW ============ */
+  async function rollDice(){
+    if(isAnimating || gameOver) return;
+    const player = players[currentPlayerIndex];
+
+    if(player.skipTurns > 0){
+      player.skipTurns--;
+      log(`${player.name} melewatkan giliran karena ${player.skipReason}.`, 'bad');
+      endTurn();
+      return;
+    }
+
+    isAnimating = true;
+    document.getElementById('rollBtn').disabled = true;
+    document.getElementById('statusLine').textContent = player.name + ' sedang melempar dadu...';
+
+    const die1El = document.getElementById('die1');
+    const die2El = document.getElementById('die2');
+    for(let i=0;i<8;i++){
+      die1El.textContent = 1 + Math.floor(Math.random()*6);
+      die2El.textContent = 1 + Math.floor(Math.random()*6);
+      await sleep(60);
+    }
+    const d1 = 1 + Math.floor(Math.random()*6);
+    const d2 = 1 + Math.floor(Math.random()*6);
+    die1El.textContent = d1;
+    die2El.textContent = d2;
+    const steps = d1 + d2;
+    log(`${player.name} melempar dadu: ${d1} + ${d2} = ${steps} langkah.`, 'info');
+
+    await movePlayer(player, steps);
+    isAnimating = false;
+  }
+
+  async function movePlayer(player, steps){
+    let passedStart = false;
+    for(let i=0;i<steps;i++){
+      player.pos = (player.pos + 1) % BOARD_SIZE;
+      if(player.pos === 0) passedStart = true;
+      updatePawns();
+      await sleep(110);
+    }
+    flashTile(player.pos, player.colorHex);
+
+    if(passedStart){
+      player.balance += PASS_START_BONUS;
+      player.xp += PASS_START_XP;
+      log(`${player.name} melewati START! Bonus +${PASS_START_BONUS} Koin & +${PASS_START_XP} XP.`, 'good');
+      renderPlayers();
+    }
+
+    handleTile(player);
+  }
+
+  function handleTile(player){
+    const tile = BOARD[player.pos];
+    document.getElementById('statusLine').textContent = player.name + ' mendarat di ' + tile.name.replace('\n',' ');
+
+    switch(tile.type){
+      case 'start':
+        log(`${player.name} berhenti tepat di START.`, 'info');
+        endTurn();
+        break;
+
+      case 'property': {
+        const owner = findOwnerPlayer(tile);
+        if(!owner){
+          openQuiz(player, tile);
+        } else if(owner.id === player.id){
+          log(`${player.name} mendarat di properti miliknya sendiri (${tile.name}).`, 'info');
+          endTurn();
+        } else {
+          payRent(player, owner, tile);
+          endTurn();
+        }
+        break;
+      }
+
+      case 'tax': {
+        player.balance -= tile.amount;
+        log(`${player.name} terkena ${tile.name}, membayar -${tile.amount} Koin ke bank.`, 'bad');
+        renderPlayers();
+        checkBankrupt(player);
+        endTurn();
+        break;
+      }
+
+      case 'event':
+        triggerEvent(player);
+        break;
+
+      case 'jail':
+        log(`${player.name} hanya mampir di Runtime Error (tidak dihukum).`, 'info');
+        endTurn();
+        break;
+
+      case 'parking':
+        player.balance += PARKING_BONUS;
+        log(`${player.name} menemukan Cloud Break, bonus +${PARKING_BONUS} Koin!`, 'good');
+        renderPlayers();
+        endTurn();
+        break;
+
+      case 'gotojail':
+        player.pos = JAIL_IDX;
+        player.skipTurns = 1;
+        player.skipReason = 'Runtime Error';
+        updatePawns();
+        log(`${player.name} dikirim ke Runtime Error dan melewatkan 1 giliran!`, 'bad');
+        endTurn();
+        break;
+
+      default:
+        endTurn();
+    }
+  }
+
+  function payRent(player, owner, tile){
+    let rent = tile.rent;
+    let monopolyNote = '';
+    if(ownsFullGroup(owner, tile.group)){
+      rent *= 2;
+      monopolyNote = ' (x2 karena grup lengkap!)';
+    }
+    rent = Math.min(rent, player.balance + rent); // rent capped conceptually, but we still deduct then check bankruptcy
+    player.balance -= rent;
+    owner.balance += rent;
+    log(`${player.name} membayar sewa ${rent} Koin ke ${owner.name} untuk ${tile.name}${monopolyNote}.`, 'bad');
+    renderPlayers();
+    checkBankrupt(player);
+  }
+
+  function endTurn(){
+    updatePawns();
+    updateOwners();
+    renderPlayers();
+    if(gameOver) return;
+    currentPlayerIndex = nextActivePlayerIndex(currentPlayerIndex);
+    updateTurnIndicator();
+    document.getElementById('statusLine').textContent = players[currentPlayerIndex].name + ', giliranmu!';
+    document.getElementById('rollBtn').disabled = false;
+  }
+
+  /* ============ QUIZ MODAL ============ */
+  let quizContext = null; // { player, tile }
+
+  function openQuiz(player, tile){
+    quizContext = { player, tile };
+    const q = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+    quizContext.question = q;
+
+    document.getElementById('quizTag').textContent = 'PROPERTI BELUM DIMILIKI — ' + tile.name.toUpperCase();
+    document.getElementById('quizQuestion').innerHTML = q.q;
+    document.getElementById('quizFeedback').textContent = '';
+    const optsEl = document.getElementById('quizOptions');
+    optsEl.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt';
+      btn.textContent = opt;
+      btn.onclick = () => submitQuizAnswer(i);
+      optsEl.appendChild(btn);
+    });
+    document.getElementById('quizActions').innerHTML = '';
+    document.getElementById('quizModal').classList.remove('hidden');
+  }
+
+  function submitQuizAnswer(choiceIndex){
+    const { player, tile, question } = quizContext;
+    const optsEl = document.getElementById('quizOptions');
+    const buttons = Array.from(optsEl.children);
+    buttons.forEach((b, i) => {
+      b.disabled = true;
+      if(i === question.correct) b.classList.add('correct');
+      else if(i === choiceIndex) b.classList.add('wrong');
+    });
+
+    const feedbackEl = document.getElementById('quizFeedback');
+    const actionsEl = document.getElementById('quizActions');
+    actionsEl.innerHTML = '';
+
+    if(choiceIndex === question.correct){
+      log(`${player.name} menjawab benar soal koding/AI!`, 'good');
+      const canAfford = player.balance >= tile.price;
+      if(canAfford){
+        feedbackEl.textContent = `Jawaban benar! Kamu bisa membeli ${tile.name} seharga ${tile.price} Koin.`;
+        const buyBtn = document.createElement('button');
+        buyBtn.className = 'primary';
+        buyBtn.textContent = `Beli (${tile.price} Koin)`;
+        buyBtn.onclick = () => {
+          player.balance -= tile.price;
+          tile.ownerId = player.id;
+          player.properties.push(tile.idx);
+          log(`${player.name} membeli ${tile.name} seharga ${tile.price} Koin.`, 'good');
+          closeQuizAndContinue();
+        };
+        const skipBtn = document.createElement('button');
+        skipBtn.textContent = 'Lewati Pembelian';
+        skipBtn.onclick = () => {
+          log(`${player.name} memilih tidak membeli ${tile.name}.`, 'info');
+          closeQuizAndContinue();
+        };
+        actionsEl.appendChild(skipBtn);
+        actionsEl.appendChild(buyBtn);
+      } else {
+        feedbackEl.textContent = `Jawaban benar, tapi saldo tidak cukup untuk membeli ${tile.name} (butuh ${tile.price} Koin).`;
+        const okBtn = document.createElement('button');
+        okBtn.className = 'primary';
+        okBtn.textContent = 'Lanjutkan';
+        okBtn.onclick = closeQuizAndContinue;
+        actionsEl.appendChild(okBtn);
+      }
+    } else {
+      feedbackEl.textContent = 'Jawaban salah! Giliranmu hangus dan properti belum bisa dibeli.';
+      log(`${player.name} menjawab salah, giliran hangus.`, 'bad');
+      const okBtn = document.createElement('button');
+      okBtn.className = 'primary';
+      okBtn.textContent = 'Lanjutkan';
+      okBtn.onclick = closeQuizAndContinue;
+      actionsEl.appendChild(okBtn);
+    }
+  }
+
+  function closeQuizAndContinue(){
+    document.getElementById('quizModal').classList.add('hidden');
+    quizContext = null;
+    endTurn();
+  }
+
+  /* ============ EVENT MODAL ============ */
+  let eventContext = null;
+
+  function triggerEvent(player){
+    const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+    eventContext = { player, ev };
+    document.getElementById('eventTag').textContent = 'AI PROMPT — EVENT ACAK';
+    document.getElementById('eventText').textContent = ev.text;
+    document.getElementById('eventModal').classList.remove('hidden');
+  }
+
+  function resolveEvent(){
+    const { player, ev } = eventContext;
+    if(ev.money){
+      player.balance += ev.money;
+      const kind = ev.money > 0 ? 'good' : 'bad';
+      log(`${player.name} ${ev.money > 0 ? 'mendapat' : 'kehilangan'} ${Math.abs(ev.money)} Koin dari event AI Prompt.`, kind);
+    }
+    if(ev.xp){ player.xp += ev.xp; }
+    if(ev.skip){
+      player.skipTurns += 1;
+      player.skipReason = 'AI Prompt (Rate Limit)';
+    }
+    renderPlayers();
+    document.getElementById('eventModal').classList.add('hidden');
+    eventContext = null;
+    checkBankrupt(player);
+    endTurn();
+  }
+
+  /* ============ EVENT LISTENERS ============ */
+  document.getElementById('rollBtn').addEventListener('click', rollDice);
+  document.getElementById('resetBtn').addEventListener('click', openSetupModal);
+  document.getElementById('setupStartBtn').addEventListener('click', () => {
+    const names = [0,1,2,3].map(i => document.getElementById('nameInput' + i).value);
+    document.getElementById('setupModal').classList.add('hidden');
+    initGame(names);
+  });
+  document.getElementById('eventOkBtn').addEventListener('click', resolveEvent);
+  document.getElementById('winnerResetBtn').addEventListener('click', () => {
+    document.getElementById('winnerModal').classList.add('hidden');
+    openSetupModal();
+  });
+  document.getElementById('rulesBtn').addEventListener('click', () => {
+    document.getElementById('rulesModal').classList.remove('hidden');
+  });
+  document.getElementById('rulesOkBtn').addEventListener('click', () => {
+    document.getElementById('rulesModal').classList.add('hidden');
+  });
+
+  /* ============ INIT ============ */
+  renderBoard();
+  openSetupModal();
+
+})();
+</script>
+</body>
+</html>
