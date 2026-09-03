@@ -2,7 +2,15 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#070b13">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kodepoli.AI">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23070b13'/%3E%3Ctext x='50' y='62' font-size='40' font-family='monospace' font-weight='700' text-anchor='middle' fill='%2335e7ff'%3E%3C/%3E%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23070b13'/%3E%3Ctext x='50' y='62' font-size='40' font-family='monospace' font-weight='700' text-anchor='middle' fill='%2335e7ff'%3E%3C/%3E%3C/text%3E%3C/svg%3E">
 <title>Kodepoli.AI — Monopoli Edukasi Koding & AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,6 +47,7 @@
 
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
   body{
     background:
       radial-gradient(circle at 15% 8%, rgba(53,231,255,0.07), transparent 45%),
@@ -47,8 +56,17 @@
     color:var(--text-primary);
     font-family:var(--font-sans);
     min-height:100vh;
+    min-height:100dvh;
     padding:18px;
+    padding-top:max(18px, env(safe-area-inset-top));
+    padding-right:max(18px, env(safe-area-inset-right));
+    padding-bottom:max(18px, env(safe-area-inset-bottom));
+    padding-left:max(18px, env(safe-area-inset-left));
+    overscroll-behavior:none;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
   }
+  button, .quiz-opt, .tile{ touch-action:manipulation; }
 
   /* ---------- Topbar ---------- */
   .topbar{
@@ -99,7 +117,7 @@
     box-shadow:0 0 14px -4px var(--turn-color, var(--cyan));
   }
 
-  .controls{display:flex;gap:10px;}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;}
   button{
     font-family:var(--font-sans);
     font-weight:600;
@@ -107,6 +125,7 @@
     cursor:pointer;
     border-radius:10px;
     padding:10px 18px;
+    min-height:44px;
     border:1px solid var(--border-line);
     background:var(--bg-panel-alt);
     color:var(--text-primary);
@@ -291,6 +310,16 @@
   .player-head .dot{width:10px;height:10px;border-radius:50%;background:var(--pc, var(--cyan));box-shadow:0 0 8px 0 var(--pc, var(--cyan));}
   .player-head .pname{font-family:var(--font-mono);font-weight:700;font-size:13.5px;flex:1;}
   .player-head .pxp{font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);}
+  .auto-badge{
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    color:var(--violet);
+    background:rgba(185,139,255,0.12);
+    border:1px solid rgba(185,139,255,0.35);
+    padding:1px 6px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
   .balance{font-family:var(--font-mono);font-size:19px;font-weight:800;color:var(--text-primary);}
   .balance small{font-size:11px;color:var(--text-muted);font-weight:500;}
   .props{margin-top:6px;font-size:11px;color:var(--text-muted);line-height:1.5;min-height:16px;}
@@ -350,6 +379,8 @@
     display:flex;align-items:center;justify-content:center;
     z-index:100;
     padding:16px;
+    padding-top:max(16px, env(safe-area-inset-top));
+    padding-bottom:max(16px, env(safe-area-inset-bottom));
   }
   .modal-overlay.hidden{display:none;}
   .modal-box{
@@ -359,6 +390,10 @@
     padding:26px;
     width:100%;
     max-width:460px;
+    max-height:88vh;
+    max-height:88dvh;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
     box-shadow:0 20px 60px -12px rgba(0,0,0,0.6);
   }
   .modal-tag{
@@ -408,13 +443,13 @@
   .setup-row .dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 8px 0 currentColor;}
   .name-input{
     flex:1;
-    padding:9px 12px;
+    padding:11px 12px;
     border-radius:8px;
     border:1px solid var(--border-line);
     background:var(--bg-panel-alt);
     color:var(--text-primary);
     font-family:var(--font-sans);
-    font-size:13.5px;
+    font-size:16px;
   }
   .name-input:focus{outline:none;border-color:var(--cyan);}
   .setup-hint{font-size:12px;color:var(--text-dim);margin:-6px 0 16px;}
@@ -462,9 +497,33 @@
   .grade-E{color:var(--red);}
 
   @media (max-width:760px){
+    body{padding:12px;}
+    .topbar{padding:12px 14px;gap:10px;}
+    .brand h1{font-size:16px;}
+    .controls{width:100%;justify-content:stretch;}
+    .controls button{flex:1 1 auto;padding:10px 8px;font-size:12px;}
+    .turn-indicator{order:3;width:100%;text-align:center;box-sizing:border-box;}
+    .layout{gap:12px;}
+    .board-wrap{padding:8px;width:100%;}
+    .board{width:100%;max-width:100%;gap:3px;}
     .sidebar{width:100%;flex:1 1 100%;}
-    .tile-name{font-size:8px;}
+    .tile-name{font-size:7.5px;}
     .tile-price{display:none;}
+    .tile-icon{font-size:13px;}
+    .modal-box{padding:18px;border-radius:14px;}
+    .result-table{font-size:11px;}
+    .result-table th, .result-table td{padding:7px 5px;}
+  }
+
+  @media (max-width:420px){
+    .board{gap:2px;}
+    .tile-name{font-size:6.8px;}
+    .die{width:34px;height:34px;font-size:16px;}
+  }
+
+  @media (hover:none) and (pointer:coarse){
+    button:hover:not(:disabled){transform:none;}
+    .tile{-webkit-user-select:none;user-select:none;}
   }
 </style>
 </head>
@@ -526,7 +585,7 @@
   <div class="modal-box">
     <div class="modal-tag">SIAPKAN PERMAINAN</div>
     <h3>Masukkan Nama 4 Pemain</h3>
-    <div class="setup-hint">Kosongkan untuk memakai nama default (Pemain 1–4).</div>
+    <div class="setup-hint">Kosongkan kolom nama agar pemain tersebut berjalan otomatis (bermain sendiri tanpa perlu diklik).</div>
     <div class="setup-row"><span class="dot" style="background:#35e7ff;color:#35e7ff"></span><input type="text" class="name-input" id="nameInput0" maxlength="16" placeholder="Pemain 1"></div>
     <div class="setup-row"><span class="dot" style="background:#ff5cc8;color:#ff5cc8"></span><input type="text" class="name-input" id="nameInput1" maxlength="16" placeholder="Pemain 2"></div>
     <div class="setup-row"><span class="dot" style="background:#ffb648;color:#ffb648"></span><input type="text" class="name-input" id="nameInput2" maxlength="16" placeholder="Pemain 3"></div>
@@ -572,6 +631,7 @@
       <li>Melewati START memberi bonus 200 Koin + 10 XP.</li>
       <li>Jika saldo pemain habis, ia dinyatakan bangkrut dan keluar dari permainan.</li>
       <li>Pemain terakhir yang tersisa memenangkan permainan.</li>
+      <li>Jika kolom nama pemain dikosongkan saat setup, pemain itu ditandai 🤖 Otomatis dan akan melempar dadu, menjawab kuis, serta melanjutkan giliran dengan sendirinya.</li>
     </ul>
     <div class="modal-actions">
       <button class="primary" id="rulesOkBtn">Mengerti</button>
@@ -661,21 +721,25 @@
   let lastNames = ['', '', '', ''];
 
   function freshPlayers(names){
-    return [0,1,2,3].map(i => ({
-      id:i,
-      name:(names && names[i] && names[i].trim()) ? names[i].trim() : ('Pemain ' + (i+1)),
-      color:PLAYER_COLORS[i],
-      colorHex:PLAYER_COLOR_HEX[i],
-      balance:START_BALANCE,
-      xp:0,
-      pos:0,
-      properties:[],
-      skipTurns:0,
-      skipReason:'',
-      bankrupt:false,
-      quizCorrect:0,
-      quizTotal:0
-    }));
+    return [0,1,2,3].map(i => {
+      const rawName = names && names[i] ? names[i].trim() : '';
+      return {
+        id:i,
+        name: rawName || ('Pemain ' + (i+1)),
+        isAuto: !rawName,
+        color:PLAYER_COLORS[i],
+        colorHex:PLAYER_COLOR_HEX[i],
+        balance:START_BALANCE,
+        xp:0,
+        pos:0,
+        properties:[],
+        skipTurns:0,
+        skipReason:'',
+        bankrupt:false,
+        quizCorrect:0,
+        quizTotal:0
+      };
+    });
   }
 
   function initGame(names){
@@ -688,12 +752,17 @@
     BOARD.forEach(t => { if(t.type==='property') t.ownerId = null; });
     document.getElementById('logList').innerHTML = '';
     log('Permainan dimulai! Setiap pemain memulai dengan ' + START_BALANCE + ' Koin.', 'info');
+    const autoNames = players.filter(p => p.isAuto).map(p => p.name);
+    if(autoNames.length){
+      log('Pemain tanpa nama akan berjalan otomatis: ' + autoNames.join(', ') + '.', 'info');
+    }
     renderPlayers();
     updatePawns();
     updateOwners();
     updateTurnIndicator();
     document.getElementById('rollBtn').disabled = false;
     document.getElementById('finishBtn').disabled = false;
+    checkAutoTurn();
   }
 
   function openSetupModal(){
@@ -792,6 +861,7 @@
         <div class="player-head">
           <span class="dot"></span>
           <span class="pname">${p.name}${p.bankrupt ? ' (Bangkrut)':''}</span>
+          ${p.isAuto ? '<span class="auto-badge">🤖 Otomatis</span>' : ''}
           <span class="pxp">XP ${p.xp}</span>
         </div>
         <div class="balance">${p.balance} <small>Koin</small></div>
@@ -812,7 +882,7 @@
   function updateTurnIndicator(){
     const el = document.getElementById('turnIndicator');
     const p = players[currentPlayerIndex];
-    el.textContent = 'Giliran: ' + p.name;
+    el.textContent = 'Giliran: ' + p.name + (p.isAuto ? ' 🤖' : '');
     el.style.setProperty('--turn-color', p.colorHex);
     el.classList.add('active-glow');
     highlightActivePlayer();
@@ -1066,8 +1136,22 @@
     if(gameOver) return;
     currentPlayerIndex = nextActivePlayerIndex(currentPlayerIndex);
     updateTurnIndicator();
-    document.getElementById('statusLine').textContent = players[currentPlayerIndex].name + ', giliranmu!';
+    const activePlayer = players[currentPlayerIndex];
+    document.getElementById('statusLine').textContent = activePlayer.isAuto
+      ? activePlayer.name + ' (otomatis) sedang bermain...'
+      : activePlayer.name + ', giliranmu!';
     document.getElementById('rollBtn').disabled = false;
+    checkAutoTurn();
+  }
+
+  function checkAutoTurn(){
+    if(gameOver) return;
+    const player = players[currentPlayerIndex];
+    if(!player || !player.isAuto || player.bankrupt) return;
+    document.getElementById('rollBtn').disabled = true;
+    setTimeout(() => {
+      if(!gameOver && players[currentPlayerIndex] === player) rollDice();
+    }, 900);
   }
 
   /* ============ QUIZ MODAL ============ */
@@ -1118,6 +1202,14 @@
     });
     document.getElementById('quizActions').innerHTML = '';
     document.getElementById('quizModal').classList.remove('hidden');
+
+    if(player.isAuto){
+      setTimeout(() => {
+        if(quizContext && quizContext.player === player){
+          submitQuizAnswer(Math.floor(Math.random() * q.opts.length));
+        }
+      }, 1100);
+    }
   }
 
   function submitQuizAnswer(choiceIndex){
@@ -1177,6 +1269,13 @@
       okBtn.onclick = closeQuizAndContinue;
       actionsEl.appendChild(okBtn);
     }
+
+    if(player.isAuto){
+      setTimeout(() => {
+        const target = actionsEl.querySelector('button.primary') || actionsEl.querySelector('button');
+        if(target) target.click();
+      }, 900);
+    }
   }
 
   function closeQuizAndContinue(){
@@ -1194,6 +1293,12 @@
     document.getElementById('eventTag').textContent = 'AI PROMPT — EVENT ACAK';
     document.getElementById('eventText').textContent = ev.text;
     document.getElementById('eventModal').classList.remove('hidden');
+
+    if(player.isAuto){
+      setTimeout(() => {
+        if(eventContext && eventContext.player === player) resolveEvent();
+      }, 900);
+    }
   }
 
   function resolveEvent(){
@@ -1245,6 +1350,11 @@
   document.getElementById('resultScreenshotBtn').addEventListener('click', takeScreenshot);
 
   /* ============ SCREENSHOT ============ */
+  function isIOS(){
+    return /iP(hone|od|ad)/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
   function takeScreenshot(){
     if(typeof html2canvas === 'undefined'){
       alert('Fitur screenshot butuh koneksi internet untuk memuat pustaka html2canvas. Coba muat ulang halaman dengan koneksi aktif.');
@@ -1254,11 +1364,30 @@
     btns.forEach(b => { if(b){ b.disabled = true; b.textContent = '⏳ Memproses...'; } });
 
     html2canvas(document.body, { backgroundColor: '#070b13', useCORS: true, scale: 2 }).then(canvas => {
-      const link = document.createElement('a');
+      const dataUrl = canvas.toDataURL('image/png');
       const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-      link.download = 'kodepoli-ai-' + stamp + '.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+
+      if(isIOS()){
+        // iOS Safari mostly ignores the download attribute for data URLs,
+        // so open the image in a new tab and let the user long-press ➜ Save Image.
+        const win = window.open();
+        if(win){
+          win.document.write(
+            '<title>Kodepoli.AI — Screenshot</title>' +
+            '<body style="margin:0;background:#070b13;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;">' +
+            '<p style="color:#dce8f5;font-size:14px;margin:14px;text-align:center;">Tahan gambar di bawah lalu pilih "Simpan ke Foto".</p>' +
+            '<img src="' + dataUrl + '" style="max-width:100%;border-radius:8px;">' +
+            '</body>'
+          );
+        } else {
+          alert('Izinkan pop-up untuk menyimpan screenshot, atau tahan tombol ini sedikit lebih lama.');
+        }
+      } else {
+        const link = document.createElement('a');
+        link.download = 'kodepoli-ai-' + stamp + '.png';
+        link.href = dataUrl;
+        link.click();
+      }
     }).catch(err => {
       alert('Gagal mengambil screenshot: ' + err.message);
     }).finally(() => {
