@@ -168,6 +168,7 @@
   <div id="header">
     <h1>❄️ Ular Tangga Informatika ❄️</h1>
     <div class="sub">Lompat tangga, hindari ular, taklukkan rintangan soal — raih kemenangan di petak 100!</div>
+    <div class="sub" style="margin-top:2px;">🤖 Kosongkan nama pemain agar Komputer otomatis bermain menggantikannya (level SMK)</div>
   </div>
 
   <div id="turnBar"><span id="turnDot" style="background:#e24b4a;"></span><span id="turnText">Giliran: -</span></div>
@@ -210,7 +211,8 @@
 <div class="modalOverlayBase show" id="setupOverlay">
   <div id="setupBox">
     <h2>🇮🇩 Siapkan Pemain</h2>
-    <p class="desc">Pilih jumlah pemain lalu isi nama tiap tim untuk memulai permainan.</p>
+    <p class="desc">Pilih jumlah pemain lalu isi nama tiap tim untuk memulai permainan.<br>
+    <b>Kosongkan kolom nama</b> jika ingin tim tersebut dimainkan otomatis oleh <b>Komputer</b> 🤖 </p>
     <div class="countPicker" id="countPicker"></div>
     <div id="nameForm"></div>
     <button id="startBtn">Mulai Permainan</button>
@@ -299,6 +301,35 @@ let currentTurnIdx = 0;
 let busy = false;
 let modalTimer = null;
 let playerCount = 2;
+let gameOver = false;
+
+// ==== Konfigurasi Komputer (mode semi-otomatis) ====
+// Tingkat "medium" setara anak SMK: cukup kompeten tapi tidak selalu benar.
+const CPU_ACCURACY = 0.62;           // peluang CPU menjawab benar
+const CPU_MIN_THINK_MS = 1300;       // jeda "berpikir" minimum
+const CPU_MAX_THINK_MS = 3200;       // jeda "berpikir" maksimum
+const CPU_PRE_ROLL_MIN_MS = 700;     // jeda sebelum CPU lempar dadu
+const CPU_PRE_ROLL_MAX_MS = 1500;
+
+function randomWrongIndex(correctIdx, total){
+  let idx;
+  do { idx = Math.floor(Math.random() * total); } while(idx === correctIdx);
+  return idx;
+}
+
+// Jika giliran sekarang milik pemain Komputer, jalankan aksinya secara otomatis.
+function maybeAutoPlay(){
+  if(gameOver) return;
+  const p = currentPlayer();
+  if(!p || !p.isCPU || busy) return;
+  setTimeout(()=>{
+    if(gameOver) return;
+    const now = currentPlayer();
+    if(now && now.id === p.id && !busy){
+      rollDice();
+    }
+  }, CPU_PRE_ROLL_MIN_MS + Math.random() * (CPU_PRE_ROLL_MAX_MS - CPU_PRE_ROLL_MIN_MS));
+}
 
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 
@@ -396,7 +427,14 @@ function updateTurnBar(){
   document.getElementById('turnDot').style.background = p.color;
   document.getElementById('turnText').textContent = 'Giliran: ' + p.name + (p.stuck ? ' (harus jawab soal dulu)' : '');
   const btn = document.getElementById('rollBtn');
-  btn.textContent = p.stuck ? '❗ Jawab Soal' : '🎲 Lempar Cube';
+  if(gameOver) return;
+  if(p.isCPU){
+    btn.textContent = '🤖 Komputer bermain...';
+    btn.disabled = true;
+  } else {
+    btn.textContent = p.stuck ? '❗ Jawab Soal' : '🎲 Lempar Cube';
+    btn.disabled = busy;
+  }
 }
 
 function renderScoreboard(){
@@ -500,10 +538,10 @@ function resolveLanding(p, num){
 
 function endTurn(){
   currentTurnIdx = (currentTurnIdx + 1) % turnOrder.length;
+  busy = false;
   updateTurnBar();
   renderScoreboard();
-  busy = false;
-  document.getElementById('rollBtn').disabled = false;
+  maybeAutoPlay();
 }
 
 function openQuestionModal(p, type, num){
@@ -515,35 +553,62 @@ function openQuestionModal(p, type, num){
   const typeLabel = type==='ladder' ? '🪜 RINTANGAN TANGGA' : (type==='gate' ? '🔒 KUNCI GILIRAN' : '❓ RINTANGAN SOAL');
   const attemptTxt = p.stuck ? ' (percobaan ke-'+(p.wrongCount+1)+')' : '';
   title.textContent = typeLabel + ' — ' + p.name + attemptTxt;
-  qEl.textContent = cur.q;
+  qEl.style.whiteSpace = p.isCPU ? 'pre-line' : '';
+  qEl.textContent = cur.q + (p.isCPU ? '\n\n🤖 Komputer sedang berpikir...' : '');
   optsWrap.innerHTML = '';
   const letters=['A','B','C','D','E'];
   let answered = false;
+
+  function selectAnswer(i){
+    if(answered) return;
+    answered = true;
+    clearInterval(modalTimer);
+    document.querySelectorAll('.modalOpt').forEach(b=>b.classList.add('disabled'));
+    const chosenBtn = optsWrap.children[i];
+    if(i === cur.c){
+      chosenBtn.classList.add('correct');
+      setTimeout(()=> closeModal(p, type, num, true), 700);
+    } else {
+      chosenBtn.classList.add('wrong');
+      optsWrap.children[cur.c].classList.add('correct');
+      setTimeout(()=> closeModal(p, type, num, false), 900);
+    }
+  }
+
   cur.o.forEach((opt,i)=>{
     const btn = document.createElement('div');
-    btn.className = 'modalOpt';
+    btn.className = 'modalOpt' + (p.isCPU ? ' disabled' : '');
     btn.innerHTML = '<b>'+letters[i]+'.</b> <span>'+opt+'</span>';
-    btn.addEventListener('click', ()=>{
-      if(answered) return;
-      answered = true;
-      clearInterval(modalTimer);
-      document.querySelectorAll('.modalOpt').forEach(b=>b.classList.add('disabled'));
-      if(i === cur.c){
-        btn.classList.add('correct');
-        setTimeout(()=> closeModal(p, type, num, true), 700);
-      } else {
-        btn.classList.add('wrong');
-        optsWrap.children[cur.c].classList.add('correct');
-        setTimeout(()=> closeModal(p, type, num, false), 900);
-      }
-    });
+    if(!p.isCPU){
+      btn.addEventListener('click', ()=> selectAnswer(i));
+    }
     optsWrap.appendChild(btn);
   });
   overlay.classList.add('show');
-  let timeLeft = 15;
+
   const bar = document.getElementById('modalTimer');
   bar.style.transition = 'none'; bar.style.width='100%';
   requestAnimationFrame(()=>{ bar.style.transition='width 1s linear'; });
+
+  if(p.isCPU){
+    // Komputer "berpikir" dulu sejenak, lalu menjawab otomatis.
+    // Tingkat medium (setara SMK): tidak selalu benar, meniru cara siswa berpikir.
+    const thinkMs = CPU_MIN_THINK_MS + Math.random() * (CPU_MAX_THINK_MS - CPU_MIN_THINK_MS);
+    let timeLeft = 15;
+    modalTimer = setInterval(()=>{
+      timeLeft--;
+      bar.style.width = Math.max(0,(timeLeft/15)*100)+'%';
+    }, 1000);
+    setTimeout(()=>{
+      if(answered) return;
+      const willBeCorrect = Math.random() < CPU_ACCURACY;
+      const chosenIdx = willBeCorrect ? cur.c : randomWrongIndex(cur.c, cur.o.length);
+      selectAnswer(chosenIdx);
+    }, thinkMs);
+    return;
+  }
+
+  let timeLeft = 15;
   modalTimer = setInterval(()=>{
     timeLeft--;
     bar.style.width = Math.max(0,(timeLeft/15)*100)+'%';
@@ -639,6 +704,8 @@ function confettiBurst(){
 }
 
 function endGame(winner){
+  gameOver = true;
+  document.getElementById('rollBtn').disabled = true;
   const overlay = document.getElementById('overlay');
   document.getElementById('overlayTitle').textContent = '🎉 ' + winner.name.toUpperCase() + ' MERDEKA! 🎉';
   document.getElementById('overlaySub').textContent = winner.name + ' mencapai petak 100 lebih dulu!';
@@ -655,12 +722,14 @@ function initGame(){
   turnOrder = players.slice();
   currentTurnIdx = 0;
   busy = false;
+  gameOver = false;
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('rollBtn').disabled = false;
   buildBoard();
   players.forEach(p=> placeToken(p.id, 0, false));
   updateTurnBar();
   renderScoreboard();
+  maybeAutoPlay();
 }
 
 function buildSetupForm(){
@@ -683,7 +752,7 @@ function buildSetupForm(){
     const input = document.createElement('input');
     input.type = 'text';
     input.maxLength = 20;
-    input.placeholder = def.defaultName;
+    input.placeholder = def.defaultName + ' (kosongkan = Komputer 🤖)';
     input.id = 'nameInput_' + i;
     row.appendChild(input);
     form.appendChild(row);
@@ -695,8 +764,13 @@ function startGame(){
   for(let i=0;i<playerCount;i++){
     const def = PLAYER_DEFS[i];
     const input = document.getElementById('nameInput_' + i);
-    const name = (input && input.value.trim()) ? input.value.trim() : def.defaultName;
-    players.push({ id: def.id, name: name, color: def.color, textColor: def.textColor, emoji: def.emoji, stuck:false, wrongCount:0 });
+    const typedName = input ? input.value.trim() : '';
+    const isCPU = typedName === '';
+    const name = isCPU ? ('🤖 ' + def.defaultName) : typedName;
+    players.push({
+      id: def.id, name: name, color: def.color, textColor: def.textColor, emoji: def.emoji,
+      stuck:false, wrongCount:0, isCPU: isCPU
+    });
   }
   document.getElementById('setupOverlay').classList.remove('show');
   initGame();
