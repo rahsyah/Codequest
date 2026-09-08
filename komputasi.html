@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Legenda Sang Pemikir - RPG Pemikiran Komputasional</title>
+
+<meta name="description" content="RPG edukasi interaktif: jelajahi lima wilayah, kalahkan teka-teki, dan kuasai empat pilar Pemikiran Komputasional - Dekomposisi, Pengenalan Pola, Abstraksi, dan Algoritma.">
+<meta name="keywords" content="pemikiran komputasional, computational thinking, game RPG edukasi, dekomposisi, algoritma, pola, abstraksi, belajar sambil bermain">
+<meta name="author" content="Media Pembelajaran Interaktif">
+<meta name="robots" content="index, follow">
+
+<meta property="og:title" content="Legenda Sang Pemikir - RPG Pemikiran Komputasional">
+<meta property="og:description" content="Jelajahi lima wilayah, hadapi tantangan, dan taklukkan empat pilar Pemikiran Komputasional dalam petualangan RPG interaktif.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="id_ID">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗡️</text></svg>">
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "EducationalGame",
+    "name": "Legenda Sang Pemikir - RPG Pemikiran Komputasional",
+    "description": "Game RPG edukasi interaktif untuk belajar pemikiran komputasional melalui lima wilayah petualangan",
+    "educationalLevel": "Beginner to Intermediate",
+    "learningResourceType": "Interactive Role-Playing Game",
+    "inLanguage": "id-ID",
+    "teaches": ["Dekomposisi", "Pengenalan Pola", "Abstraksi", "Algoritma"],
+    "isAccessibleForFree": true
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+    :root{
+        --void:#120b1f;
+        --void-2:#1c1230;
+        --panel:#241835;
+        --panel-2:#33234a;
+        --parchment:#f2e6c6;
+        --parchment-2:#e8d7a9;
+        --ink:#2c2013;
+        --ink-soft:#5b4a2e;
+        --gold:#cf9f3f;
+        --gold-bright:#f0cf5e;
+        --ember:#d75a35;
+        --arcane:#3f9e79;
+        --arcane-bright:#5ec99b;
+        --danger:#a4402a;
+        --line:rgba(207,159,63,.35);
+    }
+    *{ margin:0; padding:0; box-sizing:border-box; }
+
+    body{
+        font-family:'Lora', Georgia, serif;
+        color:var(--parchment);
+        background:
+            radial-gradient(ellipse at 20% -10%, #3a2a54 0%, transparent 55%),
+            radial-gradient(ellipse at 85% 10%, #2d1f47 0%, transparent 45%),
+            linear-gradient(180deg, var(--void) 0%, var(--void-2) 60%, #150e22 100%);
+        min-height:100vh;
+        padding:24px 16px 60px;
+        position:relative;
+        overflow-x:hidden;
+    }
+
+    body::before{
+        content:'';
+        position:fixed; inset:0;
+        background-image:
+            radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.5) 0, transparent 60%),
+            radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,.4) 0, transparent 60%),
+            radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,.35) 0, transparent 60%),
+            radial-gradient(1px 1px at 65% 40%, rgba(255,255,255,.3) 0, transparent 60%),
+            radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,.35) 0, transparent 60%),
+            radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,.3) 0, transparent 60%);
+        pointer-events:none;
+        z-index:0;
+        animation:twinkle 6s ease-in-out infinite;
+    }
+    @keyframes twinkle{ 0%,100%{opacity:.6} 50%{opacity:1} }
+
+    .container{ max-width:900px; margin:0 auto; position:relative; z-index:1; }
+
+    h1,h2,h3,.font-display{ font-family:'Cinzel', serif; letter-spacing:.02em; }
+
+    /* ---------- Header / gate ---------- */
+    .gate-title{
+        text-align:center;
+        margin-bottom:26px;
+    }
+    .gate-title .rune{ font-size:2.4em; display:block; margin-bottom:6px; }
+    .gate-title h1{
+        font-size:1.9em;
+        color:var(--gold-bright);
+        text-shadow:0 2px 10px rgba(0,0,0,.6);
+    }
+    .gate-title p{
+        color:var(--parchment-2);
+        opacity:.85;
+        margin-top:6px;
+        font-style:italic;
+    }
+
+    /* ---------- Parchment panel base ---------- */
+    .parchment{
+        background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-2) 100%);
+        color:var(--ink);
+        border-radius:8px;
+        border:2px solid var(--gold);
+        box-shadow:0 14px 34px rgba(0,0,0,.45), inset 0 0 0 5px rgba(255,255,255,.15);
+        padding:28px;
+        position:relative;
+    }
+    .parchment::before,.parchment::after{
+        content:'✦';
+        position:absolute;
+        color:var(--gold);
+        font-size:1.1em;
+        top:8px;
+    }
+    .parchment::before{ left:12px; }
+    .parchment::after{ right:12px; }
+
+    /* ---------- Character creation ---------- */
+    .creation-screen{ min-height:80vh; display:flex; align-items:center; justify-content:center; }
+    .creation-card{ max-width:600px; width:100%; text-align:center; animation:riseIn .6s ease both; }
+    @keyframes riseIn{ from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:translateY(0)} }
+
+    .creation-card h2{ font-size:1.5em; color:var(--ink); margin-bottom:6px; }
+    .creation-card > p{ color:var(--ink-soft); margin-bottom:22px; }
+
+    .class-grid{
+        display:grid;
+        grid-template-columns:repeat(2, 1fr);
+        gap:14px;
+        margin-bottom:22px;
+    }
+    .class-card{
+        background:rgba(255,255,255,.35);
+        border:2px solid var(--ink-soft);
+        border-radius:8px;
+        padding:16px 10px;
+        cursor:pointer;
+        transition:transform .18s ease, border-color .18s ease, background .18s ease;
+        text-align:center;
+    }
+    .class-card .emoji{ font-size:1.9em; display:block; margin-bottom:6px; }
+    .class-card strong{ display:block; font-family:'Cinzel',serif; font-size:.95em; color:var(--ink); margin-bottom:4px; }
+    .class-card span{ font-size:.78em; color:var(--ink-soft); line-height:1.35; display:block; }
+    .class-card:hover{ transform:translateY(-3px); border-color:var(--gold); }
+    .class-card.selected{
+        border-color:var(--gold);
+        background:linear-gradient(135deg, #fff2cc, #f0dca0);
+        box-shadow:0 0 0 3px rgba(207,159,63,.35);
+    }
+
+    .name-input{
+        width:100%;
+        padding:14px 16px;
+        border:2px solid var(--ink-soft);
+        border-radius:8px;
+        font-family:'Lora',serif;
+        font-size:1.05em;
+        margin-bottom:18px;
+        background:rgba(255,255,255,.55);
+        color:var(--ink);
+    }
+    .name-input:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(207,159,63,.25); }
+
+    /* ---------- Buttons ---------- */
+    .btn{
+        font-family:'Cinzel', serif;
+        background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+        color:#3a2a10;
+        border:none;
+        border:2px solid #8a6a1f;
+        padding:12px 26px;
+        border-radius:8px;
+        cursor:pointer;
+        font-size:.92em;
+        font-weight:600;
+        letter-spacing:.02em;
+        transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+        margin:5px;
+        box-shadow:0 4px 0 #7a5a15, 0 8px 16px rgba(0,0,0,.35);
+    }
+    .btn:hover{ filter:brightness(1.06); transform:translateY(-2px); }
+    .btn:active{ transform:translateY(1px); box-shadow:0 2px 0 #7a5a15, 0 4px 10px rgba(0,0,0,.3); }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; filter:grayscale(.3); }
+    .btn-large{ padding:15px 40px !important; font-size:1.05em !important; width:100%; }
+    .btn-ghost{
+        background:transparent;
+        color:var(--parchment);
+        border:2px solid var(--gold);
+        box-shadow:none;
+    }
+    .btn-ghost:active{ box-shadow:none; }
+    .btn-arcane{ background:linear-gradient(180deg, var(--arcane-bright), var(--arcane)); border-color:#1f6b4d; box-shadow:0 4px 0 #1f6b4d, 0 8px 16px rgba(0,0,0,.35); color:#0e2a1e; }
+    .btn-danger{ background:linear-gradient(180deg,#e8815f, var(--ember)); border-color:#7c2c17; box-shadow:0 4px 0 #7c2c17, 0 8px 16px rgba(0,0,0,.35); color:#3a1206; }
+
+    /* ---------- Main content ---------- */
+    #mainContent{ display:none; }
+
+    .hero-bar{
+        display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap;
+        gap:10px;
+        margin-bottom:18px;
+        color:var(--parchment);
+    }
+    .hero-id{ display:flex; align-items:center; gap:10px; }
+    .hero-id .avatar-emoji{
+        font-size:1.8em; width:52px; height:52px; border-radius:50%;
+        background:radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold) 70%);
+        display:flex; align-items:center; justify-content:center;
+        box-shadow:0 0 0 3px var(--void-2), 0 0 14px rgba(240,207,94,.5);
+    }
+    .hero-id .hero-name{ font-family:'Cinzel',serif; font-size:1.05em; color:var(--gold-bright); }
+    .hero-id .hero-class{ font-size:.82em; color:var(--parchment-2); opacity:.85; }
+    .hero-timer{
+        background:var(--panel);
+        border:1px solid var(--line);
+        padding:8px 14px;
+        border-radius:20px;
+        font-size:.85em;
+        color:var(--parchment-2);
+    }
+
+    /* ---------- XP bar ---------- */
+    .xp-wrap{
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:12px;
+        padding:16px 18px;
+        margin-bottom:22px;
+    }
+    .xp-wrap .xp-label{
+        display:flex; justify-content:space-between; font-size:.85em; color:var(--parchment-2); margin-bottom:8px;
+    }
+    .xp-bar{
+        width:100%; height:18px; border-radius:10px;
+        background:#160f24;
+        border:1px solid var(--line);
+        overflow:hidden;
+    }
+    .xp-fill{
+        height:100%;
+        background:linear-gradient(90deg, var(--arcane), var(--arcane-bright));
+        width:0%;
+        transition:width .6s ease;
+        box-shadow:0 0 10px rgba(94,201,155,.6) inset;
+    }
+
+    /* ---------- World map ---------- */
+    .worldmap{
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:14px;
+        padding:22px 16px;
+        margin-bottom:26px;
+    }
+    .worldmap h3{
+        text-align:center;
+        color:var(--gold-bright);
+        font-size:1em;
+        margin-bottom:18px;
+    }
+    .map-path{
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:6px;
+        position:relative;
+    }
+    .map-path::before{
+        content:'';
+        position:absolute;
+        top:28px; left:6%; right:6%;
+        height:3px;
+        background:repeating-linear-gradient(90deg, var(--gold) 0 10px, transparent 10px 18px);
+        opacity:.55;
+        z-index:0;
+    }
+    .map-node{
+        position:relative; z-index:1;
+        flex:1;
+        text-align:center;
+        cursor:default;
+    }
+    .map-node .node-dot{
+        width:56px; height:56px;
+        border-radius:50%;
+        margin:0 auto 8px;
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.5em;
+        background:var(--void-2);
+        border:3px solid var(--line);
+        transition:all .25s ease;
+    }
+    .map-node .node-label{ font-size:.72em; color:var(--parchment-2); line-height:1.3; }
+    .map-node.locked .node-dot{ opacity:.4; filter:grayscale(.6); }
+    .map-node.locked .node-label{ opacity:.4; }
+    .map-node.done .node-dot{
+        background:linear-gradient(160deg, var(--arcane-bright), var(--arcane));
+        border-color:var(--arcane-bright);
+        box-shadow:0 0 14px rgba(94,201,155,.55);
+    }
+    .map-node.active .node-dot{
+        background:linear-gradient(160deg, var(--gold-bright), var(--gold));
+        border-color:var(--gold-bright);
+        box-shadow:0 0 0 5px rgba(240,207,94,.18), 0 0 18px rgba(240,207,94,.55);
+        animation:nodePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes nodePulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.08);} }
+    .map-node.active .node-label{ color:var(--gold-bright); font-weight:600; }
+
+    /* ---------- Quest scene ---------- */
+    .quest-scene{ animation:sceneIn .5s ease both; }
+    @keyframes sceneIn{ from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)} }
+
+    .quest-banner{
+        background:linear-gradient(135deg, var(--panel-2), var(--panel));
+        border:1px solid var(--line);
+        border-radius:14px 14px 0 0;
+        padding:22px 24px 18px;
+        display:flex;
+        align-items:center;
+        gap:16px;
+    }
+    .quest-banner .banner-emoji{ font-size:2.6em; filter:drop-shadow(0 3px 6px rgba(0,0,0,.5)); }
+    .quest-banner h2{ font-size:1.25em; color:var(--gold-bright); margin-bottom:4px; }
+    .quest-banner p{ color:var(--parchment-2); font-size:.88em; opacity:.9; }
+    .quest-timer{
+        margin-left:auto;
+        background:rgba(0,0,0,.25);
+        border:1px solid var(--line);
+        border-radius:20px;
+        padding:6px 14px;
+        font-size:.8em;
+        white-space:nowrap;
+        color:var(--parchment-2);
+    }
+
+    .quest-body{
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-top:none;
+        border-radius:0 0 14px 14px;
+        padding:24px;
+        margin-bottom:22px;
+    }
+
+    /* NPC dialogue */
+    .npc-dialogue{
+        display:flex; gap:14px; align-items:flex-start;
+        background:rgba(0,0,0,.25);
+        border-left:4px solid var(--gold);
+        border-radius:8px;
+        padding:16px 18px;
+        margin-bottom:22px;
+    }
+    .npc-dialogue .npc-emoji{ font-size:1.9em; flex-shrink:0; }
+    .npc-dialogue .npc-text{ font-size:.95em; line-height:1.6; color:var(--parchment); }
+    .npc-dialogue .npc-name{ display:block; font-family:'Cinzel',serif; font-size:.8em; color:var(--gold-bright); margin-bottom:4px; letter-spacing:.03em; }
+
+    /* Rune / principle cards */
+    .rune-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+        gap:14px;
+        margin-bottom:24px;
+    }
+    .rune-card{
+        background:linear-gradient(160deg, var(--parchment), var(--parchment-2));
+        color:var(--ink);
+        border-radius:8px;
+        border:2px solid var(--gold);
+        padding:16px 18px;
+        position:relative;
+    }
+    .rune-card h3{ font-size:1em; margin-bottom:6px; color:#5a3d0f; }
+    .rune-card p{ font-size:.85em; line-height:1.5; color:var(--ink-soft); }
+
+    /* Battle box */
+    .battle-box{
+        background:rgba(0,0,0,.22);
+        border:1px solid var(--line);
+        border-radius:10px;
+        padding:20px;
+        margin-bottom:16px;
+    }
+    .battle-box .foe-line{
+        display:flex; align-items:center; gap:10px;
+        margin-bottom:10px;
+    }
+    .battle-box .foe-emoji{ font-size:1.6em; }
+    .battle-box .foe-name{ font-family:'Cinzel',serif; color:var(--ember); font-size:.95em; }
+    .battle-box .quest-prompt{ color:var(--parchment-2); margin-bottom:14px; font-size:.92em; line-height:1.55; }
+
+    .penalty-note{
+        background:rgba(212,159,63,.12);
+        border:1px dashed var(--gold);
+        border-radius:8px;
+        padding:10px 14px;
+        font-size:.82em;
+        color:var(--parchment-2);
+        margin-bottom:14px;
+    }
+
+    .paste-warning{
+        display:none;
+        background:rgba(164,64,42,.25);
+        border:1px solid var(--danger);
+        border-radius:8px;
+        padding:10px 14px;
+        font-size:.82em;
+        color:#ffd6c8;
+        margin-bottom:12px;
+    }
+
+    .challenge-input{
+        width:100%;
+        padding:12px 14px;
+        border:2px solid var(--line);
+        border-radius:8px;
+        font-family:'Lora',serif;
+        font-size:.98em;
+        margin-bottom:10px;
+        background:var(--parchment);
+        color:var(--ink);
+        resize:vertical;
+    }
+    .challenge-input:focus{ outline:none; border-color:var(--gold-bright); box-shadow:0 0 0 3px rgba(240,207,94,.25); }
+    .pattern-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+
+    .feedback{
+        display:none;
+        margin-top:12px;
+        padding:14px 16px;
+        border-radius:8px;
+        font-size:.92em;
+        line-height:1.6;
+    }
+    .feedback.success{ background:rgba(94,201,155,.18); border:1px solid var(--arcane-bright); color:#d8fbe9; }
+    .feedback.info{ background:rgba(212,159,63,.15); border:1px solid var(--gold); color:#ffe9b8; }
+
+    /* Certificate / scroll of honor */
+    .scroll-wrap{ display:none; }
+    .scroll-card{ max-width:680px; margin:0 auto; text-align:center; }
+    .scroll-card h2{ font-size:1.4em; color:#5a3d0f; margin-bottom:4px; }
+    .scroll-card .seal{ font-size:2.6em; margin:10px 0; }
+    .scroll-card .hero-final-name{ font-size:1.7em; color:#8a5a12; font-family:'Cinzel',serif; margin:14px 0 6px; }
+    .scroll-card .title-badge{
+        display:inline-block;
+        font-family:'Cinzel',serif;
+        background:linear-gradient(135deg,#8a5a12,#c99a3a);
+        color:#fff6e0;
+        padding:8px 22px;
+        border-radius:20px;
+        font-size:1em;
+        margin:8px 0 18px;
+        box-shadow:0 4px 12px rgba(0,0,0,.25);
+    }
+    .scroll-card .score-num{ font-size:2.6em; color:#5a3d0f; font-family:'Cinzel',serif; }
+    .scroll-grid{
+        display:grid; grid-template-columns:1fr 1fr; gap:16px;
+        margin:22px 0; text-align:left;
+    }
+    .scroll-grid .box{
+        background:rgba(90,61,15,.08);
+        border:1px solid rgba(90,61,15,.25);
+        border-radius:8px;
+        padding:14px 16px;
+        font-size:.86em;
+        color:var(--ink-soft);
+        line-height:1.7;
+    }
+    .scroll-grid .box strong{ color:var(--ink); }
+    .completion-date{ color:var(--ink-soft); font-size:.85em; margin-top:6px; }
+
+    /* Answer log */
+    .answer-log{ display:none; }
+    .log-entry{
+        background:rgba(255,255,255,.4);
+        border:1px solid rgba(90,61,15,.25);
+        border-radius:8px;
+        padding:14px 16px;
+        margin-bottom:12px;
+        text-align:left;
+        color:var(--ink);
+    }
+    .log-entry .log-q{ font-size:.85em; color:var(--ink-soft); margin-bottom:6px; }
+    .log-entry .log-a{ white-space:pre-wrap; font-size:.9em; line-height:1.5; }
+    .log-entry .log-t{ font-size:.78em; color:var(--ink-soft); margin-top:8px; }
+
+    footer.note{
+        text-align:center;
+        color:var(--parchment-2);
+        opacity:.55;
+        font-size:.78em;
+        margin-top:30px;
+    }
+
+    @media (max-width:640px){
+        .class-grid{ grid-template-columns:1fr 1fr; }
+        .scroll-grid{ grid-template-columns:1fr; }
+        .quest-banner{ flex-wrap:wrap; }
+        .quest-timer{ margin-left:0; }
+        .map-node .node-label{ font-size:.62em; }
+        .map-node .node-dot{ width:44px; height:44px; font-size:1.2em; }
+        .pattern-row{ grid-template-columns:1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+        *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ============ CHARACTER CREATION ============ -->
+    <div id="creationScreen" class="creation-screen">
+        <div class="creation-card parchment">
+            <div class="gate-title" style="margin-bottom:18px;">
+                <span class="rune">🗡️✨</span>
+            </div>
+            <h2>Legenda Sang Pemikir</h2>
+            <p>Sebuah petualangan untuk menempa kekuatan <strong>Pemikiran Komputasional</strong> - Dekomposisi, Pengenalan Pola, Abstraksi, dan Algoritma.</p>
+
+            <p style="font-weight:600; margin-bottom:12px; text-align:left;">Pilih kelas petualangmu:</p>
+            <div class="class-grid" id="classGrid"></div>
+
+            <input type="text" id="heroName" class="name-input" placeholder="Tuliskan nama petualangmu..." maxlength="50">
+            <button class="btn btn-large" onclick="beginQuest()">Mulai Petualangan ⚔️</button>
+            <p style="margin-top:14px; font-size:.85em; color:var(--ink-soft);">💡 Semakin cepat dan cermat kamu menaklukkan setiap wilayah, semakin tinggi gelar kehormatanmu di akhir kisah.</p>
+        </div>
+    </div>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <div id="mainContent">
+        <div class="hero-bar">
+            <div class="hero-id">
+                <div class="avatar-emoji" id="avatarEmoji">🛡️</div>
+                <div>
+                    <div class="hero-name" id="heroDisplayName"></div>
+                    <div class="hero-class" id="heroDisplayClass"></div>
+                </div>
+            </div>
+            <div class="hero-timer">⏳ Waktu Petualangan: <strong id="totalTime">00:00</strong></div>
+        </div>
+
+        <div class="xp-wrap">
+            <div class="xp-label">
+                <span>✨ Progres Petualangan</span>
+                <span><strong id="completedCount">0</strong> / 5 wilayah ditaklukkan</span>
+            </div>
+            <div class="xp-bar"><div class="xp-fill" id="progressFill"></div></div>
+        </div>
+
+        <div class="worldmap">
+            <h3>🗺️ Peta Wilayah Petualangan</h3>
+            <div class="map-path" id="mapPath"></div>
+        </div>
+
+        <!-- Quest scene dimuat secara dinamis di sini -->
+        <div id="levelContainer"></div>
+
+        <!-- ===== SCROLL OF HONOR (Sertifikat) ===== -->
+        <div class="scroll-wrap parchment" id="certificateSection">
+            <div class="scroll-card">
+                <h2>📜 Piagam Sang Master Pemikir Komputasional 📜</h2>
+                <div class="seal">🏵️</div>
+                <p style="color:var(--ink-soft);">Dianugerahkan kepada petualang bernama:</p>
+                <div class="hero-final-name" id="certName"></div>
+                <div class="title-badge" id="gradeBadge">Gelar</div>
+
+                <p style="font-size:1em; line-height:1.8; color:var(--ink-soft);">
+                    Telah menaklukkan seluruh wilayah dalam <strong>Legenda Sang Pemikir</strong><br>
+                    dan menguasai empat pilar kekuatan:<br>
+                    <strong>Dekomposisi • Pengenalan Pola • Abstraksi • Algoritma</strong>
+                </p>
+
+                <div class="score-num" id="finalScore">0</div>
+
+                <div class="scroll-grid">
+                    <div class="box">
+                        <strong>📊 Catatan Perjalanan Waktu:</strong><br>
+                        <div id="timeBreakdown"></div>
+                    </div>
+                    <div class="box">
+                        <strong>⭐ Lencana Pencapaian:</strong><br>
+                        <div id="achievements"></div>
+                    </div>
+                </div>
+
+                <p class="completion-date">Ditandatangani pada: <span id="completionDate"></span></p>
+            </div>
+
+            <button class="btn btn-large" onclick="downloadCertificate()" style="margin-top:20px;">📥 Simpan Piagam (Screenshot)</button>
+            <button class="btn" onclick="toggleAnswerRecords()">📖 Buka Buku Catatan Petualangan</button>
+            <button class="btn btn-arcane" onclick="goToNextGame()">🌌 Lanjut ke Petualangan Berikutnya →</button>
+            <br>
+            <button class="btn btn-ghost" onclick="restartJourney()" style="margin-top:8px;">🔄 Mulai Petualangan Baru</button>
+        </div>
+
+        <!-- ===== ANSWER LOG ===== -->
+        <div class="answer-log parchment" id="answerRecordsSection">
+            <h3 style="color:var(--ink); margin-bottom:16px;">📖 Buku Catatan Petualangan</h3>
+            <div id="answerRecordsContainer"></div>
+            <button class="btn" onclick="toggleAnswerRecords()" style="margin-top:10px;">⬆️ Tutup Buku Catatan</button>
+        </div>
+
+        <footer class="note">Legenda Sang Pemikir · Petualangan Pemikiran Komputasional</footer>
+    </div><!-- End Main Content -->
+</div><!-- End Container -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    /* =========================================================
+       DATA: Kelas Petualang (kosmetik / naratif saja)
+       ========================================================= */
+    const heroClasses = [
+        { id:'ksatria', emoji:'🛡️', name:'Ksatria Dekomposisi', desc:'Ahli memecah masalah besar menjadi langkah-langkah kecil yang bisa ditaklukkan.' },
+        { id:'pemburu', emoji:'🏹', name:'Pemburu Pola', desc:'Mata tajam yang mampu melihat keteraturan di balik kekacauan.' },
+        { id:'penyihir', emoji:'🔮', name:'Penyihir Abstraksi', desc:'Menyaring inti masalah, mengabaikan detail yang tak penting.' },
+        { id:'pendekar', emoji:'⚔️', name:'Pendekar Algoritma', desc:'Menyusun setiap langkah menjadi strategi yang runtut dan pasti.' }
+    ];
+    let selectedClassId = 'ksatria';
+
+    /* =========================================================
+       DATA: Peta Wilayah (5 level asli, dibingkai ulang)
+       ========================================================= */
+    const worldMapData = [
+        { level:1, emoji:'🏘️', name:'Desa Awal' },
+        { level:2, emoji:'🌲', name:'Hutan Pola' },
+        { level:3, emoji:'🗼', name:'Menara Integrasi' },
+        { level:4, emoji:'🏰', name:'Benteng Optimisasi' },
+        { level:5, emoji:'👑', name:'Kastil Naga' }
+    ];
+
+    /* =========================================================
+       DATA: Bank tantangan (identik secara pedagogis dgn versi asli)
+       ========================================================= */
+    const level1Challenges = [
+        { task: "Teh Manis", instruction: "Tuliskan langkah-langkah membuat teh manis dengan urutan yang benar!", minSteps: 5 },
+        { task: "Kopi", instruction: "Tuliskan langkah-langkah membuat kopi dengan urutan yang benar!", minSteps: 5 },
+        { task: "Mie Instan", instruction: "Tuliskan langkah-langkah membuat mie instan dengan urutan yang benar!", minSteps: 5 },
+        { task: "Sandwich", instruction: "Tuliskan langkah-langkah membuat sandwich dengan urutan yang benar!", minSteps: 5 }
+    ];
+
+    const patternChallenges = [
+        { sequence: [2, 4, 6, 8], answers: [10, 12, 14], step: 2, name: '+2' },
+        { sequence: [5, 10, 15, 20], answers: [25, 30, 35], step: 5, name: '+5' },
+        { sequence: [3, 6, 9, 12], answers: [15, 18, 21], step: 3, name: '+3' },
+        { sequence: [10, 20, 30, 40], answers: [50, 60, 70], step: 10, name: '+10' },
+        { sequence: [1, 3, 5, 7], answers: [9, 11, 13], step: 2, name: '+2' },
+        { sequence: [4, 8, 12, 16], answers: [20, 24, 28], step: 4, name: '+4' }
+    ];
+
+    const level2DecomposeTasks = [
+        { task: "Membersihkan kamar", minSteps: 5 },
+        { task: "Menyiapkan tas sekolah", minSteps: 5 },
+        { task: "Memasak nasi goreng", minSteps: 5 },
+        { task: "Mencuci sepeda", minSteps: 5 },
+        { task: "Mengerjakan PR matematika", minSteps: 5 }
+    ];
+
+    /* Pool misi acak untuk wilayah 3-5, agar setiap kali bermain selalu berbeda */
+    const advancedTaskPools = {
+        3: [
+            'Analisis studi kasus sistem peminjaman buku perpustakaan sekolah',
+            'Analisis studi kasus antrean kantin sekolah saat jam istirahat',
+            'Analisis studi kasus sistem parkir kendaraan di area kampus',
+            'Analisis studi kasus alur pendaftaran pasien di klinik kesehatan'
+        ],
+        4: [
+            'Optimalkan sistem pengiriman paket agar lebih cepat dan hemat biaya',
+            'Optimalkan antrean kasir minimarket agar tidak menumpuk saat jam ramai',
+            'Optimalkan jadwal ujian sekolah agar tidak bentrok antar mata pelajaran',
+            'Optimalkan rute bus sekolah agar menjangkau semua siswa tepat waktu'
+        ],
+        5: [
+            'Rancang sistem smart city untuk manajemen sampah kota',
+            'Rancang sistem smart city untuk mengurai kemacetan lalu lintas',
+            'Rancang sistem smart city untuk efisiensi penggunaan energi listrik',
+            'Rancang sistem smart city untuk pemantauan kualitas air bersih'
+        ]
+    };
+    let currentAdvancedTasks = { 3: '', 4: '', 5: '' };
+
+    /* =========================================================
+       STATE PETUALANGAN
+       ========================================================= */
+    let userName = '';
+    let completedLevels = 0;
+    const totalLevels = 5;
+    let levelTimes = [0, 0, 0, 0, 0];
+    let currentLevelStartTime = null;
+    let totalStartTime = null;
+    let timerInterval = null;
+    let levelTimers = {};
+    let currentLevel1Challenge = null;
+    let currentPattern = null;
+    let currentLevel2Decompose = null;
+
+    let level1Completed = false;
+    let level2PatternCompleted = false;
+    let level2DecomposeCompleted = false;
+
+    const idealTimes = [180, 300, 480, 600, 900];
+
+    let answerRecords = {
+        level1: { question: '', answer: '', time: 0 },
+        level2_pattern: { question: '', answer: '', time: 0 },
+        level2_decompose: { question: '', answer: '', time: 0 },
+        level3: { question: '', answer: '', time: 0 },
+        level4: { question: '', answer: '', time: 0 },
+        level5: { question: '', answer: '', time: 0 }
+    };
+
+    /* =========================================================
+       KARTU KELAS
+       ========================================================= */
+    function renderClassGrid(){
+        const grid = document.getElementById('classGrid');
+        grid.innerHTML = heroClasses.map(c => `
+            <div class="class-card ${c.id === selectedClassId ? 'selected' : ''}" data-class="${c.id}" onclick="pickClass('${c.id}')">
+                <span class="emoji">${c.emoji}</span>
+                <strong>${c.name}</strong>
+                <span>${c.desc}</span>
+            </div>
+        `).join('');
+    }
+
+    function pickClass(id){
+        selectedClassId = id;
+        renderClassGrid();
+    }
+
+    renderClassGrid();
+
+    /* =========================================================
+       MULAI PETUALANGAN
+       ========================================================= */
+    function beginQuest(){
+        const nameInput = document.getElementById('heroName').value.trim();
+        if (nameInput === '') {
+            alert('⚠️ Sang Guru bertanya: "Siapakah namamu, wahai petualang?" Silakan isi namamu terlebih dahulu!');
+            return;
+        }
+
+        userName = nameInput;
+        const cls = heroClasses.find(c => c.id === selectedClassId);
+
+        document.getElementById('avatarEmoji').textContent = cls.emoji;
+        document.getElementById('heroDisplayName').textContent = userName;
+        document.getElementById('heroDisplayClass').textContent = cls.name;
+
+        document.getElementById('creationScreen').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+
+        randomizeChallenges();
+        totalStartTime = Date.now();
+        startTotalTimer();
+
+        renderWorldMap();
+        renderCurrentLevel();
+        startLevelTimer(1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function randomizeChallenges() {
+        currentLevel1Challenge = level1Challenges[Math.floor(Math.random() * level1Challenges.length)];
+        currentPattern = patternChallenges[Math.floor(Math.random() * patternChallenges.length)];
+        currentLevel2Decompose = level2DecomposeTasks[Math.floor(Math.random() * level2DecomposeTasks.length)];
+        currentAdvancedTasks[3] = advancedTaskPools[3][Math.floor(Math.random() * advancedTaskPools[3].length)];
+        currentAdvancedTasks[4] = advancedTaskPools[4][Math.floor(Math.random() * advancedTaskPools[4].length)];
+        currentAdvancedTasks[5] = advancedTaskPools[5][Math.floor(Math.random() * advancedTaskPools[5].length)];
+    }
+
+    /* =========================================================
+       PETA WILAYAH
+       ========================================================= */
+    function renderWorldMap(){
+        const currentLevelNum = completedLevels + 1;
+        const path = document.getElementById('mapPath');
+        path.innerHTML = worldMapData.map(node => {
+            let state = 'locked';
+            if (node.level < currentLevelNum || completedLevels >= totalLevels) state = 'done';
+            else if (node.level === currentLevelNum) state = 'active';
+
+            const icon = state === 'done' ? '✅' : (state === 'locked' ? '🔒' : node.emoji);
+            return `
+                <div class="map-node ${state}" title="${node.name}">
+                    <div class="node-dot">${icon}</div>
+                    <div class="node-label">Lv${node.level}<br>${node.name}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    /* =========================================================
+       TEMPLATE WILAYAH / QUEST (setara dgn levelTemplates asli)
+       ========================================================= */
+    const levelTemplates = {
+        1: {
+            emoji: '🏘️',
+            title: "Desa Awal: Wejangan Sang Guru",
+            subtitle: "Pahami empat kekuatan dasar lewat kisah sehari-hari",
+            npc: `Selamat datang, petualang muda! Sebelum melangkah lebih jauh, kuasai dulu empat kekuatan dasar Pemikiran Komputasional ini. Bacalah keempat jimat di bawah, lalu buktikan pemahamanmu pada tantangan pertama.`,
+            content: function () {
+                return `
+                    <div class="rune-grid">
+                        <div class="rune-card">
+                            <h3>🧩 Dekomposisi</h3>
+                            <p><strong>Kisah:</strong> Seperti membuat nasi goreng - pecah menjadi langkah kecil: siapkan bahan, goreng bumbu, masukkan nasi, aduk, sajikan.</p>
+                        </div>
+                        <div class="rune-card">
+                            <h3>🔍 Pengenalan Pola</h3>
+                            <p><strong>Kisah:</strong> Seperti mengenali motif batik - ada corak yang berulang dengan keteraturan tertentu.</p>
+                        </div>
+                        <div class="rune-card">
+                            <h3>✂️ Abstraksi</h3>
+                            <p><strong>Kisah:</strong> Seperti peta jalan - hanya menampilkan info penting (jalan, nama kota), mengabaikan detail (warna rumah, jenis pohon).</p>
+                        </div>
+                        <div class="rune-card">
+                            <h3>📋 Algoritma</h3>
+                            <p><strong>Kisah:</strong> Seperti resep masakan - langkah demi langkah yang jelas dan berurutan menuju hasil.</p>
+                        </div>
+                    </div>
+
+                    <div class="battle-box">
+                        <div class="foe-line">
+                            <span class="foe-emoji">🐉</span>
+                            <span class="foe-name">Naga Kebingungan menghadang di depan dapur!</span>
+                        </div>
+                        <div class="penalty-note">⏰ Kalahkan secepat mungkin - kecepatanmu memengaruhi skor akhir di piagam kehormatan!</div>
+                        <p class="quest-prompt"><strong>Misi: Susun Ramuan "${currentLevel1Challenge.task}"</strong><br>${currentLevel1Challenge.instruction}</p>
+                        <div class="paste-warning" id="paste-warning-1">
+                            🛡️ <strong>Sang Guru menahan mantra salinanmu!</strong><br>
+                            Tuliskan jawabanmu sendiri agar kekuatanmu benar-benar terlatih.
+                        </div>
+                        <textarea class="challenge-input no-paste" id="level1-input" rows="6" placeholder="Contoh:
+1. Siapkan...
+2. ...
+3. ..."></textarea>
+                        <button class="btn" onclick="checkLevel1()">⚔️ Serang dengan Jawabanmu</button>
+                        <div class="feedback" id="level1-feedback"></div>
+                    </div>
+
+                    <div class="npc-dialogue" style="margin-top:6px;">
+                        <span class="npc-emoji">🤔</span>
+                        <div class="npc-text">
+                            <span class="npc-name">Renungan Sang Petualang</span>
+                            Bagaimana rasanya ketika masalah besar dipecah menjadi bagian kecil? Pola apa yang sering kamu temui dalam kehidupan sehari-hari? Mengapa urutan langkah begitu penting untuk menyelesaikan masalah?
+                        </div>
+                    </div>
+                `;
+            }
+        },
+        2: {
+            emoji: '🌲',
+            title: "Hutan Pola & Reruntuhan Pecahan",
+            subtitle: "Uji nalurimu pada teka-teki pola dan masalah yang perlu dipecah",
+            npc: `Hutan ini menyimpan dua penjaga: satu menguji ketajaman matamu pada pola, satu lagi menguji kemampuanmu memecah masalah besar menjadi bagian-bagian kecil. Kalahkan keduanya untuk membuka jalan ke Menara Integrasi.`,
+            content: function () {
+                return `
+                    <div class="rune-grid">
+                        <div class="rune-card">
+                            <h3>🧩 Dekomposisi</h3>
+                            <p><strong>Praktik:</strong> Merencanakan pesta ulang tahun - pecah menjadi: daftar tamu, lokasi, dekorasi, makanan, hiburan, undangan.</p>
+                        </div>
+                        <div class="rune-card">
+                            <h3>🔍 Pengenalan Pola</h3>
+                            <p><strong>Praktik:</strong> Mencari pola dalam deret angka atau siklus hari dalam seminggu yang berulang.</p>
+                        </div>
+                        <div class="rune-card">
+                            <h3>✂️ Abstraksi</h3>
+                            <p><strong>Praktik:</strong> Membuat diagram alur sederhana - fokus pada langkah utama, abaikan detail yang tak relevan.</p>
+                        </div>
+                        <div class="rune-card">
+                            <h3>📋 Algoritma</h3>
+                            <p><strong>Praktik:</strong> Menyusun prosedur mencari buku di perpustakaan menggunakan sistem katalog.</p>
+                        </div>
+                    </div>
+
+                    <div class="battle-box">
+                        <div class="foe-line">
+                            <span class="foe-emoji">🦉</span>
+                            <span class="foe-name">Burung Hantu Teka-teki menjaga gerbang pola</span>
+                        </div>
+                        <div class="penalty-note">⏰ Waktu memengaruhi skor akhir - amati polanya dengan cermat!</div>
+                        <p class="quest-prompt" id="patternChallenge">Lengkapi deret sihir: ${currentPattern.sequence.join(', ')}, ?, ?, ?</p>
+                        <div class="paste-warning" id="paste-warning-2a">
+                            🛡️ <strong>Sang Guru menahan mantra salinanmu!</strong> Ketik jawabanmu sendiri.
+                        </div>
+                        <div class="pattern-row">
+                            <input type="number" class="challenge-input no-paste" id="level2-input1" placeholder="Angka ke-1">
+                            <input type="number" class="challenge-input no-paste" id="level2-input2" placeholder="Angka ke-2">
+                            <input type="number" class="challenge-input no-paste" id="level2-input3" placeholder="Angka ke-3">
+                        </div>
+                        <button class="btn" onclick="checkLevel2Pattern()">⚔️ Tebak Pola Sang Burung Hantu</button>
+                        <div class="feedback" id="level2-feedback"></div>
+                    </div>
+
+                    <div class="battle-box">
+                        <div class="foe-line">
+                            <span class="foe-emoji">🕷️</span>
+                            <span class="foe-name">Laba-laba Kekacauan menjaga reruntuhan</span>
+                        </div>
+                        <p class="quest-prompt">Pecahkan masalah "<strong>${currentLevel2Decompose.task}</strong>" menjadi minimal 5 sub-tugas agar Laba-laba Kekacauan tak berdaya:</p>
+                        <div class="paste-warning" id="paste-warning-2b">
+                            🛡️ <strong>Sang Guru menahan mantra salinanmu!</strong> Ketik jawabanmu sendiri.
+                        </div>
+                        <textarea class="challenge-input no-paste" id="level2-decompose" rows="6" placeholder="1. ...
+2. ...
+3. ..."></textarea>
+                        <button class="btn" onclick="checkLevel2Decompose()">⚔️ Pecahkan Kekacauan</button>
+                        <div class="feedback" id="decompose-feedback"></div>
+                    </div>
+                `;
+            }
+        }
+    };
+
+    const advancedQuestData = {
+        3: {
+            emoji: '🗼',
+            title: "Menara Integrasi",
+            subtitle: "Satukan seluruh ilmu untuk menaklukkan penjaga menara",
+            foe: '🗼👹', foeName: 'Penjaga Menara Kebingungan',
+            npc: `Menara ini hanya bisa ditembus oleh mereka yang mampu memadukan keempat kekuatan sekaligus. Tak cukup menguasai satu - kamu harus menunjukkan keempatnya dalam satu strategi.`,
+            minWords: 100
+        },
+        4: {
+            emoji: '🏰',
+            title: "Benteng Optimisasi",
+            subtitle: "Asah strategimu agar lebih efisien dan tepat sasaran",
+            foe: '🏰🐺', foeName: 'Serigala Efisiensi',
+            npc: `Benteng ini menguji bukan hanya pemahaman, tapi efisiensi strategimu. Serigala Efisiensi hanya tunduk pada solusi yang cermat dan optimal.`,
+            minWords: 120
+        },
+        5: {
+            emoji: '👑',
+            title: "Kastil Naga: Pertempuran Terakhir",
+            subtitle: "Hadapi Sang Naga Inovasi dan buktikan dirimu Master Pemikir",
+            foe: '👑🐲', foeName: 'Naga Raja Inovasi',
+            npc: `Inilah pertempuran terakhirmu, petualang. Sang Naga Raja Inovasi hanya bisa dikalahkan oleh rancangan yang menyatukan dekomposisi, pola, abstraksi, dan algoritma sekaligus. Tunjukkan seluruh kekuatanmu!`,
+            minWords: 150
+        }
+    };
+
+    /* =========================================================
+       RENDER QUEST SAAT INI
+       ========================================================= */
+    function renderCurrentLevel() {
+        const currentLevelNum = completedLevels + 1;
+        if (currentLevelNum > totalLevels) return;
+
+        const container = document.getElementById('levelContainer');
+        const template = levelTemplates[currentLevelNum];
+
+        if (template) {
+            container.innerHTML = `
+                <div class="quest-scene" data-level="${currentLevelNum}">
+                    <div class="quest-banner">
+                        <span class="banner-emoji">${template.emoji}</span>
+                        <div>
+                            <h2>${template.title}</h2>
+                            <p>${template.subtitle}</p>
+                        </div>
+                        <div class="quest-timer">⏱️ <span id="level${currentLevelNum}Timer">00:00</span></div>
+                    </div>
+                    <div class="quest-body">
+                        <div class="npc-dialogue">
+                            <span class="npc-emoji">🧙‍♂️</span>
+                            <div class="npc-text"><span class="npc-name">Sang Guru berkata</span>${template.npc}</div>
+                        </div>
+                        ${template.content()}
+                    </div>
+                </div>
+            `;
+        } else {
+            renderAdvancedQuest(currentLevelNum, container);
+        }
+    }
+
+    function renderAdvancedQuest(levelNum, container) {
+        const q = advancedQuestData[levelNum];
+        const taskText = currentAdvancedTasks[levelNum];
+        container.innerHTML = `
+            <div class="quest-scene" data-level="${levelNum}">
+                <div class="quest-banner">
+                    <span class="banner-emoji">${q.emoji}</span>
+                    <div>
+                        <h2>${q.title}</h2>
+                        <p>${q.subtitle}</p>
+                    </div>
+                    <div class="quest-timer">⏱️ <span id="level${levelNum}Timer">00:00</span></div>
+                </div>
+                <div class="quest-body">
+                    <div class="npc-dialogue">
+                        <span class="npc-emoji">🧙‍♂️</span>
+                        <div class="npc-text"><span class="npc-name">Sang Guru berkata</span>${q.npc}</div>
+                    </div>
+
+                    <div class="battle-box">
+                        <div class="foe-line">
+                            <span class="foe-emoji">${q.foe}</span>
+                            <span class="foe-name">${q.foeName}</span>
+                        </div>
+                        <div class="penalty-note">⏰ Waktu memengaruhi skor akhir di piagam kehormatanmu!</div>
+                        <p class="quest-prompt"><strong>${taskText}</strong><br>Jelaskan strategimu dengan menyebutkan keempat pilar Pemikiran Komputasional (minimal ${q.minWords} kata).</p>
+                        <div class="paste-warning" id="paste-warning-${levelNum}">
+                            🛡️ <strong>Sang Guru menahan mantra salinanmu!</strong><br>
+                            Tuliskan jawabanmu sendiri untuk melatih kekuatan aslimu.
+                        </div>
+                        <textarea class="challenge-input no-paste" id="level${levelNum}-input" rows="10" placeholder="Tuliskan strategi lengkapmu di sini..."></textarea>
+                        <button class="btn" onclick="checkLevel${levelNum}()">⚔️ Lancarkan Strategi</button>
+                        <div class="feedback" id="level${levelNum}-feedback"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    /* =========================================================
+       TIMER
+       ========================================================= */
+    function startTotalTimer() {
+        timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - totalStartTime) / 1000);
+            document.getElementById('totalTime').textContent = formatTime(elapsed);
+        }, 1000);
+    }
+
+    function startLevelTimer(level) {
+        currentLevelStartTime = Date.now();
+        if (levelTimers[level]) clearInterval(levelTimers[level]);
+
+        levelTimers[level] = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - currentLevelStartTime) / 1000);
+            const timerElement = document.getElementById(`level${level}Timer`);
+            if (timerElement) timerElement.textContent = formatTime(elapsed);
+        }, 1000);
+    }
+
+    function stopLevelTimer(level) {
+        if (levelTimers[level]) clearInterval(levelTimers[level]);
+        const elapsed = Math.floor((Date.now() - currentLevelStartTime) / 1000);
+        levelTimes[level - 1] = elapsed;
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    /* =========================================================
+       VALIDASI QUEST 1
+       ========================================================= */
+    function checkLevel1() {
+        const answer = document.getElementById('level1-input').value.trim();
+        const lines = answer.split('\n').filter(line => line.trim().length > 0);
+
+        if (lines.length >= currentLevel1Challenge.minSteps && answer.length > 60) {
+            level1Completed = true;
+            answerRecords.level1 = {
+                question: `Menyusun ramuan: ${currentLevel1Challenge.task}`,
+                answer: answer,
+                time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+            };
+            showFeedback('level1-feedback',
+                '⚔️ <strong>Naga Kebingungan berhasil ditaklukkan!</strong><br>' +
+                'Kamu telah menerapkan <strong>Dekomposisi</strong> dan <strong>Algoritma</strong> dengan baik!<br><br>' +
+                '<button class="btn" onclick="completeLevel(1)" style="margin-top: 10px;">Menuju Hutan Pola →</button>',
+                'success');
+        } else {
+            showFeedback('level1-feedback',
+                `🛡️ <strong>Serangan ditangkis!</strong><br>` +
+                `Jawabanmu perlu minimal ${currentLevel1Challenge.minSteps} langkah yang detail agar Naga Kebingungan benar-benar kalah.<br>` +
+                `Coba lagi!`,
+                'info');
+        }
+    }
+
+    /* =========================================================
+       VALIDASI QUEST 2
+       ========================================================= */
+    function checkLevel2Pattern() {
+        const ans1 = parseInt(document.getElementById('level2-input1').value);
+        const ans2 = parseInt(document.getElementById('level2-input2').value);
+        const ans3 = parseInt(document.getElementById('level2-input3').value);
+
+        if (ans1 === currentPattern.answers[0] &&
+            ans2 === currentPattern.answers[1] &&
+            ans3 === currentPattern.answers[2]) {
+            level2PatternCompleted = true;
+            answerRecords.level2_pattern = {
+                question: `Pola: ${currentPattern.sequence.join(', ')}, ?, ?, ?`,
+                answer: `${ans1}, ${ans2}, ${ans3} (Pola: ${currentPattern.name})`,
+                time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+            };
+            showFeedback('level2-feedback',
+                `🎯 <strong>Burung Hantu Teka-teki mengangguk puas!</strong> Pola: ${currentPattern.name}<br>` +
+                `Sekarang taklukkan Laba-laba Kekacauan di bawah!`,
+                'success');
+            checkLevel2Complete();
+        } else {
+            showFeedback('level2-feedback',
+                `🛡️ <strong>Belum tepat!</strong> Sang Burung Hantu menggeleng - perhatikan lagi polanya.`,
+                'info');
+        }
+    }
+
+    function checkLevel2Decompose() {
+        const answer = document.getElementById('level2-decompose').value.trim();
+        const lines = answer.split('\n').filter(line => line.trim().length > 0);
+
+        if (lines.length >= currentLevel2Decompose.minSteps && answer.length > 80) {
+            level2DecomposeCompleted = true;
+            answerRecords.level2_decompose = {
+                question: `Dekomposisi: ${currentLevel2Decompose.task}`,
+                answer: answer,
+                time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+            };
+            showFeedback('decompose-feedback',
+                '⚔️ <strong>Laba-laba Kekacauan berhasil dipecah-belah!</strong> Dekomposisi yang baik!',
+                'success');
+            checkLevel2Complete();
+        } else {
+            showFeedback('decompose-feedback',
+                `🛡️ Minimal ${currentLevel2Decompose.minSteps} sub-tugas yang detail agar sang laba-laba benar-benar kalah!`,
+                'info');
+        }
+    }
+
+    function checkLevel2Complete() {
+        if (level2PatternCompleted && level2DecomposeCompleted) {
+            const feedback = document.getElementById('decompose-feedback');
+            feedback.innerHTML = feedback.innerHTML +
+                '<br><button class="btn" onclick="completeLevel(2)" style="margin-top: 10px;">Menuju Menara Integrasi →</button>';
+        }
+    }
+
+    /* =========================================================
+       VALIDASI QUEST 3-5
+       ========================================================= */
+    function checkLevel3() { validateAdvancedLevel(3, 100); }
+    function checkLevel4() { validateAdvancedLevel(4, 120); }
+    function checkLevel5() { validateAdvancedLevel(5, 150); }
+
+    function validateAdvancedLevel(level, minWords) {
+        const answer = document.getElementById(`level${level}-input`).value.trim();
+        const wordCount = answer.split(/\s+/).filter(w => w.length > 0).length;
+
+        const hasDekomposisi = /dekomposisi|decompose|pecah|bagian|sub/i.test(answer);
+        const hasPola = /pola|pattern|keteraturan/i.test(answer);
+        const hasAbstraksi = /abstraksi|abstract|data|informasi/i.test(answer);
+        const hasAlgoritma = /algoritma|algorithm|prosedur|langkah/i.test(answer);
+
+        if (wordCount < minWords) {
+            showFeedback(`level${level}-feedback`,
+                `🛡️ <strong>Serangan terlalu lemah!</strong> Strategimu baru ${wordCount} kata (minimal ${minWords} kata).`,
+                'info');
+            return;
+        }
+
+        if (!hasDekomposisi || !hasPola || !hasAbstraksi || !hasAlgoritma) {
+            showFeedback(`level${level}-feedback`,
+                `🛡️ <strong>Musuh masih bertahan!</strong> Pastikan strategimu memuat keempat kekuatan:<br>` +
+                `${hasDekomposisi ? '✅' : '❌'} Dekomposisi<br>` +
+                `${hasPola ? '✅' : '❌'} Pola<br>` +
+                `${hasAbstraksi ? '✅' : '❌'} Abstraksi<br>` +
+                `${hasAlgoritma ? '✅' : '❌'} Algoritma`,
+                'info');
+            return;
+        }
+
+        answerRecords[`level${level}`] = {
+            question: currentAdvancedTasks[level],
+            answer: answer,
+            time: Math.floor((Date.now() - currentLevelStartTime) / 1000)
+        };
+
+        const victoryText = level === 5
+            ? '👑 <strong>Naga Raja Inovasi tumbang!</strong> Kamu telah menaklukkan seluruh petualangan!<br><br>'
+            : '⚔️ <strong>Musuh berhasil dikalahkan!</strong> Strategi yang luar biasa!<br><br>';
+
+        showFeedback(`level${level}-feedback`,
+            victoryText +
+            `<button class="btn" onclick="completeLevel(${level})">${level === 5 ? 'Buka Piagam Kehormatan →' : 'Lanjutkan Petualangan →'}</button>`,
+            'success');
+    }
+
+    /* =========================================================
+       PENYELESAIAN LEVEL
+       ========================================================= */
+    function completeLevel(level) {
+        stopLevelTimer(level);
+        completedLevels++;
+        updateProgress();
+        renderWorldMap();
+
+        if (completedLevels < totalLevels) {
+            randomizeChallenges();
+            setTimeout(() => {
+                renderCurrentLevel();
+                startLevelTimer(completedLevels + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 900);
+        } else {
+            clearInterval(timerInterval);
+            setTimeout(() => { showCertificate(); }, 900);
+        }
+    }
+
+    function updateProgress() {
+        const percentage = (completedLevels / totalLevels) * 100;
+        document.getElementById('progressFill').style.width = percentage + '%';
+        document.getElementById('completedCount').textContent = completedLevels;
+    }
+
+    function showFeedback(elementId, message, type = 'success') {
+        const feedback = document.getElementById(elementId);
+        if (feedback) {
+            feedback.className = 'feedback ' + type;
+            feedback.innerHTML = message;
+            feedback.style.display = 'block';
+            feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
+    /* =========================================================
+       SKOR & PIAGAM KEHORMATAN
+       ========================================================= */
+    function calculateScore() {
+        let totalScore = 0;
+        let scoreDetails = [];
+
+        levelTimes.forEach((time, index) => {
+            const fiveMinutePeriods = Math.floor(time / 300);
+            let levelScore = Math.max(0, 100 - (fiveMinutePeriods * 10));
+
+            let performance = '';
+            if (levelScore === 100) performance = 'Sempurna! 🏆';
+            else if (levelScore >= 90) performance = 'Sangat Cepat! 🚀';
+            else if (levelScore >= 80) performance = 'Cepat! ⚡';
+            else if (levelScore >= 70) performance = 'Baik 👍';
+            else if (levelScore >= 60) performance = 'Cukup 👌';
+            else if (levelScore >= 50) performance = 'Lumayan 💪';
+            else performance = 'Perlu Latihan 📚';
+
+            totalScore += levelScore;
+            scoreDetails.push({ level: index + 1, score: levelScore, time, performance, penalties: fiveMinutePeriods });
+        });
+
+        const avgScore = Math.round(totalScore / totalLevels);
+        return { avgScore, scoreDetails };
+    }
+
+    function getGrade(score) {
+        if (score >= 90) return { grade: 'S', title: 'Grandmaster Pemikir Komputasional' };
+        if (score >= 75) return { grade: 'A', title: 'Master Strategi Sejati' };
+        if (score >= 60) return { grade: 'B', title: 'Ksatria Logika Berpengalaman' };
+        return { grade: 'C', title: 'Pengembara yang Terus Belajar' };
+    }
+
+    function showCertificate() {
+        const { avgScore, scoreDetails } = calculateScore();
+        const gradeInfo = getGrade(avgScore);
+        const totalElapsed = levelTimes.reduce((a, b) => a + b, 0);
+        const cls = heroClasses.find(c => c.id === selectedClassId);
+
+        document.getElementById('certName').textContent = `${cls.emoji} ${userName}`;
+        document.getElementById('finalScore').textContent = avgScore;
+        document.getElementById('gradeBadge').textContent = `Gelar ${gradeInfo.grade} - ${gradeInfo.title}`;
+
+        let timeBreakdownHTML = '';
+        scoreDetails.forEach(detail => {
+            const penaltyText = detail.penalties > 0 ? ` (-${detail.penalties * 10} poin)` : '';
+            timeBreakdownHTML += `Wilayah ${detail.level}: ${formatTime(detail.time)} (${detail.score}${penaltyText}) ${detail.performance}<br>`;
+        });
+        timeBreakdownHTML += `<strong>Total: ${formatTime(totalElapsed)}</strong>`;
+        document.getElementById('timeBreakdown').innerHTML = timeBreakdownHTML;
+
+        const fastLevels = scoreDetails.filter(d => d.score === 100).length;
+        let achievementsHTML = `⚡ ${fastLevels} Wilayah Ditaklukkan Sempurna<br>`;
+        achievementsHTML += `✅ ${totalLevels} Wilayah Ditaklukkan<br>`;
+        if (avgScore >= 90) achievementsHTML += `🏆 Grandmaster Pemikiran Komputasional<br>`;
+        else if (avgScore >= 75) achievementsHTML += `🥈 Master Strategi Sejati<br>`;
+        achievementsHTML += `📚 4 Pilar Kekuatan Dikuasai`;
+        document.getElementById('achievements').innerHTML = achievementsHTML;
+
+        const now = new Date();
+        document.getElementById('completionDate').textContent = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        document.getElementById('levelContainer').style.display = 'none';
+        document.querySelector('.worldmap').style.display = 'none';
+        document.querySelector('.xp-wrap').style.display = 'none';
+        document.getElementById('certificateSection').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function downloadCertificate() {
+        alert('📸 Untuk menyimpan Piagam Kehormatanmu:\n\n1. Screenshot area piagam\n2. Atau gunakan Snipping Tool\n3. Simpan gambar\n\n💡 Zoom out browser agar seluruh piagam terlihat!');
+    }
+
+    function goToNextGame() {
+        const nextGameURL = prompt('Masukkan URL petualangan berikutnya:', 'https://example.com/next-game');
+        if (nextGameURL && nextGameURL.trim()) window.location.href = nextGameURL;
+    }
+
+    function toggleAnswerRecords() {
+        const section = document.getElementById('answerRecordsSection');
+        const certificate = document.getElementById('certificateSection');
+
+        if (section.style.display === 'none' || section.style.display === '') {
+            renderAnswerRecords();
+            section.style.display = 'block';
+            certificate.style.display = 'none';
+        } else {
+            section.style.display = 'none';
+            certificate.style.display = 'block';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderAnswerRecords() {
+        const container = document.getElementById('answerRecordsContainer');
+        let html = '';
+
+        const entries = [
+            ['level1', 'Wilayah 1 - Desa Awal'],
+            ['level2_pattern', 'Wilayah 2 - Hutan Pola (Tebak Pola)'],
+            ['level2_decompose', 'Wilayah 2 - Hutan Pola (Dekomposisi)'],
+            ['level3', 'Wilayah 3 - Menara Integrasi'],
+            ['level4', 'Wilayah 4 - Benteng Optimisasi'],
+            ['level5', 'Wilayah 5 - Kastil Naga']
+        ];
+
+        entries.forEach(([key, label]) => {
+            const rec = answerRecords[key];
+            if (rec.answer) {
+                html += `
+                    <div class="log-entry">
+                        <div style="font-weight:600; margin-bottom:6px;">${label}</div>
+                        <div class="log-q"><strong>Soal:</strong> ${rec.question}</div>
+                        <div class="log-a">${rec.answer}</div>
+                        <div class="log-t">⏱️ Waktu pengerjaan: ${formatTime(rec.time)}</div>
+                    </div>
+                `;
+            }
+        });
+
+        container.innerHTML = html || '<p style="color:var(--ink-soft);">Belum ada catatan.</p>';
+    }
+
+    function restartJourney() {
+        location.reload();
+    }
+
+    /* =========================================================
+       PROTEKSI ANTI SALIN-TEMPEL (dipertahankan dari versi asli)
+       ========================================================= */
+    function preventCopyPaste(element, warningId) {
+        if (!element) return;
+
+        element.addEventListener('paste', function (e) { e.preventDefault(); showPasteWarning(warningId); return false; });
+        element.addEventListener('copy', function (e) { e.preventDefault(); return false; });
+        element.addEventListener('cut', function (e) { e.preventDefault(); return false; });
+        element.addEventListener('contextmenu', function (e) { e.preventDefault(); return false; });
+        element.addEventListener('drop', function (e) { e.preventDefault(); showPasteWarning(warningId); return false; });
+        element.addEventListener('dragover', function (e) { e.preventDefault(); return false; });
+
+        let lastValue = element.value || '';
+        let lastLength = lastValue.length;
+
+        element.addEventListener('input', function (e) {
+            const currentValue = element.value || '';
+            const currentLength = currentValue.length;
+            const lengthDiff = Math.abs(currentLength - lastLength);
+
+            if (lengthDiff > 10 && currentLength > lastLength) {
+                element.value = lastValue;
+                showPasteWarning(warningId);
+                e.preventDefault();
+                return false;
+            }
+            lastValue = currentValue;
+            lastLength = currentLength;
+        });
+
+        let touchTimer;
+        let touchStarted = false;
+        element.addEventListener('touchstart', function () {
+            touchStarted = true;
+            touchTimer = setTimeout(function () {
+                if (touchStarted) {
+                    element.blur();
+                    setTimeout(function () { element.focus(); }, 100);
+                }
+            }, 500);
+        });
+        element.addEventListener('touchend', function () { touchStarted = false; clearTimeout(touchTimer); });
+        element.addEventListener('touchmove', function () { touchStarted = false; clearTimeout(touchTimer); });
+
+        element.addEventListener('beforeinput', function (e) {
+            if (e.inputType === 'insertFromPaste' || e.inputType === 'insertFromDrop') {
+                e.preventDefault();
+                showPasteWarning(warningId);
+                return false;
+            }
+        });
+    }
+
+    function showPasteWarning(warningId) {
+        const warning = document.getElementById(warningId);
+        if (warning) {
+            warning.style.display = 'block';
+            setTimeout(() => { warning.style.display = 'none'; }, 3000);
+        }
+    }
+
+    function initializeNoPasteInputs() {
+        const level1Input = document.getElementById('level1-input');
+        if (level1Input) preventCopyPaste(level1Input, 'paste-warning-1');
+
+        const level2Input1 = document.getElementById('level2-input1');
+        const level2Input2 = document.getElementById('level2-input2');
+        const level2Input3 = document.getElementById('level2-input3');
+        const level2Decompose = document.getElementById('level2-decompose');
+
+        if (level2Input1) preventCopyPaste(level2Input1, 'paste-warning-2a');
+        if (level2Input2) preventCopyPaste(level2Input2, 'paste-warning-2a');
+        if (level2Input3) preventCopyPaste(level2Input3, 'paste-warning-2a');
+        if (level2Decompose) preventCopyPaste(level2Decompose, 'paste-warning-2b');
+
+        [3, 4, 5].forEach(n => {
+            const el = document.getElementById(`level${n}-input`);
+            if (el) preventCopyPaste(el, `paste-warning-${n}`);
+        });
+    }
+
+    const originalRenderCurrentLevel = renderCurrentLevel;
+    renderCurrentLevel = function () {
+        originalRenderCurrentLevel();
+        setTimeout(() => { initializeNoPasteInputs(); }, 100);
+    };
+
+    document.addEventListener('keydown', function (e) {
+        const currentLevelNum = completedLevels + 1;
+        if (currentLevelNum <= 5) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'v' || e.key === 'x')) {
+                if (e.target.classList && e.target.classList.contains('no-paste')) {
+                    e.preventDefault();
+                    const warningId = 'paste-warning-' + (currentLevelNum === 2 && e.target.id.includes('decompose') ? '2b' : currentLevelNum === 2 ? '2a' : currentLevelNum);
+                    showPasteWarning(warningId);
+                    return false;
+                }
+            }
+        }
+    });
+
+    document.addEventListener('paste', function (e) {
+        if (e.target.classList && e.target.classList.contains('no-paste')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentLevelNum = completedLevels + 1;
+            showPasteWarning('paste-warning-' + currentLevelNum);
+            return false;
+        }
+    }, true);
+
+    document.addEventListener('selectstart', function (e) {
+        if (e.target.classList && e.target.classList.contains('no-paste')) e.preventDefault();
+    });
+
+    document.addEventListener('contextmenu', function (e) {
+        if (e.target.classList && e.target.classList.contains('no-paste')) e.preventDefault();
+    });
+</script>
+</body>
+</html>
