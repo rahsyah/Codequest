@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1c2430">
-<title>Buku Catatan Sang Analis — RPG Data Administrasi</title>
+<title>Permintaan Pimpinan — Simulasi Analisis Data Administrasi</title>
 <style>
   :root{
     --ink: #1c2430;
@@ -24,10 +24,6 @@
     --serif: 'Spectral', 'Iowan Old Style', 'Georgia', serif;
     --data: 'Courier New', ui-monospace, monospace;
   }
-  @font-face{
-    font-family:'Spectral';
-    src: local('Spectral');
-  }
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html{
     scroll-padding-top: env(safe-area-inset-top, 0px);
@@ -36,9 +32,7 @@
   }
   html,body{
     margin:0; padding:0; min-height:100%;
-    background:
-      radial-gradient(ellipse at top, #26314540, transparent 60%),
-      var(--ink);
+    background: radial-gradient(ellipse at top, #26314540, transparent 60%), var(--ink);
     color: var(--paper);
     font-family: var(--serif);
     overscroll-behavior-y: contain;
@@ -76,384 +70,231 @@
     background: var(--ink-2);
     color: var(--paper);
     border-bottom: 3px solid var(--gold);
+    gap: 14px;
+    flex-wrap: wrap;
   }
-  .topbar .brand{
-    font-size: 0.95rem;
-    letter-spacing: 0.03em;
-    color: var(--gold-2);
-  }
+  .topbar .brand{ font-size: 0.95rem; letter-spacing: 0.03em; color: var(--gold-2); }
   .topbar .brand b{ color: var(--paper); font-weight:700; }
   .stat-strip{ display:flex; gap:18px; font-size:0.85rem; }
-  .stat-strip span b{ color: var(--gold-2); }
-
-  .hpwrap{ width:120px; }
+  .hpwrap{ width:130px; }
   .barlabel{ font-size:0.68rem; letter-spacing:0.04em; margin-bottom:2px; opacity:0.85;}
-  .barouter{
-    height:9px; border-radius:5px; background:#0004; overflow:hidden;
-    box-shadow: inset 0 0 0 1px #ffffff22;
-  }
+  .barouter{ height:9px; border-radius:5px; background:#0004; overflow:hidden; box-shadow: inset 0 0 0 1px #ffffff22; }
   .barinner{ height:100%; transition: width .5s ease; }
-  .barinner.hp{ background: linear-gradient(90deg, var(--crimson), var(--crimson-2)); }
-  .barinner.boss{ background: linear-gradient(90deg, #5a3a8a, #7d58ad); }
+  .barinner.energi{ background: linear-gradient(90deg, var(--crimson), var(--crimson-2)); }
+  .barinner.trust{ background: linear-gradient(90deg, #b8862c, var(--gold-2)); }
   .barinner.exp{ background: linear-gradient(90deg, var(--forest), var(--forest-2)); }
 
-  .stage{
-    flex:1;
-    padding: 30px 34px 20px;
-    position: relative;
-    z-index:1;
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-  }
-
-  h1{ font-size:1.6rem; margin:0 0 4px; font-weight:700; }
-  h2{ font-size:1.15rem; margin:0 0 6px; color: var(--ink-2); font-weight:700;}
+  .stage{ flex:1; padding: 30px 34px 20px; position: relative; z-index:1; display:flex; flex-direction:column; gap:16px; }
+  h1{ font-size:1.55rem; margin:0 0 4px; font-weight:700; }
+  h2{ font-size:1.12rem; margin:0 0 6px; color: var(--ink-2); font-weight:700;}
   p{ line-height:1.55; margin:0 0 10px; }
   .lede{ color: var(--ink-soft); font-size:0.95rem; }
-
   .rule{ border:none; border-top:1px solid #00000022; margin: 6px 0 4px; }
-
-  .chip{
-    display:inline-block;
-    font-size:0.72rem;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: var(--ink-2);
-    color: var(--gold-2);
-    letter-spacing:0.02em;
-    margin-bottom: 6px;
-  }
+  .chip{ display:inline-block; font-size:0.72rem; padding: 3px 10px; border-radius: 999px; background: var(--ink-2); color: var(--gold-2); letter-spacing:0.02em; margin-bottom: 6px; }
 
   .btn{
-    font-family: var(--serif);
-    font-size: 1rem;
-    padding: 12px 22px;
-    min-height: 44px;
-    border-radius: 3px;
-    border: 1.5px solid var(--ink-2);
-    background: var(--ink-2);
-    color: var(--paper);
-    cursor: pointer;
-    touch-action: manipulation;
-    transition: transform .12s ease, background .15s ease;
+    font-family: var(--serif); font-size: 1rem; padding: 12px 22px; min-height: 44px;
+    border-radius: 3px; border: 1.5px solid var(--ink-2); background: var(--ink-2); color: var(--paper);
+    cursor: pointer; touch-action: manipulation; transition: transform .12s ease, background .15s ease;
   }
   .btn:hover{ background: var(--ink); transform: translateY(-1px); }
   .btn:active{ transform: translateY(0); }
-  .btn.secondary{
-    background: transparent; color: var(--ink-2);
-  }
+  .btn.secondary{ background: transparent; color: var(--ink-2); }
   .btn.secondary:hover{ background:#00000010; }
-  .btn:disabled{ opacity:0.5; cursor:default; transform:none; }
 
   input[type=text]{
-    font-family: var(--serif);
-    font-size: 1.05rem;
-    padding: 11px 14px;
-    border-radius: 3px;
-    border: 1.5px solid #00000040;
-    background: #fffdf6;
-    color: var(--ink);
-    width: 100%;
-    max-width: 320px;
+    font-family: var(--serif); font-size: 1.05rem; padding: 11px 14px; border-radius: 3px;
+    border: 1.5px solid #00000040; background: #fffdf6; color: var(--ink); width: 100%; max-width: 320px;
   }
 
-  .scene-desk{
-    background: var(--paper-2);
-    border: 1px solid #00000020;
-    border-radius: 4px;
-    padding: 18px 20px;
-  }
-  .data-table{
-    width:100%; border-collapse: collapse; margin: 10px 0 4px;
-    font-family: var(--data);
-    font-size: 0.86rem;
-  }
-  .data-table th, .data-table td{
-    border: 1px solid #00000030;
-    padding: 6px 9px;
-    text-align:right;
-  }
+  .scene-desk{ background: var(--paper-2); border: 1px solid #00000020; border-radius: 4px; padding: 18px 20px; overflow-x:auto; }
+  .data-table{ width:100%; border-collapse: collapse; margin: 10px 0 4px; font-family: var(--data); font-size: 0.82rem; }
+  .data-table th, .data-table td{ border: 1px solid #00000030; padding: 6px 8px; text-align:right; white-space:nowrap; }
   .data-table th{ background: var(--ink-2); color: var(--gold-2); text-align:center; font-family: var(--serif);}
   .data-table td:first-child, .data-table th:first-child{ text-align:left; }
 
   .boss-card{
     display:flex; align-items:center; gap:16px;
     background: linear-gradient(135deg, #2a2140, #3a2c56);
-    color: var(--paper);
-    border-radius: 4px;
-    padding: 16px 18px;
-    margin-bottom: 4px;
+    color: var(--paper); border-radius: 4px; padding: 16px 18px; margin-bottom: 4px;
   }
   .boss-sigil{
-    width:54px; height:54px; flex:none;
-    border-radius: 50%;
+    width:54px; height:54px; flex:none; border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, #9a6fd0, #4a3070);
-    display:flex; align-items:center; justify-content:center;
-    font-size:1.5rem;
+    display:flex; align-items:center; justify-content:center; font-size:1.5rem;
     box-shadow: 0 0 0 3px #ffffff20;
   }
   .boss-name{ font-weight:700; font-size:1.05rem; }
   .boss-title{ font-size:0.78rem; opacity:0.75; }
+  .memo{
+    background: #fffdf6; border-left: 4px solid var(--gold); padding: 12px 16px;
+    font-style: italic; color: var(--ink-2); border-radius: 2px;
+  }
 
   .qcount{ font-size:0.78rem; color: var(--ink-soft); }
-
   .options{ display:flex; flex-direction:column; gap:9px; margin-top:6px; }
   .opt{
-    text-align:left;
-    font-family: var(--serif);
-    font-size:0.98rem;
-    padding: 13px 15px;
-    min-height: 46px;
-    border-radius:3px;
-    border: 1.5px solid #00000030;
-    background: #fffdf6;
-    color: var(--ink);
-    cursor:pointer;
-    touch-action: manipulation;
-    transition: background .12s ease, border-color .12s ease;
+    text-align:left; font-family: var(--serif); font-size:0.98rem; padding: 13px 15px; min-height: 46px;
+    border-radius:3px; border: 1.5px solid #00000030; background: #fffdf6; color: var(--ink);
+    cursor:pointer; touch-action: manipulation; transition: background .12s ease, border-color .12s ease;
   }
   .opt:hover{ border-color: var(--ink-2); }
   .opt.correct{ background: #dcead9; border-color: var(--forest); }
   .opt.wrong{ background: #f2d9d9; border-color: var(--crimson); }
   .opt:disabled{ cursor:default; }
 
-  .feedback{
-    padding: 12px 14px;
-    border-radius: 3px;
-    font-size: 0.92rem;
-    line-height:1.5;
-    display:none;
-  }
+  .feedback{ padding: 12px 14px; border-radius: 3px; font-size: 0.92rem; line-height:1.5; display:none; }
   .feedback.show{ display:block; }
   .feedback.ok{ background:#dcead9; border-left:4px solid var(--forest); }
   .feedback.bad{ background:#f2d9d9; border-left:4px solid var(--crimson); }
 
   .footer-row{ display:flex; justify-content:flex-end; gap:10px; margin-top:auto; padding-top:8px; }
-
   .center{ text-align:center; }
   .badge-grid{ display:flex; flex-wrap:wrap; gap:10px; margin: 14px 0; }
-  .badge{
-    background: var(--ink-2); color: var(--gold-2);
-    padding: 8px 14px; border-radius: 4px; font-size:0.82rem;
-    border: 1px solid #00000030;
-  }
-  .badge.locked{ color:#8a8a8a; background:#00000015; color:#0006;}
-
-  .rank-plate{
-    font-family: var(--serif);
-    font-size: 3.2rem; font-weight:700;
-    color: var(--gold);
-    text-shadow: 0 2px 0 #00000020;
-  }
+  .badge{ background: var(--ink-2); color: var(--gold-2); padding: 8px 14px; border-radius: 4px; font-size:0.78rem; border: 1px solid #00000030; }
+  .badge.locked{ background:#00000015; color:#0006; }
+  .rank-plate{ font-family: var(--serif); font-size: 3.2rem; font-weight:700; color: var(--gold); text-shadow: 0 2px 0 #00000020; }
 
   @media (max-width: 620px){
     .stage{ padding: 22px 18px 16px; }
     .topbar{ flex-direction:column; align-items:flex-start; gap:10px; }
     .stat-strip{ flex-wrap:wrap; gap:12px; }
-    .data-table{ font-size:0.76rem; }
+    .data-table{ font-size:0.72rem; }
   }
-  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
 </style>
 </head>
 <body>
-<div id="app">
-  <div class="journal" id="journal"></div>
-</div>
+<div id="app"><div class="journal" id="journal"></div></div>
 
 <script>
-/* ============ DATA SOAL — Data Analisis Administrasi ============ */
+/* ============ DATA SOAL — diambil & disusun dari materi Data Analisis Administrasi ============ */
 const QUESTION_BANK = {
   bab1: {
-    title: "Bab I — Gerbang Arsip",
-    boss: { name: "Si Kertas Kusut", title: "Penjaga Data Mentah", sigil: "📋" },
-    intro: "Hari pertamamu sebagai staf administrasi. Meja kerjamu penuh berkas mentah yang belum diolah. Sebelum bisa melangkah ke ruang arsip, kamu harus membuktikan bahwa kamu memahami dasar analisis data administrasi.",
+    title: "Permintaan 1 — Membaca Peta Spreadsheet",
+    boss: { name: "Pimpinan", title: "Meminta staf memastikan dasar-dasar pembacaan data", sigil: "🗂️" },
+    intro: "Pagi ini Pimpinan memanggilmu ke ruangannya. \"Sebelum saya percayakan laporan penting, saya perlu tahu kamu benar-benar paham struktur spreadsheet kita,\" katanya sambil menunjuk layar komputer.",
+    memo: "\"Tunjukkan bahwa kamu bisa membaca kolom, baris, cell, dan range dengan tepat.\"",
     questions: [
-      {
-        q: "Dalam siklus pengolahan data administrasi, urutan yang benar adalah…",
-        options: ["Output → Proses → Input", "Input → Proses → Output", "Proses → Output → Input", "Input → Output → Proses"],
-        correct: 1,
-        expl: "Data mentah (input) diolah lewat proses (hitung, saring, ringkas) sebelum menjadi informasi siap pakai (output)."
-      },
-      {
-        q: "Data absensi pegawai berupa angka jam masuk dan keluar termasuk jenis data…",
-        options: ["Data kualitatif", "Data kuantitatif", "Data naratif", "Data multimedia"],
-        correct: 1,
-        expl: "Data berbentuk angka yang dapat dihitung dan diukur disebut data kuantitatif — cocok untuk dianalisis dengan rumus statistik."
-      },
-      {
-        q: "Ciri utama 'data yang berkualitas' untuk dasar pengambilan keputusan kantor adalah…",
-        options: ["Jumlahnya sangat banyak", "Akurat, lengkap, dan konsisten", "Ditulis tangan agar personal", "Disimpan di banyak folder berbeda"],
-        correct: 1,
-        expl: "Data yang baik harus akurat (sesuai fakta), lengkap (tidak ada bagian hilang), dan konsisten (format sama) agar analisis tidak menyesatkan."
-      },
-      {
-        q: "Sebuah alamat sel pada spreadsheet seperti C5 menunjukkan…",
-        options: ["Kolom C baris ke-5", "Baris C kolom ke-5", "Sheet ke-5 kolom C", "Rentang dari C sampai 5"],
-        correct: 0,
-        expl: "Huruf menunjuk kolom, angka menunjuk baris — jadi C5 adalah pertemuan kolom C dengan baris 5."
-      }
+      { q: "Pada spreadsheet, huruf A, B, C, D yang berada di bagian atas menunjukkan …", options: ["Baris","Kolom","Cell","Rumus","Range"], correct: 1, expl: "Huruf di bagian atas spreadsheet menandai kolom." },
+      { q: "Pada spreadsheet, angka 1, 2, 3, 4 yang berada di bagian kiri menunjukkan …", options: ["Kolom","Cell","Range","Baris","Rumus"], correct: 3, expl: "Angka di sisi kiri menandai baris." },
+      { q: "Jika kolom F bertemu dengan baris 8, alamat cell yang terbentuk adalah …", options: ["8F","F8","F-8","F:8","8-F"], correct: 1, expl: "Alamat cell ditulis kolom lalu baris tanpa spasi: F8." },
+      { q: "Seorang siswa menyebut C5 sebagai alamat kolom. Pernyataan tersebut …", options: ["Benar, C menunjukkan kolom","Benar, 5 menunjukkan kolom","Salah, C5 menunjukkan satu cell","Salah, C5 menunjukkan satu baris","Salah, C5 menunjukkan satu range"], correct: 2, expl: "C5 adalah gabungan kolom C dan baris 5 — jadi menunjuk satu cell, bukan hanya kolom." },
+      { q: "Range B2:B8 menunjukkan …", options: ["Satu baris dan tujuh kolom","Tujuh baris dan satu kolom","Dua baris dan delapan kolom","Delapan baris dan dua kolom","Dua baris dan tujuh kolom"], correct: 1, expl: "B2 sampai B8 tetap di kolom B, mencakup baris 2 hingga 8 — tujuh baris, satu kolom." },
+      { q: "Range A2:C4 digunakan dalam sebuah tabel. Jumlah cell yang terdapat di dalam range tersebut adalah …", options: ["06","07","08","09","12"], correct: 3, expl: "Kolom A–C (3 kolom) × baris 2–4 (3 baris) = 9 cell." },
+      { q: "Seorang siswa memilih range D3:D10. Jika ia mengatakan terdapat delapan kolom dalam range tersebut, maka …", options: ["Pernyataan benar","Pernyataan salah","Pernyataan benar jika data angka","Pernyataan benar jika data teks","Pernyataan tidak dapat diperiksa"], correct: 1, expl: "D3:D10 hanya mencakup satu kolom (D) dengan delapan baris, bukan delapan kolom." }
     ]
   },
   bab2: {
-    title: "Bab II — Ruang Rekap Kehadiran",
-    boss: { name: "Sang Penghitung Bayangan", title: "Roh Fungsi Agregat", sigil: "🧮" },
-    intro: "Kamu memasuki ruang rekap kehadiran. Puluhan baris data absensi menunggu diringkas. Roh Penghitung Bayangan hanya bisa dikalahkan dengan fungsi-fungsi agregat spreadsheet yang tepat.",
-    table: {
-      headers: ["Nama", "Hadir", "Izin", "Alpa"],
-      rows: [
-        ["Sari", "20", "1", "0"],
-        ["Budi", "18", "0", "3"],
-        ["Wulan", "21", "0", "0"],
-        ["Rian", "17", "2", "2"]
-      ]
-    },
+    title: "Permintaan 2 — Menilai Data dengan Jernih",
+    boss: { name: "Pimpinan", title: "Membawa beberapa kasus yang membingungkan tim lain", sigil: "🧭" },
+    intro: "\"Kemarin ada staf lain yang buru-buru menyimpulkan sesuatu dari data, dan itu hampir membuat kita salah ambil keputusan,\" ujar Pimpinan sambil menyodorkan beberapa kasus.",
+    memo: "\"Saya ingin kamu menilai setiap kasus ini secara objektif, bukan buru-buru menyimpulkan.\"",
     questions: [
-      {
-        q: "Untuk menjumlahkan seluruh hari 'Hadir' keempat pegawai di atas, rumus yang tepat adalah…",
-        options: ["=AVERAGE(hadir)", "=SUM(rentang sel Hadir)", "=COUNT(rentang sel Hadir)", "=MAX(rentang sel Hadir)"],
-        correct: 1,
-        expl: "SUM menjumlahkan seluruh nilai dalam suatu rentang — pas untuk total hari hadir semua pegawai."
-      },
-      {
-        q: "Untuk mengetahui pegawai dengan jumlah Alpa TERBANYAK, fungsi yang dipakai adalah…",
-        options: ["=MIN()", "=AVERAGE()", "=MAX()", "=SUM()"],
-        correct: 2,
-        expl: "MAX mengambil nilai tertinggi dalam suatu rentang, sehingga bisa menunjukkan pegawai dengan alpa terbanyak."
-      },
-      {
-        q: "Rata-rata hari Hadir dari Sari, Budi, Wulan, dan Rian dihitung dengan fungsi…",
-        options: ["=AVERAGE()", "=COUNTIF()", "=SUM()", "=MIN()"],
-        correct: 0,
-        expl: "AVERAGE menjumlahkan lalu membaginya dengan jumlah data — cocok untuk mencari rata-rata kehadiran."
-      },
-      {
-        q: "Jika ingin menghitung berapa banyak pegawai yang Alpa-nya sama dengan 0, fungsi yang sesuai adalah…",
-        options: ["=COUNTIF(rentang, 0)", "=SUM(rentang, 0)", "=AVERAGEIF(rentang)", "=MAX(rentang, 0)"],
-        correct: 0,
-        expl: "COUNTIF menghitung jumlah sel yang memenuhi kriteria tertentu — di sini kriterianya adalah nilai sama dengan 0."
-      }
+      { q: "Sebuah perusahaan menemukan bahwa seorang karyawan memiliki tingkat kehadiran tinggi, tetapi jumlah pekerjaan yang diselesaikan relatif rendah. Seorang staf langsung menyimpulkan karyawan tersebut tidak produktif. Penilaian yang paling tepat terhadap kesimpulan tersebut adalah …", options: ["Tepat karena kehadiran selalu menentukan produktivitas","Tepat karena jumlah pekerjaan menjadi satu-satunya ukuran","Kurang tepat karena produktivitas memerlukan indikator tambahan","Salah karena data absensi tidak dapat digunakan sama sekali","Salah karena produktivitas hanya ditentukan oleh jam kerja"], correct: 2, expl: "Produktivitas tidak bisa disimpulkan hanya dari satu indikator — perlu data pendukung lain sebelum menarik kesimpulan." },
+      { q: "Sebuah tabel pegawai memiliki kolom: NIP | Nama | Jabatan | Gaji. Ketika tabel diurutkan berdasarkan gaji dari terbesar ke terkecil, staf hanya melakukan sort pada kolom Gaji. Akibat yang paling mungkin terjadi adalah …", options: ["Nilai gaji otomatis berubah","Nama dan NIP tetap mengikuti pegawai masing-masing","Data pegawai menjadi tidak sinkron dengan nilai gajinya","Spreadsheet otomatis membuat backup","Semua data berubah menjadi alfabetis"], correct: 2, expl: "Mengurutkan hanya satu kolom membuat baris data pegawai tidak lagi selaras dengan gaji yang benar." },
+      { q: "Seorang kepala administrasi meminta laporan \"10 pegawai dengan absensi terbaik\". Staf menggunakan fungsi MAX dan mengambil nilai terbesar saja. Apakah metode tersebut sudah tepat?", options: ["Ya, karena MAX menemukan data terbaik","Ya, karena hanya nilai terbesar yang diperlukan","Tidak, karena diperlukan pengurutan atau fungsi yang dapat mengidentifikasi beberapa pegawai dengan nilai tertinggi","Tidak, karena MAX hanya bekerja pada teks","Ya, selama jumlah pegawai kurang dari 10"], correct: 2, expl: "MAX hanya mengambil satu nilai tertinggi, padahal yang dibutuhkan adalah sepuluh pegawai teratas — perlu sort atau fungsi lain." },
+      { q: "Seorang administrator menemukan total penjualan pada spreadsheet Rp850 juta, sedangkan laporan sistem perusahaan menunjukkan Rp780 juta. Langkah pertama yang paling ilmiah sebelum menyatakan salah satu laporan salah adalah …", options: ["Memilih angka yang lebih besar","Memeriksa sumber data, periode, duplikasi, filter, dan formula yang digunakan","Menghapus spreadsheet","Menggunakan angka sistem tanpa pemeriksaan","Mengubah semua data agar sama"], correct: 1, expl: "Sebelum menuding salah satu sumber keliru, analis harus menelusuri kemungkinan penyebab selisih terlebih dahulu." }
     ]
   },
   bab3: {
-    title: "Bab III — Lorong Pencarian",
-    boss: { name: "Bayangan Tabel Ganda", title: "Penguasa Rujukan Silang", sigil: "🔍" },
-    intro: "Kamu tiba di lorong berisi dua tabel berbeda: daftar kode barang dan daftar harga. Bayangan Tabel Ganda hanya takut pada satu hal — kemampuan mencocokkan data antar tabel.",
+    title: "Permintaan 3 — Mengolah Tabel Penjualan",
+    boss: { name: "Pimpinan", title: "Menyerahkan satu tabel penjualan nyata untuk diolah", sigil: "🧮" },
+    intro: "Pimpinan meletakkan satu lembar data penjualan di mejamu. \"Ini data mentah dari empat toko kita. Saya butuh beberapa angka spesifik dari sini, cepat dan tepat.\"",
+    memo: "\"Gunakan rumus yang tepat — jangan sampai satu kolom saja bisa membuat laporan kita meleset.\"",
+    table: {
+      headers: ["Kolom","A: NO","B: ID","C: Date","D: Toko","E: Nama","F: Produk","G: Categori","H: Jumlah","I: Satuan","J: Metode","K: Total"],
+      rows: [
+        ["Baris 2","1","RX-712157","08 Jun","Sejahtera","Rudi Wijaya","Roti Tawar","Makanan","3","20500","Tunai","61500"],
+        ["Baris 3","2","RX-81430","10 Jun","Barokah","Yudi Markona","Beras Pinpin","Sembako","11","15500","OVO","170500"],
+        ["Baris 4","3","RX-790378","12 Jun","Anugrah","Lukman Hidayat","Rokok Surya","Rokok","16","28500","TF BCA","456000"],
+        ["Baris 5","4","RX-265337","12 Jun","Cahaya Suhada","Anis 20","Paket Data","Pulsa","1","20500","Tunai","20500"]
+      ]
+    },
     questions: [
-      {
-        q: "Fungsi spreadsheet untuk mengambil data dari tabel lain berdasarkan satu nilai kunci (misalnya kode barang) adalah…",
-        options: ["=SORT()", "=VLOOKUP()", "=FILTER()", "=ROUND()"],
-        correct: 1,
-        expl: "VLOOKUP mencari nilai kunci pada kolom pertama sebuah tabel, lalu mengambil data dari kolom lain di baris yang sama."
-      },
-      {
-        q: "Dalam =VLOOKUP(A2, DataHarga, 3, FALSE), angka 3 menunjukkan…",
-        options: ["Jumlah baris yang dicari", "Nomor kolom hasil yang diambil dari tabel rujukan", "Jumlah tabel yang dibandingkan", "Nomor urut fungsi"],
-        correct: 1,
-        expl: "Argumen ketiga VLOOKUP menentukan kolom ke berapa (dihitung dari kolom pertama tabel rujukan) yang nilainya ingin diambil."
-      },
-      {
-        q: "Parameter FALSE pada akhir VLOOKUP berarti…",
-        options: ["Mencari kecocokan persis (exact match)", "Mengabaikan data kosong", "Mengurutkan hasil secara menurun", "Menghitung rata-rata otomatis"],
-        correct: 0,
-        expl: "FALSE (atau 0) memaksa VLOOKUP mencari kecocokan yang benar-benar persis, bukan perkiraan terdekat."
-      },
-      {
-        q: "Untuk menampilkan hanya baris data pegawai dari Divisi 'Keuangan' dari ratusan baris data, tindakan yang paling tepat adalah…",
-        options: ["Menghapus semua baris lain secara manual", "Menggunakan fitur Filter atau fungsi FILTER()", "Mengurutkan data dari A ke Z", "Mengetik ulang seluruh data"],
-        correct: 1,
-        expl: "Filter menampilkan hanya baris yang memenuhi kriteria tertentu tanpa menghapus data asli — cara kerja yang efisien dan aman."
-      }
+      { q: "Dalam laporan keuangan, seorang staf menggunakan: =SUM(B2:B10), namun terdapat beberapa sel kosong dan teks \"N/A\". Staf khawatir hasil perhitungan menjadi salah. Analisis yang paling tepat adalah …", options: ["SUM selalu menghasilkan error jika terdapat teks","SUM hanya menghitung nilai numerik sehingga teks diabaikan","SUM tidak dapat digunakan pada data yang memiliki sel kosong","SUM mengubah semua teks menjadi nol secara permanen","SUM hanya menghitung angka pada baris pertama"], correct: 1, expl: "SUM secara otomatis mengabaikan sel kosong maupun teks, dan tetap menjumlahkan nilai numerik yang ada." },
+      { q: "Staf tersebut menggunakan rumus =SUM(H2:K5) pada Tabel Penjualan, namun tidak sesuai harapan. Rumus yang paling tepat untuk menghitung total penjualan (kolom Total) adalah …", options: ["=SUM(H2:H5)","=SUMPRODUCT(H2:H5)","=PRODUCT(K2:K5)","=SUM(K2:K5)","=AVERAGE(H2:K5)"], correct: 3, expl: "Kolom Total ada di K, jadi total penjualan dihitung dengan =SUM(K2:K5), bukan menjumlah beberapa kolom sekaligus." },
+      { q: "Staf menyimpulkan rata-rata penjualan pada Tabel Penjualan sebesar 456000 karena angka itu paling besar. Kesalahan kesimpulan tersebut adalah …", options: ["456000 merupakan nilai minimum","456000 merupakan nilai maksimum","456000 merupakan jumlah seluruh nilai","456000 merupakan jumlah total nilai penjualan","456000 merupakan rata-rata penjualan"], correct: 1, expl: "456000 adalah nilai tertinggi (maksimum) pada kolom Total, bukan rata-ratanya." },
+      { q: "Seorang staf ingin mengetahui total penjualan, tetapi menggunakan AVERAGE. Kesalahan yang terjadi adalah …", options: ["AVERAGE mencari nilai terbesar","AVERAGE mencari nilai terkecil","AVERAGE menghitung nilai rata-rata","AVERAGE menghitung jumlah cell","AVERAGE menyaring data"], correct: 2, expl: "AVERAGE menghasilkan rata-rata, bukan jumlah total — fungsi yang salah untuk kebutuhan itu." },
+      { q: "Dengan data pada Tabel Penjualan, rumus =AVERAGE(K2:K5) menghasilkan …", options: ["177125","456000","708500","626500","04"], correct: 0, expl: "Total keempat nilai (61500+170500+456000+20500=708500) dibagi 4 baris = 177125." },
+      { q: "Dengan data pada Tabel Penjualan, rumus =COUNTA(E2:E5) menghasilkan …", options: ["177125","456000","708500","04","05"], correct: 3, expl: "COUNTA menghitung jumlah sel berisi data (bukan menjumlah nilainya) — kolom Nama terisi di 4 baris, hasilnya 04." },
+      { q: "Seorang staf ingin mengetahui jumlah toko yang datanya sudah dimasukkan pada Tabel Penjualan, bukan jumlah total nilai penjualan. Fungsi yang paling sesuai adalah …", options: ["SUM","MAX","FILTER","AVERAGE","COUNTA"], correct: 4, expl: "COUNTA menghitung banyaknya sel yang terisi data — cocok untuk menghitung jumlah toko yang tercatat." },
+      { q: "Dengan data pada Tabel Penjualan, rumus =MIN(H2:H5) menghasilkan …", options: ["16","11","03","01","#NAME?"], correct: 3, expl: "Kolom Jumlah (H) berisi 3, 11, 16, 1 — nilai terkecilnya adalah 1, ditulis 01." },
+      { q: "Dengan data pada Tabel Penjualan, cell F3 adalah data …", options: ["Nama","Sembako","Yudi Markona","Sejahtera","Beras Pinpin"], correct: 4, expl: "F adalah kolom Produk, baris 3 adalah data toko Barokah — isinya \"Beras Pinpin\"." }
     ]
   },
   bab4: {
-    title: "Bab IV — Aula Ringkasan",
-    boss: { name: "Sang Perangkum Agung", title: "Penjaga Tabel Pivot", sigil: "📊" },
-    intro: "Di aula ini, ribuan baris transaksi kantor menunggu diringkas menjadi laporan yang bisa dibaca pimpinan dalam sekali lihat. Sang Perangkum Agung menguji pemahamanmu tentang ringkasan data dan visualisasi.",
+    title: "Permintaan 4 — Menelusuri dan Menyaring Data",
+    boss: { name: "Pimpinan", title: "Butuh data spesifik dari ribuan baris tanpa mengubah data asli", sigil: "🔎" },
+    intro: "\"Data kita sekarang sudah ribuan baris,\" kata Pimpinan sambil menggeser laptop ke arahmu. \"Saya tidak mau kamu menghapus atau mengetik ulang apa pun — cukup gunakan alat yang tepat.\"",
+    memo: "\"Tunjukkan kamu tahu kapan harus menyaring, dan kapan harus mencocokkan data antar tabel.\"",
     questions: [
-      {
-        q: "Fitur spreadsheet yang paling tepat untuk meringkas ribuan baris transaksi menjadi tabel ringkas per kategori adalah…",
-        options: ["Conditional Formatting", "Pivot Table", "Spell Check", "Text to Columns"],
-        correct: 1,
-        expl: "Pivot Table meringkas data mentah dalam jumlah besar menjadi tabel silang berdasarkan kategori yang dipilih, lengkap dengan agregasi seperti jumlah atau rata-rata."
-      },
-      {
-        q: "Untuk menunjukkan perubahan pengeluaran kantor dari bulan ke bulan, jenis grafik yang paling sesuai adalah…",
-        options: ["Grafik lingkaran (pie chart)", "Grafik garis (line chart)", "Word cloud", "Diagram Venn"],
-        correct: 1,
-        expl: "Grafik garis paling baik menampilkan tren atau perubahan suatu nilai sepanjang waktu, seperti pengeluaran bulanan."
-      },
-      {
-        q: "Untuk membandingkan proporsi anggaran antar-divisi dalam satu periode, grafik yang paling sesuai adalah…",
-        options: ["Grafik garis", "Grafik lingkaran (pie chart) atau batang", "Scatter plot 3D", "Tabel tanpa grafik"],
-        correct: 1,
-        expl: "Pie chart atau grafik batang cocok untuk membandingkan proporsi atau besaran antar-kategori pada satu waktu tertentu."
-      },
-      {
-        q: "Laporan hasil analisis data administrasi sebaiknya disusun dengan urutan…",
-        options: ["Kesimpulan saja, tanpa data pendukung", "Ringkasan temuan → data pendukung → interpretasi → rekomendasi", "Data mentah tanpa penjelasan", "Rekomendasi di awal tanpa alasan"],
-        correct: 1,
-        expl: "Laporan yang baik menyampaikan temuan utama, didukung data, diberi interpretasi makna, lalu ditutup rekomendasi tindak lanjut yang jelas."
-      }
+      { q: "Seorang administrator mempunyai tabel 50 pegawai. Ia ingin menampilkan hanya pegawai dari Bagian Administrasi, tetapi data bagian lain tetap tersimpan. Pilihan yang paling sesuai adalah …", options: ["MAX","SUM","FILTER","MIN","COUNTA"], correct: 2, expl: "FILTER menampilkan hanya baris yang memenuhi kriteria tanpa menghapus data lain yang tersimpan." },
+      { q: "\"Seorang guru menggunakan MIN untuk mengetahui nilai tertinggi siswa.\" Perbaikan yang seharusnya dilakukan adalah mengganti fungsi tersebut dengan …", options: ["SUM","MAX","COUNTA","FILTER","AVERAGE"], correct: 1, expl: "Untuk mencari nilai tertinggi, fungsi yang tepat adalah MAX, bukan MIN." },
+      { q: "Sebuah tabel transaksi memiliki Kode Barang, tetapi belum memiliki Nama Barang. Data nama barang tersedia pada tabel referensi yang tersusun secara vertikal. Cara yang paling sesuai untuk mengisi nama barang secara otomatis adalah …", options: ["Menggunakan VLOOKUP berdasarkan kode","Menggunakan SUM berdasarkan kode","Menggunakan MAX berdasarkan kode","Menggunakan AVERAGE berdasarkan kode","Menggunakan FILTER untuk menjumlahkan kode"], correct: 0, expl: "VLOOKUP mencocokkan Kode Barang dengan tabel referensi untuk mengambil Nama Barang secara otomatis." },
+      { q: "Sebuah tabel transaksi berisi Kode Barang dan Jumlah. Tabel referensi berisi Kode Barang, Nama Barang, dan Harga. Jika staf ingin mengambil Nama Barang berdasarkan Kode Barang, maka data referensi sebaiknya memiliki …", options: ["Kode Barang pada kolom pertama","Nama Barang pada kolom pertama","Jumlah transaksi pada kolom pertama","Total transaksi pada kolom pertama","Harga Barang pada kolom pertama"], correct: 0, expl: "VLOOKUP selalu mencari nilai kunci pada kolom pertama tabel referensi, sehingga Kode Barang harus berada di sana." }
     ]
   },
   bab5: {
-    title: "Bab V — Ruang Arsip Terlarang",
-    boss: { name: "Penjaga Gerbang Kerahasiaan", title: "Wali Keamanan Data", sigil: "🔐" },
-    intro: "Ruang terakhir menyimpan data pribadi dan keuangan yang sensitif. Penjaga Gerbang hanya membiarkan analis yang memahami etika dan keamanan data untuk lewat.",
+    title: "Permintaan 5 — Menjaga Kualitas Data",
+    boss: { name: "Pimpinan", title: "Menemukan kejanggalan pada data pegawai dan pelanggan", sigil: "🧹" },
+    intro: "Pimpinan menunjukkan layar berisi data yang berantakan. \"Sebelum data ini dipakai untuk laporan resmi, saya ingin tahu apakah kamu bisa mengenali masalahnya.\"",
+    memo: "\"Data yang rapi di permukaan belum tentu data yang benar.\"",
     questions: [
-      {
-        q: "Menyimpan data gaji pegawai di spreadsheet yang bisa diakses siapa saja tanpa kata sandi adalah pelanggaran prinsip…",
-        options: ["Efisiensi kerja", "Kerahasiaan dan keamanan data", "Kecepatan input data", "Estetika tampilan"],
-        correct: 1,
-        expl: "Data sensitif seperti gaji dan data pribadi harus dijaga kerahasiaannya, misalnya dengan pembatasan akses dan kata sandi."
-      },
-      {
-        q: "Langkah paling tepat sebelum membagikan hasil rekap data pegawai ke pihak luar adalah…",
-        options: ["Membagikan file asli apa adanya", "Menghapus atau menyamarkan data pribadi yang tidak relevan", "Mengubah semua angka menjadi acak", "Mengirim tanpa memeriksa isinya"],
-        correct: 1,
-        expl: "Data pribadi yang tidak diperlukan pihak luar sebaiknya dihapus atau disamarkan (anonimisasi) untuk melindungi privasi pegawai."
-      },
-      {
-        q: "Backup data administrasi secara berkala penting terutama untuk mencegah…",
-        options: ["Data terlihat terlalu rapi", "Kehilangan data akibat kerusakan sistem atau kesalahan hapus", "Laporan menjadi terlalu singkat", "Grafik menjadi lebih berwarna"],
-        correct: 1,
-        expl: "Backup rutin melindungi data penting dari risiko hilang akibat perangkat rusak, virus, atau kesalahan manusia."
-      },
-      {
-        q: "Seorang analis menemukan data yang tidak konsisten (misalnya nama sama ditulis berbeda-beda). Langkah profesional yang tepat adalah…",
-        options: ["Mengabaikannya karena tidak penting", "Membersihkan dan menyeragamkan data (data cleaning) sebelum dianalisis", "Menghapus seluruh baris data tersebut", "Melaporkan tanpa memperbaiki"],
-        correct: 1,
-        expl: "Data cleaning — menyeragamkan format dan memperbaiki inkonsistensi — adalah langkah wajib sebelum data dianalisis agar hasilnya akurat."
-      }
+      { q: "Sebuah kantor menyimpan data pegawai pada Microsoft Excel. Data transaksi administrasi yang berjumlah ribuan baris perlu dicari berdasarkan ID pegawai, sedangkan beberapa pengguna juga harus dapat mengolah data secara bersamaan. Kombinasi pertimbangan yang paling sesuai adalah …", options: ["Excel untuk analisis dan Google Sheets untuk kolaborasi","Access untuk grafik dan Excel untuk penyimpanan sementara","Google Sheets untuk rumus dan Access untuk membuat presentasi","Excel untuk database dan Access untuk membuat grafik","Access untuk kolaborasi dan Excel untuk menyimpan dokumen"], correct: 0, expl: "Excel kuat untuk analisis dan rumus, sementara Google Sheets unggul untuk kolaborasi banyak pengguna secara bersamaan." },
+      { q: "Ketika dalam sebuah tabel, record terdapat data yang kosong dan redundant (ganda), tindakan paling tepat untuk dilakukan adalah …", options: ["Menyalin semua data ganda ke data yang kosong","Menghapus data ganda dan memeriksa nilai yang kosong","Memeriksa data yang kosong dan menyalin data yang ganda","Menghapus semua baris yang terdapat record kosong","Membuat grafik sebelum melakukan cetak ganda di record yang kosong"], correct: 1, expl: "Data ganda perlu dihapus, sementara data kosong perlu diperiksa dulu penyebabnya sebelum diputuskan tindakannya." },
+      { q: "Seorang staf menemukan data alamat pelanggan ditulis dengan variasi seperti \"Jl. Ahmad Yani No. 10\" dan \"Jl Ahmad Yani No 10\" yang sebenarnya merujuk alamat yang sama. Masalah utama pada data tersebut adalah …", options: ["Data tidak memiliki nomor identitas","Format penulisan belum konsisten","Jumlah data tidak mencukupi","Tipe data seluruhnya berupa angka","Struktur tabel belum memiliki grafik"], correct: 1, expl: "Inti masalahnya adalah inkonsistensi format penulisan, bukan jumlah atau jenis datanya." },
+      { q: "Dalam data pegawai terdapat beberapa cell kosong pada kolom Nomor Telepon. Seorang staf langsung mengisi semua cell kosong dengan angka 0. Tindakan tersebut sebaiknya …", options: ["Dipertahankan karena kosong berarti nol","Dilanjutkan agar seluruh tabel terisi","Diganti dengan angka acak untuk sementara","Dihapus bersama seluruh baris pegawai","Diperiksa karena kosong belum tentu berarti nol"], correct: 4, expl: "Cell kosong bisa berarti data belum tersedia, bukan otomatis bernilai nol — perlu diperiksa lebih dulu." }
+    ]
+  },
+  bab6: {
+    title: "Permintaan 6 — Meringkas untuk Rapat Pimpinan",
+    boss: { name: "Pimpinan", title: "Butuh ringkasan siap tayang untuk rapat mingguan", sigil: "📊" },
+    intro: "\"Rapat pukul dua siang, dan saya tidak mau melihat ribuan baris data mentah di layar,\" kata Pimpinan sambil melirik jam. \"Saya butuh ringkasan yang bisa langsung dibaca.\"",
+    memo: "\"Ringkas, tepat sasaran, dan enak dilihat — itu yang saya minta.\"",
+    questions: [
+      { q: "Sebuah perusahaan memiliki 5.000 data transaksi. Setiap minggu kepala administrasi meminta laporan total penjualan berdasarkan cabang dan bulan. Saat ini staf menghitungnya secara manual sehingga membutuhkan waktu lama. Solusi yang paling efektif adalah …", options: ["Menyalin data setiap minggu ke file baru","Mengurutkan data lalu menghitung secara manual","Membuat Pivot Table dari sumber data transaksi","Menghapus transaksi lama setelah laporan dibuat","Membuat grafik sebelum mengelompokkan data"], correct: 2, expl: "Pivot Table bisa meringkas ribuan baris data secara otomatis berdasarkan kategori yang dipilih." },
+      { q: "Kepala administrasi menerima laporan penjualan lima cabang selama enam bulan. Ia ingin mengetahui cabang mana yang memiliki penjualan tertinggi dan membandingkan performa antar-cabang. Jenis grafik yang paling sesuai adalah …", options: ["Diagram garis","Diagram batang","Diagram lingkaran","Diagram pencar","Diagram radar"], correct: 1, expl: "Diagram batang paling jelas untuk membandingkan besaran antar-kategori seperti cabang." },
+      { q: "Setiap akhir bulan, staf harus membuat laporan dari data transaksi baru dengan menyalin data secara manual, menghitung ulang, lalu membuat grafik. Agar proses lebih efisien, rancangan yang paling tepat adalah …", options: ["Membuat file baru untuk setiap periode","Menyimpan hasil laporan dalam bentuk PDF","Menyiapkan sumber data, rumus, dan grafik yang dapat diperbarui","Menghapus data lama sebelum memasukkan transaksi baru","Membuat laporan setelah seluruh data dicetak"], correct: 2, expl: "Sumber data, rumus, dan grafik yang saling terhubung akan otomatis memperbarui laporan tanpa perlu diulang dari nol." },
+      { q: "Sebuah perusahaan memiliki ribuan transaksi dengan kolom Tanggal, Cabang, Produk, dan Total Penjualan. Manajer meminta ringkasan total penjualan setiap cabang tanpa menghitung transaksi satu per satu. Fitur yang paling sesuai adalah …", options: ["Find","Sort","Pivot Table","Spell Check","Page Layout"], correct: 2, expl: "Pivot Table langsung meringkas total per kategori tanpa perlu menghitung manual satu per satu." },
+      { q: "Sebuah Pivot Table menampilkan total penjualan berdasarkan cabang. Manajer kemudian meminta laporan berdasarkan cabang dan bulan. Perubahan yang paling sesuai adalah …", options: ["Menambahkan Bulan sebagai kategori analisis","Menghapus seluruh data berdasarkan cabang","Mengubah semua angka menjadi teks","Mengganti Pivot Table dengan Word","Menghapus kolom tanggal dari sumber data"], correct: 0, expl: "Cukup menambahkan Bulan sebagai kategori baru dalam Pivot Table, tanpa perlu mengubah struktur lain." },
+      { q: "Manajer memiliki data penjualan bulanan selama satu tahun dan ingin mengetahui apakah penjualan cenderung naik atau turun dari waktu ke waktu. Grafik yang paling sesuai adalah …", options: ["Pie Chart","Bar Chart","Line Chart","Scatter Chart","Doughnut Chart"], correct: 2, expl: "Line Chart paling tepat untuk menunjukkan tren perubahan suatu nilai sepanjang waktu." },
+      { q: "Sebuah dashboard administrasi menampilkan 15 grafik sekaligus, dan Pimpinan justru kesulitan menemukan informasi penting. Evaluasi yang paling tepat adalah …", options: ["Dashboard terlalu banyak menggunakan data","Dashboard perlu menampilkan informasi yang relevan","Dashboard harus menggunakan lebih banyak grafik","Dashboard sebaiknya menghapus seluruh angka","Dashboard tidak perlu menggunakan data aktual"], correct: 1, expl: "Dashboard yang baik menonjolkan informasi relevan, bukan sekadar menampilkan grafik sebanyak-banyaknya." },
+      { q: "Setiap minggu staf membuat laporan dengan tahapan: data baru → menghitung ulang → membuat tabel → membuat grafik → mencetak laporan, yang memakan waktu lama karena dilakukan berulang. Solusi yang paling sesuai adalah …", options: ["Menambah jumlah staf yang membuat laporan","Mengurangi jumlah transaksi yang dianalisis","Membuat template laporan yang terhubung dengan data","Mencetak data sebelum melakukan perhitungan","Menyimpan setiap laporan dalam file berbeda"], correct: 2, expl: "Template yang terhubung langsung dengan data akan memperbarui laporan otomatis tanpa mengulang seluruh proses." }
+    ]
+  },
+  bab7: {
+    title: "Permintaan 7 — Mengambil Keputusan Berbasis Data",
+    boss: { name: "Pimpinan", title: "Meminta rekomendasi tindakan, bukan sekadar angka", sigil: "🧠" },
+    intro: "Di penghujung hari, Pimpinan duduk sambil menutup laptopnya. \"Angka-angka itu penting, tapi saya butuh kamu menerjemahkannya menjadi keputusan.\"",
+    memo: "\"Ini permintaan terakhir hari ini — dan yang paling menentukan.\"",
+    questions: [
+      { q: "Bagian administrasi mencatat data absensi karyawan selama enam bulan. Setelah dianalisis, terlihat bahwa jumlah keterlambatan meningkat setiap hari Senin. Tindakan yang paling sesuai berdasarkan data tersebut adalah …", options: ["Menghapus data hari Senin","Membandingkan pola absensi antarhari","Mengurangi jumlah hari kerja","Mengganti sistem penggajian","Mengabaikan data keterlambatan"], correct: 1, expl: "Langkah lanjutan yang tepat adalah menyelidiki pola tersebut lebih lanjut, misalnya membandingkannya dengan hari lain." },
+      { q: "Data inventaris kantor menunjukkan penggunaan kertas rata-rata 20 rim per bulan, sementara stok saat ini hanya tersisa 5 rim dan proses pemesanan butuh beberapa hari. Keputusan administrasi yang paling rasional adalah …", options: ["Mempertimbangkan pemesanan stok berikutnya","Menunggu sampai stok benar-benar habis","Mengurangi pencatatan penggunaan kertas","Mengganti seluruh dokumen menjadi digital","Menghapus data penggunaan bulan sebelumnya"], correct: 0, expl: "Dengan stok menipis dan waktu pemesanan yang perlu diperhitungkan, langkah rasionalnya adalah mulai mempertimbangkan pemesanan berikutnya." },
+      { q: "Bagian administrasi mencatat pengeluaran operasional setiap bulan. Kepala kantor ingin mengetahui pos pengeluaran yang paling besar agar dapat mengevaluasi penggunaan anggaran. Data yang paling membantu untuk kebutuhan tersebut adalah …", options: ["Nama pegawai dan jabatannya","Jenis pengeluaran dan jumlahnya","Nomor surat dan tanggal surat","Alamat kantor dan nomor telepon","Nama pemasok dan alamat pemasok"], correct: 1, expl: "Untuk mengevaluasi pos anggaran terbesar, data yang relevan adalah jenis pengeluaran beserta jumlahnya." },
+      { q: "Sebelumnya staf membutuhkan waktu tiga jam setiap akhir bulan untuk membuat rekap pengeluaran. Setelah menggunakan spreadsheet dengan rumus dan template otomatis, pekerjaan tersebut selesai dalam 30 menit. Kesimpulan yang paling tepat adalah …", options: ["Spreadsheet menggantikan seluruh pekerjaan staf","Keputusan perusahaan dapat dibuat tanpa analisis","Data keuangan tidak perlu diperiksa kembali","Semua laporan dapat dibuat tanpa sumber data","Otomatisasi dapat mengurangi pekerjaan berulang"], correct: 4, expl: "Contoh ini menunjukkan bagaimana otomatisasi mempercepat pekerjaan berulang, bukan menggantikan peran staf sepenuhnya." }
     ]
   }
 };
 
-const BAB_ORDER = ["bab1","bab2","bab3","bab4","bab5"];
+const BAB_ORDER = ["bab1","bab2","bab3","bab4","bab5","bab6","bab7"];
 const BAB_SKILL_LABEL = {
-  bab1: "Dasar Data Administrasi",
-  bab2: "Fungsi Agregat (SUM/AVG/MAX)",
-  bab3: "VLOOKUP & Filter",
-  bab4: "Pivot Table & Visualisasi",
-  bab5: "Etika & Keamanan Data"
+  bab1: "Struktur Spreadsheet",
+  bab2: "Interpretasi Data",
+  bab3: "Rumus Tabel Penjualan",
+  bab4: "Filter & VLOOKUP",
+  bab5: "Kualitas Data",
+  bab6: "Pivot Table & Visualisasi",
+  bab7: "Keputusan Berbasis Data"
 };
 
 /* ============ STATE ============ */
 let state = {
-  name: "",
-  babIndex: 0,
-  qIndex: 0,
-  hp: 100,
-  maxHp: 100,
-  bossHp: 100,
-  maxBossHp: 100,
-  exp: 0,
-  level: 1,
-  correctTotal: 0,
-  totalQuestions: 0,
-  babQuestions: [],
-  answered: false,
+  name: "", babIndex: 0, qIndex: 0,
+  hp: 100, maxHp: 100,
+  trust: 0, maxTrust: 100,
+  exp: 0, level: 1,
+  correctTotal: 0, totalQuestions: 0,
+  babQuestions: [], answered: false,
   earnedBadges: []
 };
 
@@ -461,23 +302,15 @@ const journal = document.getElementById('journal');
 
 function shuffle(arr){
   const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; }
   return a;
 }
-
 function shuffledQuestion(qObj){
   const optIdx = qObj.options.map((opt,i)=>({opt,i}));
   const shuffledOpts = shuffle(optIdx);
-  return {
-    q: qObj.q,
-    expl: qObj.expl,
-    options: shuffledOpts.map(o=>o.opt),
-    correct: shuffledOpts.findIndex(o=>o.i === qObj.correct)
-  };
+  return { q: qObj.q, expl: qObj.expl, options: shuffledOpts.map(o=>o.opt), correct: shuffledOpts.findIndex(o=>o.i === qObj.correct) };
 }
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ============ SCREENS ============ */
 function renderIntro(){
@@ -485,26 +318,22 @@ function renderIntro(){
   journal.innerHTML = `
     <div class="stage center">
       <span class="chip">Simulasi Kerja — Data Analisis Administrasi</span>
-      <h1>Buku Catatan Sang Analis</h1>
-      <p class="lede">Sebuah RPG teks tentang perjalanan pegawai administrasi baru yang belajar mengolah data menjadi keputusan.</p>
+      <h1>Permintaan Pimpinan</h1>
+      <p class="lede">Satu hari kerja sebagai staf administrasi, dilihat lewat tujuh permintaan data dari Pimpinan.</p>
       <hr class="rule">
-      <p>Kamu baru saja diterima sebagai staf administrasi di sebuah kantor. Tugasmu bukan sekadar mengetik dan mengarsip — kamu harus mampu membaca data, merangkumnya, dan menyajikannya sebagai informasi yang berguna bagi pimpinan.</p>
-      <p>Lima ruang kerja menantimu, masing-masing dijaga oleh tantangan yang menguji satu kemampuan analisis data. Jawab dengan tepat untuk melemahkan tantangan itu — jawaban keliru akan menguras staminamu.</p>
-      <p style="margin-top:18px;">Siapa namamu, Analis?</p>
+      <p>Kamu adalah staf administrasi. Sepanjang hari ini, Pimpinan akan mendatangi mejamu tujuh kali — masing-masing dengan permintaan data yang berbeda. Caramu menjawab akan menentukan seberapa besar kepercayaan yang ia berikan padamu.</p>
+      <p>Jawaban yang tepat akan menaikkan kepercayaan Pimpinan. Jawaban yang meleset akan menguras energi kerjamu. Jaga keduanya sampai akhir hari.</p>
+      <p style="margin-top:18px;">Siapa namamu?</p>
       <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px;">
         <input type="text" id="nameInput" placeholder="Tulis namamu di sini" maxlength="24">
       </div>
       <div class="footer-row" style="justify-content:center; margin-top:18px;">
-        <button class="btn" id="startBtn">Mulai Hari Pertama →</button>
+        <button class="btn" id="startBtn">Mulai Hari Kerja →</button>
       </div>
     </div>
   `;
   const input = document.getElementById('nameInput');
-  const go = () => {
-    const v = input.value.trim();
-    state.name = v || "Analis";
-    startBab(0);
-  };
+  const go = () => { state.name = input.value.trim() || "Staf"; startBab(0); };
   document.getElementById('startBtn').onclick = go;
   input.addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
   input.focus();
@@ -513,8 +342,7 @@ function renderIntro(){
 function startBab(index){
   state.babIndex = index;
   state.qIndex = 0;
-  state.bossHp = 100;
-  state.maxBossHp = 100;
+  state.trust = 0;
   const babKey = BAB_ORDER[index];
   const bab = QUESTION_BANK[babKey];
   state.babQuestions = shuffle(bab.questions).map(shuffledQuestion);
@@ -527,25 +355,21 @@ function topbar(){
   return `
     <div class="topbar">
       <div>
-        <div class="brand"><b>${escapeHtml(state.name)}</b> · Staf Administrasi Jr.</div>
+        <div class="brand"><b>${escapeHtml(state.name)}</b> · Staf Administrasi</div>
         <div style="font-size:0.75rem; opacity:0.75; margin-top:2px;">${bab.title || ""}</div>
       </div>
       <div class="stat-strip">
         <div class="hpwrap">
-          <div class="barlabel">STAMINA</div>
-          <div class="barouter"><div class="barinner hp" style="width:${Math.max(state.hp,0)}%"></div></div>
+          <div class="barlabel">ENERGI KERJA</div>
+          <div class="barouter"><div class="barinner energi" style="width:${Math.max(state.hp,0)}%"></div></div>
         </div>
         <div class="hpwrap">
-          <div class="barlabel">EXP LV.${state.level}</div>
+          <div class="barlabel">LV.${state.level}</div>
           <div class="barouter"><div class="barinner exp" style="width:${state.exp % 100}%"></div></div>
         </div>
       </div>
     </div>
   `;
-}
-
-function escapeHtml(s){
-  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function renderBabIntro(){
@@ -554,7 +378,7 @@ function renderBabIntro(){
   journal.innerHTML = `
     ${topbar()}
     <div class="stage">
-      <span class="chip">Ruang ${state.babIndex+1} dari ${BAB_ORDER.length}</span>
+      <span class="chip">Permintaan ${state.babIndex+1} dari ${BAB_ORDER.length}</span>
       <h1>${bab.title}</h1>
       <p>${bab.intro}</p>
       <div class="boss-card">
@@ -564,8 +388,9 @@ function renderBabIntro(){
           <div class="boss-title">${bab.boss.title}</div>
         </div>
       </div>
+      <div class="memo">${bab.memo}</div>
       <div class="footer-row">
-        <button class="btn" id="enterBtn">Hadapi Tantangan →</button>
+        <button class="btn" id="enterBtn">Tanggapi Permintaan →</button>
       </div>
     </div>
   `;
@@ -582,10 +407,10 @@ function renderQuestion(){
   if(state.qIndex === 0 && bab.table){
     tableHtml = `
       <div class="scene-desk">
-        <div style="font-size:0.8rem; color:var(--ink-soft); margin-bottom:4px;">Lembar Data — Rekap Kehadiran</div>
+        <div style="font-size:0.8rem; color:var(--ink-soft); margin-bottom:4px;">Lembar Data — Tabel Penjualan (dipakai untuk beberapa pertanyaan berikut)</div>
         <table class="data-table">
           <tr>${bab.table.headers.map(h=>`<th>${h}</th>`).join('')}</tr>
-          ${bab.table.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${c}</td>`).join('')}</tr>`).join('')}
+          ${bab.table.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}
         </table>
       </div>
     `;
@@ -597,9 +422,9 @@ function renderQuestion(){
       <div class="boss-card">
         <div class="boss-sigil">${bab.boss.sigil}</div>
         <div style="flex:1;">
-          <div class="boss-name">${bab.boss.name}</div>
+          <div class="boss-name">Tingkat Kepercayaan Pimpinan</div>
           <div class="hpwrap" style="width:100%; margin-top:6px;">
-            <div class="barouter"><div class="barinner boss" style="width:${Math.max(state.bossHp,0)}%"></div></div>
+            <div class="barouter"><div class="barinner trust" style="width:${Math.max(state.trust,0)}%"></div></div>
           </div>
         </div>
       </div>
@@ -615,7 +440,6 @@ function renderQuestion(){
       </div>
     </div>
   `;
-
   document.querySelectorAll('.opt').forEach(btn=>{
     btn.onclick = () => handleAnswer(parseInt(btn.dataset.i), q);
   });
@@ -633,21 +457,20 @@ function handleAnswer(choice, q){
 
   const fb = document.getElementById('feedback');
   fb.classList.add('show', correct ? 'ok' : 'bad');
-  fb.textContent = (correct ? "Tepat! " : "Belum tepat. ") + q.expl;
+  fb.textContent = (correct ? "Tepat. " : "Belum tepat. ") + q.expl;
 
+  const trustGain = Math.ceil(100 / state.babQuestions.length);
   if(correct){
-    state.bossHp = Math.max(0, state.bossHp - 25);
-    state.exp += 20;
+    state.trust = Math.min(100, state.trust + trustGain);
+    state.exp += 15;
     state.correctTotal += 1;
-    if(state.exp >= state.level * 100){
-      state.level += 1;
-    }
+    if(state.exp >= state.level * 100){ state.level += 1; }
   } else {
-    state.hp = Math.max(0, state.hp - 15);
+    state.hp = Math.max(0, state.hp - 12);
   }
 
-  document.querySelector('.barinner.boss').style.width = Math.max(state.bossHp,0) + '%';
-  document.querySelector('.barinner.hp').style.width = Math.max(state.hp,0) + '%';
+  document.querySelector('.barinner.trust').style.width = Math.max(state.trust,0) + '%';
+  document.querySelector('.barinner.energi').style.width = Math.max(state.hp,0) + '%';
   document.querySelector('.barinner.exp').style.width = (state.exp % 100) + '%';
 
   const nextBtn = document.getElementById('nextBtn');
@@ -656,10 +479,7 @@ function handleAnswer(choice, q){
 }
 
 function advance(){
-  if(state.hp <= 0){
-    renderDefeat();
-    return;
-  }
+  if(state.hp <= 0){ renderDefeat(); return; }
   state.qIndex += 1;
   if(state.qIndex < state.babQuestions.length){
     renderQuestion();
@@ -676,20 +496,19 @@ function renderBabVictory(){
   journal.innerHTML = `
     ${topbar()}
     <div class="stage center">
-      <span class="chip">Ruang Selesai</span>
-      <h1>${bab.boss.name} berhasil ditaklukkan</h1>
+      <span class="chip">Permintaan Selesai</span>
+      <h1>Pimpinan mengangguk puas</h1>
       <p class="lede">Kamu kini menguasai: <b>${BAB_SKILL_LABEL[babKey]}</b></p>
       <div class="badge-grid" style="justify-content:center;">
         ${state.earnedBadges.map(k=>`<div class="badge">${BAB_SKILL_LABEL[k]}</div>`).join('')}
       </div>
       <div class="footer-row" style="justify-content:center;">
-        <button class="btn" id="continueBtn">${isLast ? "Lihat Hasil Akhir →" : "Lanjut ke Ruang Berikutnya →"}</button>
+        <button class="btn" id="continueBtn">${isLast ? "Lihat Evaluasi Akhir Hari →" : "Tunggu Permintaan Berikutnya →"}</button>
       </div>
     </div>
   `;
   document.getElementById('continueBtn').onclick = () => {
-    if(isLast){ renderFinalResult(); }
-    else { startBab(state.babIndex + 1); }
+    if(isLast){ renderFinalResult(); } else { startBab(state.babIndex + 1); }
   };
 }
 
@@ -697,9 +516,9 @@ function renderDefeat(){
   journal.innerHTML = `
     ${topbar()}
     <div class="stage center">
-      <span class="chip">Stamina Habis</span>
+      <span class="chip">Energi Kerja Habis</span>
       <h1>Kamu perlu istirahat sejenak, ${escapeHtml(state.name)}</h1>
-      <p class="lede">Terlalu banyak jawaban meleset membuat staminamu terkuras. Analis yang baik tahu kapan harus berhenti sejenak dan mencoba lagi dengan kepala dingin.</p>
+      <p class="lede">Terlalu banyak jawaban meleset membuat energi kerjamu terkuras. Staf administrasi yang baik tahu kapan harus jeda dan mencoba lagi dengan kepala dingin.</p>
       <p>Progres benar sejauh ini: <b>${state.correctTotal} dari ${state.totalQuestions}</b> pertanyaan.</p>
       <div class="footer-row" style="justify-content:center;">
         <button class="btn" id="retryBtn">Coba Lagi dari Awal</button>
@@ -712,15 +531,15 @@ function renderDefeat(){
 function renderFinalResult(){
   const pct = Math.round((state.correctTotal / state.totalQuestions) * 100);
   let rank, ranktext;
-  if(pct >= 90){ rank="S"; ranktext="Analis Data Senior — hasil kerjamu langsung dipercaya pimpinan."; }
-  else if(pct >= 75){ rank="A"; ranktext="Analis Data Andal — laporanmu jarang perlu direvisi."; }
-  else if(pct >= 60){ rank="B"; ranktext="Analis Data yang Berkembang — dasar-dasarmu sudah kuat."; }
-  else { rank="C"; ranktext="Staf Administrasi Pemula — masih perlu banyak berlatih rumus dan analisis."; }
+  if(pct >= 90){ rank="S"; ranktext="Pimpinan menyerahkan laporan penting berikutnya langsung padamu tanpa ragu."; }
+  else if(pct >= 75){ rank="A"; ranktext="Pimpinan puas — data yang kamu olah jarang perlu direvisi."; }
+  else if(pct >= 60){ rank="B"; ranktext="Pimpinan cukup percaya, meski beberapa jawabanmu masih perlu dipertajam."; }
+  else { rank="C"; ranktext="Pimpinan menyarankan kamu berlatih lagi sebelum memegang laporan penting."; }
 
   journal.innerHTML = `
     <div class="stage center">
-      <span class="chip">Laporan Akhir Karier</span>
-      <h1>Perjalanan ${escapeHtml(state.name)} Berakhir di Sini</h1>
+      <span class="chip">Evaluasi Akhir Hari</span>
+      <h1>Hari Kerja ${escapeHtml(state.name)} Berakhir</h1>
       <div class="rank-plate">${rank}</div>
       <p class="lede">${ranktext}</p>
       <hr class="rule">
@@ -733,7 +552,7 @@ function renderFinalResult(){
         }).join('')}
       </div>
       <div class="footer-row" style="justify-content:center;">
-        <button class="btn secondary" id="restartBtn">Main Ulang</button>
+        <button class="btn secondary" id="restartBtn">Ulangi dari Awal</button>
       </div>
     </div>
   `;
@@ -742,14 +561,10 @@ function renderFinalResult(){
 
 function resetGame(){
   state = {
-    name: state.name,
-    babIndex: 0, qIndex: 0,
-    hp: 100, maxHp: 100,
-    bossHp: 100, maxBossHp: 100,
-    exp: 0, level: 1,
-    correctTotal: 0, totalQuestions: 0,
-    babQuestions: [], answered: false,
-    earnedBadges: []
+    name: state.name, babIndex: 0, qIndex: 0,
+    hp: 100, maxHp: 100, trust: 0, maxTrust: 100,
+    exp: 0, level: 1, correctTotal: 0, totalQuestions: 0,
+    babQuestions: [], answered: false, earnedBadges: []
   };
   renderIntro();
 }
