@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1c2430">
+<title>Buku Catatan Sang Analis — RPG Data Administrasi</title>
+<style>
+  :root{
+    --ink: #1c2430;
+    --ink-2: #2a3444;
+    --paper: #f2ead8;
+    --paper-2: #e8dcc0;
+    --gold: #c9982f;
+    --gold-2: #e3b94f;
+    --forest: #4f7a56;
+    --forest-2: #6fa377;
+    --crimson: #a13c3c;
+    --crimson-2: #c25858;
+    --ink-soft: #566073;
+    --serif: 'Spectral', 'Iowan Old Style', 'Georgia', serif;
+    --data: 'Courier New', ui-monospace, monospace;
+  }
+  @font-face{
+    font-family:'Spectral';
+    src: local('Spectral');
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html{
+    scroll-padding-top: env(safe-area-inset-top, 0px);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background:
+      radial-gradient(ellipse at top, #26314540, transparent 60%),
+      var(--ink);
+    color: var(--paper);
+    font-family: var(--serif);
+    overscroll-behavior-y: contain;
+  }
+  #app{
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 18px calc(60px + env(safe-area-inset-bottom, 0px));
+    display:flex;
+    flex-direction:column;
+  }
+  .journal{
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px #00000030, 0 20px 50px -20px #000a;
+    position: relative;
+    overflow:hidden;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  .journal::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(90deg, #00000010 0, transparent 14px),
+      repeating-linear-gradient(#00000000 0 34px, #00000009 34px 35px);
+    pointer-events:none;
+  }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 14px 22px;
+    background: var(--ink-2);
+    color: var(--paper);
+    border-bottom: 3px solid var(--gold);
+  }
+  .topbar .brand{
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    color: var(--gold-2);
+  }
+  .topbar .brand b{ color: var(--paper); font-weight:700; }
+  .stat-strip{ display:flex; gap:18px; font-size:0.85rem; }
+  .stat-strip span b{ color: var(--gold-2); }
+
+  .hpwrap{ width:120px; }
+  .barlabel{ font-size:0.68rem; letter-spacing:0.04em; margin-bottom:2px; opacity:0.85;}
+  .barouter{
+    height:9px; border-radius:5px; background:#0004; overflow:hidden;
+    box-shadow: inset 0 0 0 1px #ffffff22;
+  }
+  .barinner{ height:100%; transition: width .5s ease; }
+  .barinner.hp{ background: linear-gradient(90deg, var(--crimson), var(--crimson-2)); }
+  .barinner.boss{ background: linear-gradient(90deg, #5a3a8a, #7d58ad); }
+  .barinner.exp{ background: linear-gradient(90deg, var(--forest), var(--forest-2)); }
+
+  .stage{
+    flex:1;
+    padding: 30px 34px 20px;
+    position: relative;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  h1{ font-size:1.6rem; margin:0 0 4px; font-weight:700; }
+  h2{ font-size:1.15rem; margin:0 0 6px; color: var(--ink-2); font-weight:700;}
+  p{ line-height:1.55; margin:0 0 10px; }
+  .lede{ color: var(--ink-soft); font-size:0.95rem; }
+
+  .rule{ border:none; border-top:1px solid #00000022; margin: 6px 0 4px; }
+
+  .chip{
+    display:inline-block;
+    font-size:0.72rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--ink-2);
+    color: var(--gold-2);
+    letter-spacing:0.02em;
+    margin-bottom: 6px;
+  }
+
+  .btn{
+    font-family: var(--serif);
+    font-size: 1rem;
+    padding: 12px 22px;
+    min-height: 44px;
+    border-radius: 3px;
+    border: 1.5px solid var(--ink-2);
+    background: var(--ink-2);
+    color: var(--paper);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform .12s ease, background .15s ease;
+  }
+  .btn:hover{ background: var(--ink); transform: translateY(-1px); }
+  .btn:active{ transform: translateY(0); }
+  .btn.secondary{
+    background: transparent; color: var(--ink-2);
+  }
+  .btn.secondary:hover{ background:#00000010; }
+  .btn:disabled{ opacity:0.5; cursor:default; transform:none; }
+
+  input[type=text]{
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    padding: 11px 14px;
+    border-radius: 3px;
+    border: 1.5px solid #00000040;
+    background: #fffdf6;
+    color: var(--ink);
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .scene-desk{
+    background: var(--paper-2);
+    border: 1px solid #00000020;
+    border-radius: 4px;
+    padding: 18px 20px;
+  }
+  .data-table{
+    width:100%; border-collapse: collapse; margin: 10px 0 4px;
+    font-family: var(--data);
+    font-size: 0.86rem;
+  }
+  .data-table th, .data-table td{
+    border: 1px solid #00000030;
+    padding: 6px 9px;
+    text-align:right;
+  }
+  .data-table th{ background: var(--ink-2); color: var(--gold-2); text-align:center; font-family: var(--serif);}
+  .data-table td:first-child, .data-table th:first-child{ text-align:left; }
+
+  .boss-card{
+    display:flex; align-items:center; gap:16px;
+    background: linear-gradient(135deg, #2a2140, #3a2c56);
+    color: var(--paper);
+    border-radius: 4px;
+    padding: 16px 18px;
+    margin-bottom: 4px;
+  }
+  .boss-sigil{
+    width:54px; height:54px; flex:none;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #9a6fd0, #4a3070);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem;
+    box-shadow: 0 0 0 3px #ffffff20;
+  }
+  .boss-name{ font-weight:700; font-size:1.05rem; }
+  .boss-title{ font-size:0.78rem; opacity:0.75; }
+
+  .qcount{ font-size:0.78rem; color: var(--ink-soft); }
+
+  .options{ display:flex; flex-direction:column; gap:9px; margin-top:6px; }
+  .opt{
+    text-align:left;
+    font-family: var(--serif);
+    font-size:0.98rem;
+    padding: 13px 15px;
+    min-height: 46px;
+    border-radius:3px;
+    border: 1.5px solid #00000030;
+    background: #fffdf6;
+    color: var(--ink);
+    cursor:pointer;
+    touch-action: manipulation;
+    transition: background .12s ease, border-color .12s ease;
+  }
+  .opt:hover{ border-color: var(--ink-2); }
+  .opt.correct{ background: #dcead9; border-color: var(--forest); }
+  .opt.wrong{ background: #f2d9d9; border-color: var(--crimson); }
+  .opt:disabled{ cursor:default; }
+
+  .feedback{
+    padding: 12px 14px;
+    border-radius: 3px;
+    font-size: 0.92rem;
+    line-height:1.5;
+    display:none;
+  }
+  .feedback.show{ display:block; }
+  .feedback.ok{ background:#dcead9; border-left:4px solid var(--forest); }
+  .feedback.bad{ background:#f2d9d9; border-left:4px solid var(--crimson); }
+
+  .footer-row{ display:flex; justify-content:flex-end; gap:10px; margin-top:auto; padding-top:8px; }
+
+  .center{ text-align:center; }
+  .badge-grid{ display:flex; flex-wrap:wrap; gap:10px; margin: 14px 0; }
+  .badge{
+    background: var(--ink-2); color: var(--gold-2);
+    padding: 8px 14px; border-radius: 4px; font-size:0.82rem;
+    border: 1px solid #00000030;
+  }
+  .badge.locked{ color:#8a8a8a; background:#00000015; color:#0006;}
+
+  .rank-plate{
+    font-family: var(--serif);
+    font-size: 3.2rem; font-weight:700;
+    color: var(--gold);
+    text-shadow: 0 2px 0 #00000020;
+  }
+
+  @media (max-width: 620px){
+    .stage{ padding: 22px 18px 16px; }
+    .topbar{ flex-direction:column; align-items:flex-start; gap:10px; }
+    .stat-strip{ flex-wrap:wrap; gap:12px; }
+    .data-table{ font-size:0.76rem; }
+  }
+  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="journal" id="journal"></div>
+</div>
+
+<script>
+/* ============ DATA SOAL — Data Analisis Administrasi ============ */
+const QUESTION_BANK = {
+  bab1: {
+    title: "Bab I — Gerbang Arsip",
+    boss: { name: "Si Kertas Kusut", title: "Penjaga Data Mentah", sigil: "📋" },
+    intro: "Hari pertamamu sebagai staf administrasi. Meja kerjamu penuh berkas mentah yang belum diolah. Sebelum bisa melangkah ke ruang arsip, kamu harus membuktikan bahwa kamu memahami dasar analisis data administrasi.",
+    questions: [
+      {
+        q: "Dalam siklus pengolahan data administrasi, urutan yang benar adalah…",
+        options: ["Output → Proses → Input", "Input → Proses → Output", "Proses → Output → Input", "Input → Output → Proses"],
+        correct: 1,
+        expl: "Data mentah (input) diolah lewat proses (hitung, saring, ringkas) sebelum menjadi informasi siap pakai (output)."
+      },
+      {
+        q: "Data absensi pegawai berupa angka jam masuk dan keluar termasuk jenis data…",
+        options: ["Data kualitatif", "Data kuantitatif", "Data naratif", "Data multimedia"],
+        correct: 1,
+        expl: "Data berbentuk angka yang dapat dihitung dan diukur disebut data kuantitatif — cocok untuk dianalisis dengan rumus statistik."
+      },
+      {
+        q: "Ciri utama 'data yang berkualitas' untuk dasar pengambilan keputusan kantor adalah…",
+        options: ["Jumlahnya sangat banyak", "Akurat, lengkap, dan konsisten", "Ditulis tangan agar personal", "Disimpan di banyak folder berbeda"],
+        correct: 1,
+        expl: "Data yang baik harus akurat (sesuai fakta), lengkap (tidak ada bagian hilang), dan konsisten (format sama) agar analisis tidak menyesatkan."
+      },
+      {
+        q: "Sebuah alamat sel pada spreadsheet seperti C5 menunjukkan…",
+        options: ["Kolom C baris ke-5", "Baris C kolom ke-5", "Sheet ke-5 kolom C", "Rentang dari C sampai 5"],
+        correct: 0,
+        expl: "Huruf menunjuk kolom, angka menunjuk baris — jadi C5 adalah pertemuan kolom C dengan baris 5."
+      }
+    ]
+  },
+  bab2: {
+    title: "Bab II — Ruang Rekap Kehadiran",
+    boss: { name: "Sang Penghitung Bayangan", title: "Roh Fungsi Agregat", sigil: "🧮" },
+    intro: "Kamu memasuki ruang rekap kehadiran. Puluhan baris data absensi menunggu diringkas. Roh Penghitung Bayangan hanya bisa dikalahkan dengan fungsi-fungsi agregat spreadsheet yang tepat.",
+    table: {
+      headers: ["Nama", "Hadir", "Izin", "Alpa"],
+      rows: [
+        ["Sari", "20", "1", "0"],
+        ["Budi", "18", "0", "3"],
+        ["Wulan", "21", "0", "0"],
+        ["Rian", "17", "2", "2"]
+      ]
+    },
+    questions: [
+      {
+        q: "Untuk menjumlahkan seluruh hari 'Hadir' keempat pegawai di atas, rumus yang tepat adalah…",
+        options: ["=AVERAGE(hadir)", "=SUM(rentang sel Hadir)", "=COUNT(rentang sel Hadir)", "=MAX(rentang sel Hadir)"],
+        correct: 1,
+        expl: "SUM menjumlahkan seluruh nilai dalam suatu rentang — pas untuk total hari hadir semua pegawai."
+      },
+      {
+        q: "Untuk mengetahui pegawai dengan jumlah Alpa TERBANYAK, fungsi yang dipakai adalah…",
+        options: ["=MIN()", "=AVERAGE()", "=MAX()", "=SUM()"],
+        correct: 2,
+        expl: "MAX mengambil nilai tertinggi dalam suatu rentang, sehingga bisa menunjukkan pegawai dengan alpa terbanyak."
+      },
+      {
+        q: "Rata-rata hari Hadir dari Sari, Budi, Wulan, dan Rian dihitung dengan fungsi…",
+        options: ["=AVERAGE()", "=COUNTIF()", "=SUM()", "=MIN()"],
+        correct: 0,
+        expl: "AVERAGE menjumlahkan lalu membaginya dengan jumlah data — cocok untuk mencari rata-rata kehadiran."
+      },
+      {
+        q: "Jika ingin menghitung berapa banyak pegawai yang Alpa-nya sama dengan 0, fungsi yang sesuai adalah…",
+        options: ["=COUNTIF(rentang, 0)", "=SUM(rentang, 0)", "=AVERAGEIF(rentang)", "=MAX(rentang, 0)"],
+        correct: 0,
+        expl: "COUNTIF menghitung jumlah sel yang memenuhi kriteria tertentu — di sini kriterianya adalah nilai sama dengan 0."
+      }
+    ]
+  },
+  bab3: {
+    title: "Bab III — Lorong Pencarian",
+    boss: { name: "Bayangan Tabel Ganda", title: "Penguasa Rujukan Silang", sigil: "🔍" },
+    intro: "Kamu tiba di lorong berisi dua tabel berbeda: daftar kode barang dan daftar harga. Bayangan Tabel Ganda hanya takut pada satu hal — kemampuan mencocokkan data antar tabel.",
+    questions: [
+      {
+        q: "Fungsi spreadsheet untuk mengambil data dari tabel lain berdasarkan satu nilai kunci (misalnya kode barang) adalah…",
+        options: ["=SORT()", "=VLOOKUP()", "=FILTER()", "=ROUND()"],
+        correct: 1,
+        expl: "VLOOKUP mencari nilai kunci pada kolom pertama sebuah tabel, lalu mengambil data dari kolom lain di baris yang sama."
+      },
+      {
+        q: "Dalam =VLOOKUP(A2, DataHarga, 3, FALSE), angka 3 menunjukkan…",
+        options: ["Jumlah baris yang dicari", "Nomor kolom hasil yang diambil dari tabel rujukan", "Jumlah tabel yang dibandingkan", "Nomor urut fungsi"],
+        correct: 1,
+        expl: "Argumen ketiga VLOOKUP menentukan kolom ke berapa (dihitung dari kolom pertama tabel rujukan) yang nilainya ingin diambil."
+      },
+      {
+        q: "Parameter FALSE pada akhir VLOOKUP berarti…",
+        options: ["Mencari kecocokan persis (exact match)", "Mengabaikan data kosong", "Mengurutkan hasil secara menurun", "Menghitung rata-rata otomatis"],
+        correct: 0,
+        expl: "FALSE (atau 0) memaksa VLOOKUP mencari kecocokan yang benar-benar persis, bukan perkiraan terdekat."
+      },
+      {
+        q: "Untuk menampilkan hanya baris data pegawai dari Divisi 'Keuangan' dari ratusan baris data, tindakan yang paling tepat adalah…",
+        options: ["Menghapus semua baris lain secara manual", "Menggunakan fitur Filter atau fungsi FILTER()", "Mengurutkan data dari A ke Z", "Mengetik ulang seluruh data"],
+        correct: 1,
+        expl: "Filter menampilkan hanya baris yang memenuhi kriteria tertentu tanpa menghapus data asli — cara kerja yang efisien dan aman."
+      }
+    ]
+  },
+  bab4: {
+    title: "Bab IV — Aula Ringkasan",
+    boss: { name: "Sang Perangkum Agung", title: "Penjaga Tabel Pivot", sigil: "📊" },
+    intro: "Di aula ini, ribuan baris transaksi kantor menunggu diringkas menjadi laporan yang bisa dibaca pimpinan dalam sekali lihat. Sang Perangkum Agung menguji pemahamanmu tentang ringkasan data dan visualisasi.",
+    questions: [
+      {
+        q: "Fitur spreadsheet yang paling tepat untuk meringkas ribuan baris transaksi menjadi tabel ringkas per kategori adalah…",
+        options: ["Conditional Formatting", "Pivot Table", "Spell Check", "Text to Columns"],
+        correct: 1,
+        expl: "Pivot Table meringkas data mentah dalam jumlah besar menjadi tabel silang berdasarkan kategori yang dipilih, lengkap dengan agregasi seperti jumlah atau rata-rata."
+      },
+      {
+        q: "Untuk menunjukkan perubahan pengeluaran kantor dari bulan ke bulan, jenis grafik yang paling sesuai adalah…",
+        options: ["Grafik lingkaran (pie chart)", "Grafik garis (line chart)", "Word cloud", "Diagram Venn"],
+        correct: 1,
+        expl: "Grafik garis paling baik menampilkan tren atau perubahan suatu nilai sepanjang waktu, seperti pengeluaran bulanan."
+      },
+      {
+        q: "Untuk membandingkan proporsi anggaran antar-divisi dalam satu periode, grafik yang paling sesuai adalah…",
+        options: ["Grafik garis", "Grafik lingkaran (pie chart) atau batang", "Scatter plot 3D", "Tabel tanpa grafik"],
+        correct: 1,
+        expl: "Pie chart atau grafik batang cocok untuk membandingkan proporsi atau besaran antar-kategori pada satu waktu tertentu."
+      },
+      {
+        q: "Laporan hasil analisis data administrasi sebaiknya disusun dengan urutan…",
+        options: ["Kesimpulan saja, tanpa data pendukung", "Ringkasan temuan → data pendukung → interpretasi → rekomendasi", "Data mentah tanpa penjelasan", "Rekomendasi di awal tanpa alasan"],
+        correct: 1,
+        expl: "Laporan yang baik menyampaikan temuan utama, didukung data, diberi interpretasi makna, lalu ditutup rekomendasi tindak lanjut yang jelas."
+      }
+    ]
+  },
+  bab5: {
+    title: "Bab V — Ruang Arsip Terlarang",
+    boss: { name: "Penjaga Gerbang Kerahasiaan", title: "Wali Keamanan Data", sigil: "🔐" },
+    intro: "Ruang terakhir menyimpan data pribadi dan keuangan yang sensitif. Penjaga Gerbang hanya membiarkan analis yang memahami etika dan keamanan data untuk lewat.",
+    questions: [
+      {
+        q: "Menyimpan data gaji pegawai di spreadsheet yang bisa diakses siapa saja tanpa kata sandi adalah pelanggaran prinsip…",
+        options: ["Efisiensi kerja", "Kerahasiaan dan keamanan data", "Kecepatan input data", "Estetika tampilan"],
+        correct: 1,
+        expl: "Data sensitif seperti gaji dan data pribadi harus dijaga kerahasiaannya, misalnya dengan pembatasan akses dan kata sandi."
+      },
+      {
+        q: "Langkah paling tepat sebelum membagikan hasil rekap data pegawai ke pihak luar adalah…",
+        options: ["Membagikan file asli apa adanya", "Menghapus atau menyamarkan data pribadi yang tidak relevan", "Mengubah semua angka menjadi acak", "Mengirim tanpa memeriksa isinya"],
+        correct: 1,
+        expl: "Data pribadi yang tidak diperlukan pihak luar sebaiknya dihapus atau disamarkan (anonimisasi) untuk melindungi privasi pegawai."
+      },
+      {
+        q: "Backup data administrasi secara berkala penting terutama untuk mencegah…",
+        options: ["Data terlihat terlalu rapi", "Kehilangan data akibat kerusakan sistem atau kesalahan hapus", "Laporan menjadi terlalu singkat", "Grafik menjadi lebih berwarna"],
+        correct: 1,
+        expl: "Backup rutin melindungi data penting dari risiko hilang akibat perangkat rusak, virus, atau kesalahan manusia."
+      },
+      {
+        q: "Seorang analis menemukan data yang tidak konsisten (misalnya nama sama ditulis berbeda-beda). Langkah profesional yang tepat adalah…",
+        options: ["Mengabaikannya karena tidak penting", "Membersihkan dan menyeragamkan data (data cleaning) sebelum dianalisis", "Menghapus seluruh baris data tersebut", "Melaporkan tanpa memperbaiki"],
+        correct: 1,
+        expl: "Data cleaning — menyeragamkan format dan memperbaiki inkonsistensi — adalah langkah wajib sebelum data dianalisis agar hasilnya akurat."
+      }
+    ]
+  }
+};
+
+const BAB_ORDER = ["bab1","bab2","bab3","bab4","bab5"];
+const BAB_SKILL_LABEL = {
+  bab1: "Dasar Data Administrasi",
+  bab2: "Fungsi Agregat (SUM/AVG/MAX)",
+  bab3: "VLOOKUP & Filter",
+  bab4: "Pivot Table & Visualisasi",
+  bab5: "Etika & Keamanan Data"
+};
+
+/* ============ STATE ============ */
+let state = {
+  name: "",
+  babIndex: 0,
+  qIndex: 0,
+  hp: 100,
+  maxHp: 100,
+  bossHp: 100,
+  maxBossHp: 100,
+  exp: 0,
+  level: 1,
+  correctTotal: 0,
+  totalQuestions: 0,
+  babQuestions: [],
+  answered: false,
+  earnedBadges: []
+};
+
+const journal = document.getElementById('journal');
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function shuffledQuestion(qObj){
+  const optIdx = qObj.options.map((opt,i)=>({opt,i}));
+  const shuffledOpts = shuffle(optIdx);
+  return {
+    q: qObj.q,
+    expl: qObj.expl,
+    options: shuffledOpts.map(o=>o.opt),
+    correct: shuffledOpts.findIndex(o=>o.i === qObj.correct)
+  };
+}
+
+/* ============ SCREENS ============ */
+function renderIntro(){
+  state.totalQuestions = BAB_ORDER.reduce((sum,k)=>sum+QUESTION_BANK[k].questions.length,0);
+  journal.innerHTML = `
+    <div class="stage center">
+      <span class="chip">Simulasi Kerja — Data Analisis Administrasi</span>
+      <h1>Buku Catatan Sang Analis</h1>
+      <p class="lede">Sebuah RPG teks tentang perjalanan pegawai administrasi baru yang belajar mengolah data menjadi keputusan.</p>
+      <hr class="rule">
+      <p>Kamu baru saja diterima sebagai staf administrasi di sebuah kantor. Tugasmu bukan sekadar mengetik dan mengarsip — kamu harus mampu membaca data, merangkumnya, dan menyajikannya sebagai informasi yang berguna bagi pimpinan.</p>
+      <p>Lima ruang kerja menantimu, masing-masing dijaga oleh tantangan yang menguji satu kemampuan analisis data. Jawab dengan tepat untuk melemahkan tantangan itu — jawaban keliru akan menguras staminamu.</p>
+      <p style="margin-top:18px;">Siapa namamu, Analis?</p>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px;">
+        <input type="text" id="nameInput" placeholder="Tulis namamu di sini" maxlength="24">
+      </div>
+      <div class="footer-row" style="justify-content:center; margin-top:18px;">
+        <button class="btn" id="startBtn">Mulai Hari Pertama →</button>
+      </div>
+    </div>
+  `;
+  const input = document.getElementById('nameInput');
+  const go = () => {
+    const v = input.value.trim();
+    state.name = v || "Analis";
+    startBab(0);
+  };
+  document.getElementById('startBtn').onclick = go;
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
+  input.focus();
+}
+
+function startBab(index){
+  state.babIndex = index;
+  state.qIndex = 0;
+  state.bossHp = 100;
+  state.maxBossHp = 100;
+  const babKey = BAB_ORDER[index];
+  const bab = QUESTION_BANK[babKey];
+  state.babQuestions = shuffle(bab.questions).map(shuffledQuestion);
+  renderBabIntro();
+}
+
+function topbar(){
+  const babKey = BAB_ORDER[state.babIndex];
+  const bab = QUESTION_BANK[babKey] || {title:"—"};
+  return `
+    <div class="topbar">
+      <div>
+        <div class="brand"><b>${escapeHtml(state.name)}</b> · Staf Administrasi Jr.</div>
+        <div style="font-size:0.75rem; opacity:0.75; margin-top:2px;">${bab.title || ""}</div>
+      </div>
+      <div class="stat-strip">
+        <div class="hpwrap">
+          <div class="barlabel">STAMINA</div>
+          <div class="barouter"><div class="barinner hp" style="width:${Math.max(state.hp,0)}%"></div></div>
+        </div>
+        <div class="hpwrap">
+          <div class="barlabel">EXP LV.${state.level}</div>
+          <div class="barouter"><div class="barinner exp" style="width:${state.exp % 100}%"></div></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderBabIntro(){
+  const babKey = BAB_ORDER[state.babIndex];
+  const bab = QUESTION_BANK[babKey];
+  journal.innerHTML = `
+    ${topbar()}
+    <div class="stage">
+      <span class="chip">Ruang ${state.babIndex+1} dari ${BAB_ORDER.length}</span>
+      <h1>${bab.title}</h1>
+      <p>${bab.intro}</p>
+      <div class="boss-card">
+        <div class="boss-sigil">${bab.boss.sigil}</div>
+        <div>
+          <div class="boss-name">${bab.boss.name}</div>
+          <div class="boss-title">${bab.boss.title}</div>
+        </div>
+      </div>
+      <div class="footer-row">
+        <button class="btn" id="enterBtn">Hadapi Tantangan →</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('enterBtn').onclick = ()=> renderQuestion();
+}
+
+function renderQuestion(){
+  state.answered = false;
+  const babKey = BAB_ORDER[state.babIndex];
+  const bab = QUESTION_BANK[babKey];
+  const q = state.babQuestions[state.qIndex];
+
+  let tableHtml = "";
+  if(state.qIndex === 0 && bab.table){
+    tableHtml = `
+      <div class="scene-desk">
+        <div style="font-size:0.8rem; color:var(--ink-soft); margin-bottom:4px;">Lembar Data — Rekap Kehadiran</div>
+        <table class="data-table">
+          <tr>${bab.table.headers.map(h=>`<th>${h}</th>`).join('')}</tr>
+          ${bab.table.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${c}</td>`).join('')}</tr>`).join('')}
+        </table>
+      </div>
+    `;
+  }
+
+  journal.innerHTML = `
+    ${topbar()}
+    <div class="stage">
+      <div class="boss-card">
+        <div class="boss-sigil">${bab.boss.sigil}</div>
+        <div style="flex:1;">
+          <div class="boss-name">${bab.boss.name}</div>
+          <div class="hpwrap" style="width:100%; margin-top:6px;">
+            <div class="barouter"><div class="barinner boss" style="width:${Math.max(state.bossHp,0)}%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="qcount">Pertanyaan ${state.qIndex+1} dari ${state.babQuestions.length}</div>
+      ${tableHtml}
+      <h2>${q.q}</h2>
+      <div class="options" id="optionsWrap">
+        ${q.options.map((opt,i)=>`<button class="opt" data-i="${i}">${opt}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <div class="footer-row">
+        <button class="btn" id="nextBtn" style="display:none;">Lanjut →</button>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.onclick = () => handleAnswer(parseInt(btn.dataset.i), q);
+  });
+}
+
+function handleAnswer(choice, q){
+  if(state.answered) return;
+  state.answered = true;
+  const buttons = document.querySelectorAll('.opt');
+  buttons.forEach(b=>b.disabled = true);
+
+  const correct = choice === q.correct;
+  buttons[q.correct].classList.add('correct');
+  if(!correct) buttons[choice].classList.add('wrong');
+
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show', correct ? 'ok' : 'bad');
+  fb.textContent = (correct ? "Tepat! " : "Belum tepat. ") + q.expl;
+
+  if(correct){
+    state.bossHp = Math.max(0, state.bossHp - 25);
+    state.exp += 20;
+    state.correctTotal += 1;
+    if(state.exp >= state.level * 100){
+      state.level += 1;
+    }
+  } else {
+    state.hp = Math.max(0, state.hp - 15);
+  }
+
+  document.querySelector('.barinner.boss').style.width = Math.max(state.bossHp,0) + '%';
+  document.querySelector('.barinner.hp').style.width = Math.max(state.hp,0) + '%';
+  document.querySelector('.barinner.exp').style.width = (state.exp % 100) + '%';
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = 'inline-block';
+  nextBtn.onclick = advance;
+}
+
+function advance(){
+  if(state.hp <= 0){
+    renderDefeat();
+    return;
+  }
+  state.qIndex += 1;
+  if(state.qIndex < state.babQuestions.length){
+    renderQuestion();
+  } else {
+    state.earnedBadges.push(BAB_ORDER[state.babIndex]);
+    renderBabVictory();
+  }
+}
+
+function renderBabVictory(){
+  const babKey = BAB_ORDER[state.babIndex];
+  const bab = QUESTION_BANK[babKey];
+  const isLast = state.babIndex === BAB_ORDER.length - 1;
+  journal.innerHTML = `
+    ${topbar()}
+    <div class="stage center">
+      <span class="chip">Ruang Selesai</span>
+      <h1>${bab.boss.name} berhasil ditaklukkan</h1>
+      <p class="lede">Kamu kini menguasai: <b>${BAB_SKILL_LABEL[babKey]}</b></p>
+      <div class="badge-grid" style="justify-content:center;">
+        ${state.earnedBadges.map(k=>`<div class="badge">${BAB_SKILL_LABEL[k]}</div>`).join('')}
+      </div>
+      <div class="footer-row" style="justify-content:center;">
+        <button class="btn" id="continueBtn">${isLast ? "Lihat Hasil Akhir →" : "Lanjut ke Ruang Berikutnya →"}</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('continueBtn').onclick = () => {
+    if(isLast){ renderFinalResult(); }
+    else { startBab(state.babIndex + 1); }
+  };
+}
+
+function renderDefeat(){
+  journal.innerHTML = `
+    ${topbar()}
+    <div class="stage center">
+      <span class="chip">Stamina Habis</span>
+      <h1>Kamu perlu istirahat sejenak, ${escapeHtml(state.name)}</h1>
+      <p class="lede">Terlalu banyak jawaban meleset membuat staminamu terkuras. Analis yang baik tahu kapan harus berhenti sejenak dan mencoba lagi dengan kepala dingin.</p>
+      <p>Progres benar sejauh ini: <b>${state.correctTotal} dari ${state.totalQuestions}</b> pertanyaan.</p>
+      <div class="footer-row" style="justify-content:center;">
+        <button class="btn" id="retryBtn">Coba Lagi dari Awal</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('retryBtn').onclick = resetGame;
+}
+
+function renderFinalResult(){
+  const pct = Math.round((state.correctTotal / state.totalQuestions) * 100);
+  let rank, ranktext;
+  if(pct >= 90){ rank="S"; ranktext="Analis Data Senior — hasil kerjamu langsung dipercaya pimpinan."; }
+  else if(pct >= 75){ rank="A"; ranktext="Analis Data Andal — laporanmu jarang perlu direvisi."; }
+  else if(pct >= 60){ rank="B"; ranktext="Analis Data yang Berkembang — dasar-dasarmu sudah kuat."; }
+  else { rank="C"; ranktext="Staf Administrasi Pemula — masih perlu banyak berlatih rumus dan analisis."; }
+
+  journal.innerHTML = `
+    <div class="stage center">
+      <span class="chip">Laporan Akhir Karier</span>
+      <h1>Perjalanan ${escapeHtml(state.name)} Berakhir di Sini</h1>
+      <div class="rank-plate">${rank}</div>
+      <p class="lede">${ranktext}</p>
+      <hr class="rule">
+      <p>Jawaban benar: <b>${state.correctTotal} / ${state.totalQuestions}</b> (${pct}%)&nbsp;·&nbsp; Level akhir: <b>${state.level}</b></p>
+      <h2 style="margin-top:12px;">Kemampuan yang Dikuasai</h2>
+      <div class="badge-grid" style="justify-content:center;">
+        ${BAB_ORDER.map(k=>{
+          const earned = state.earnedBadges.includes(k);
+          return `<div class="badge ${earned ? '' : 'locked'}">${BAB_SKILL_LABEL[k]}</div>`;
+        }).join('')}
+      </div>
+      <div class="footer-row" style="justify-content:center;">
+        <button class="btn secondary" id="restartBtn">Main Ulang</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('restartBtn').onclick = resetGame;
+}
+
+function resetGame(){
+  state = {
+    name: state.name,
+    babIndex: 0, qIndex: 0,
+    hp: 100, maxHp: 100,
+    bossHp: 100, maxBossHp: 100,
+    exp: 0, level: 1,
+    correctTotal: 0, totalQuestions: 0,
+    babQuestions: [], answered: false,
+    earnedBadges: []
+  };
+  renderIntro();
+}
+
+renderIntro();
+</script>
+</body>
+</html>
