@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<link rel="icon" href="img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="data:image/png;base64,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" type="image/png">
+
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Data Administrasi Tetris</title>
@@ -84,6 +87,7 @@ body::after{content:"";position:fixed;inset:0;background:radial-gradient(60px 24
 #bar::before{left:0}#bar::after{right:0}
 #bar.fast::before,#bar.fast::after{background:#ffb02e}
 #helpm{position:fixed;inset:0;background:rgba(20,40,120,.6);display:none;align-items:center;justify-content:center;padding:14px;z-index:40}#helpm.on{display:flex}
+#qn{align-items:center;gap:6px}#fbt{font-weight:800;padding:2px 10px;border-radius:12px;font-size:14px}#fbt:empty{display:none}#fbt.g{background:#b8f5c0;color:#1f8a35}#fbt.r{background:#ffd0d0;color:#d12a2a}
 </style></head><body>
 
 <section id="s-name" class="scr on"><div class="card">
@@ -121,8 +125,8 @@ body::after{content:"";position:fixed;inset:0;background:radial-gradient(60px 24
 
 <div id="modal"><div id="qc">
 <div id="qt"><i id="qtf"></i></div>
-<div id="qn"><span id="qno"></span><span id="qs"></span></div>
-<div id="qb"></div><div id="qo"></div><div id="fb"></div>
+<div id="qn"><span id="qno"></span><span id="fbt"></span><span id="qs"></span></div>
+<div id="qb"></div><div id="qo"></div>
 </div></div>
 <div id="toast"></div>
 
@@ -160,10 +164,10 @@ const esc=s=>String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[
 function openQ(){if(S.phase==='q'||S.qi>=S.total)return;S.phase='q';S.lock=0;const q=S.cur=S.ql[S.qi++];S.qt=QTIME;let h='';if(q.tbl)h+='<table>'+q.tbl.map(r=>'<tr>'+r.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')+'</table>';
 let html='<p>'+esc(q.q)+'</p>';if(q.tbl)html=html;
 let ul=false,mid='';q.c.forEach(i=>{if(i.b){if(!ul){mid+='<ul>';ul=true}mid+='<li>'+esc(i.t)+'</li>'}else{if(ul){mid+='</ul>';ul=false}mid+='<p>'+esc(i.t)+'</p>'}});if(ul)mid+='</ul>';
-$('qb').innerHTML=html+h+mid;$('qno').textContent='Soal '+S.qi+' dari '+S.total;$('fb').textContent='';$('fb').className='';
+$('qb').innerHTML=html+h+mid;$('qno').textContent='Soal '+S.qi+' dari '+S.total;$('fbt').textContent='';$('fbt').className='';
 $('qo').innerHTML='';q.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent='ABCDE'[i]+'. '+t;b.onclick=()=>answer(i);$('qo').appendChild(b)});$('modal').classList.add('on');$('qc').scrollTop=0;qui()}
 function qui(){$('qtf').style.width=Math.max(0,S.qt/QTIME*100)+'%';$('qtf').style.background=S.qt<10?'#e83b3b':'#2fb344';$('qs').textContent=Math.ceil(Math.max(S.qt,0))+' dtk'}
-function answer(i){if(S.phase!=='q'||S.lock)return;S.lock=1;const ok=i===S.cur.a;S.score+=ok?10:-5;if(ok)S.ok++;[...$('qo').children].forEach((b,k)=>{b.disabled=true;if(k===i)b.classList.add(ok?'ok':'no')});$('fb').textContent=i<0?'Waktu habis  -5 poin':ok?'Benar!  +10 poin':'Salah  -5 poin';$('fb').className=ok?'g':'r';ui();setTimeout(next,1500)}
+function answer(i){if(S.phase!=='q'||S.lock)return;S.lock=1;const ok=i===S.cur.a;S.score+=ok?10:-5;if(ok)S.ok++;[...$('qo').children].forEach((b,k)=>{b.disabled=true;if(k===i)b.classList.add(ok?'ok':'no')});$('fbt').textContent=i<0?'Waktu habis -5':ok?'Benar! +10':'Salah -5';$('fbt').className=ok?'g':'r';ui();setTimeout(next,1500)}
 function next(){$('modal').classList.remove('on');S.pending--;S.ans++;ui();if(S.ans>=S.total){finish(true);return}S.phase='play';if(S.pending>0)setTimeout(openQ,300)}
 function finish(done){S.run=false;S.phase='end';$('modal').classList.remove('on');$('rt').textContent=done?'Semua soal selesai!':'Balok menumpuk!';$('rn').textContent=S.name;$('rs').textContent=S.score;$('rd').textContent='Benar '+S.ok+' dari '+S.total+' soal'+(done?'':' · Selesaikan semua soal untuk lanjut ke Lv 2.');$('next').classList.toggle('off',!done);show('s-res')}
 function start(lv){const nm=S.name;S={run:true,phase:'play',last:Date.now(),cell:S.cell,pcs:[],nid:0,name:nm,lv,score:0,ok:0,ans:0,qi:0,pending:0,busy:false,lock:0};
