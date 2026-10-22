@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Algo Coder: Misi Cari dan Urut</title>
+<style>
+:root{--bg:#eef3f1;--card:#fff;--tx:#14232e;--mu:#5b6b76;--ac:#0f8b8d;--ok:#1f9d55;--bad:#d64545;--cm:#e9a23b;--sw:#e4572e;--code:#1d2b36;--ctx:#dbe7ee;--bd:#cdd9d6;--bar:#9fb3bd;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a21;--card:#16262f;--tx:#e3eef2;--mu:#93a8b2;--ac:#3cc1c3;--code:#0a1217;--bd:#2a3f4a;--bar:#4a6270;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1a21;--card:#16262f;--tx:#e3eef2;--mu:#93a8b2;--ac:#3cc1c3;--code:#0a1217;--bd:#2a3f4a;--bar:#4a6270;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:860px;margin:0 auto;padding:14px}
+h1{font:800 clamp(26px,6vw,38px)/1.1 Georgia,"Times New Roman",serif;margin:.2em 0}
+h2{font:700 21px/1.2 Georgia,serif;margin:.3em 0}
+.mu{color:var(--mu)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:600}
+.xp{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:2px 12px}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:14px 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin:10px 0}
+.st{text-align:left;font:inherit;color:inherit;cursor:pointer;display:block;width:100%}
+.chip{display:inline-block;border:1px solid var(--bd);border-radius:6px;padding:0 8px;font-size:13px;margin:2px 4px 2px 0;color:var(--mu)}
+button{font:600 15px system-ui,sans-serif;background:var(--ac);color:#fff;border:0;border-radius:8px;padding:10px 14px;min-height:42px;cursor:pointer;touch-action:manipulation}
+button.sec{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--cm);outline-offset:1px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.code{background:var(--code);color:var(--ctx);border-radius:10px;padding:12px 10px;overflow-x:auto;font:14px/2.1 ui-monospace,Menlo,Consolas,monospace}
+.ln{white-space:pre;min-height:2em}
+.cm{color:#7f95a3}
+.code input{font:16px ui-monospace,Menlo,Consolas,monospace;background:#0006;color:#fff;border:1px dashed var(--cm);border-radius:4px;padding:0 4px;height:1.8em;vertical-align:middle}
+.code input.ok{border:1px solid var(--ok);color:#8ff0b3;background:#1f9d5522}
+.code input.bad{border-color:var(--bad);animation:sh .3s}
+.rk{color:#8ff0b3;font-weight:700}.rw{color:#ff8b8b}
+@keyframes sh{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+#kp{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:5px;padding:8px 2px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--bd)}
+#kp button{min-width:38px;height:42px;padding:0 6px;font:700 17px ui-monospace,Menlo,monospace;background:var(--card);color:var(--tx);border:1px solid var(--bd)}
+.bars{display:flex;gap:6px;align-items:flex-end;height:210px;padding:8px 4px;overflow-x:auto}
+.col{flex:1;min-width:36px;max-width:80px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.b{width:100%;background:var(--bar);border-radius:6px 6px 0 0;color:#fff;text-align:center;font-weight:700;padding-top:3px;transition:height .3s,background .2s}
+.b.d{background:var(--ac)}.b.c{background:var(--cm);color:#222}.b.s{background:var(--sw)}.b.f{background:var(--ok)}.b.g{outline:2px dashed var(--ac);outline-offset:1px}
+.col small{height:1.4em;font-size:12px;color:var(--mu);white-space:nowrap}
+.out{background:var(--code);color:#8ff0b3;border-radius:8px;padding:8px 12px;font:14px ui-monospace,Menlo,Consolas,monospace;min-height:2.4em}
+#msg{min-height:1.6em;font-weight:600}
+code{font:13px ui-monospace,Menlo,Consolas,monospace;background:var(--bd);padding:0 5px;border-radius:4px}
+li{margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--bd);padding:6px 8px;text-align:left}
+input[type=number],#nama{font:16px system-ui,sans-serif;padding:8px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--tx)}
+input[type=number]{width:80px}#nama{width:100%;margin-top:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#ta{width:100%;font:16px/1.5 ui-monospace,Menlo,Consolas,monospace;background:var(--code);color:var(--ctx);border:1px solid var(--bd);border-radius:10px;padding:10px;resize:vertical;white-space:pre;overflow:auto;tab-size:2}
+button:disabled{cursor:not-allowed}
+</style></head><body><div class="w">
+<div class="top"><span>💻 Algo Coder</span><span class="xp">Skor: <b id="xp">0</b></span></div>
+<div id="nm"></div><div id="home" hidden></div><div id="stage" hidden></div><div id="end" hidden></div>
+</div>
+<script>
+const LINK_GAME_LAIN='';
+const $=s=>document.querySelector(s),esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const S=[
+{id:'linear',n:'Linear Search',i:'🔎',t:'Pencarian',tp:'a',lv:'Teliti tanda baca',w:'O(n)',r:'O(1)',
+ k:'Seperti mencari kunci di laci yang berantakan: buka satu per satu dari depan sampai ketemu.',
+ m:'Isi 7 kotak kecil: operator, titik koma, dan koma. Fokus pada ketelitian tanda baca.',
+ d:[[8,3,9,2,6],5],
+ c:['function linearSearch(arr, target) {','  for (let i = 0; i {{0}} arr.length; i++) {','    if (arr[i] {{1}} target) {','      return i{{2}}  // Mengembalikan indeks jika ditemukan','    }','  }','  return {{3}};  // Mengembalikan -1 jika tidak ditemukan','}','','const arr = [8{{4}} 3, 9, 2, 6];','const target = 5;','const result = linearSearch(arr{{5}} target);','','if (result {{6}} -1) {','  console.log(`Target ditemukan di indeks: ${result}`);','} else {','  console.log("Target tidak ditemukan");','}'],
+ a:[['<'],['===','=='],[';'],['-1'],[','],[','],['!==','!=']],
+ h:['Loop berjalan selama i lebih kecil dari panjang array, jadi pakai <. Kalau pakai <= akan melewati batas array.','Tiga tanda sama dengan (===) membandingkan nilai sekaligus tipe data.','Setiap pernyataan JavaScript diakhiri titik koma (;).','Jika tidak ditemukan, fungsi mengembalikan -1 (tanda minus lalu angka 1).','Elemen array dipisahkan tanda koma (,).','Argumen fungsi dipisahkan tanda koma (,).','!== berarti tidak sama dengan. Hasil bukan -1 berarti target ditemukan.']},
+{id:'selection',n:'Selection Sort',i:'🧲',t:'Pengurutan',tp:'b',lv:'Sambung baris',w:'O(n²)',r:'O(1)',
+ k:'Seperti menyusun kartu: cari kartu terkecil di tumpukan, taruh paling depan, ulangi untuk sisanya.',
+ m:'Baris kode sudah dimulai. Sambung sisanya sampai selesai, termasuk kurung, titik koma, dan kurung kurawal.',
+ d:[[12,21,4,14,6]],
+ c:['function selectionSort(arr) {','  const n = {{0}}','  for (let i = 0; {{1}}','    let minIndex = {{2}}','    for (let j = i+1; {{3}}','      if (arr[j] < {{4}}','        minIndex = {{5}}','      }','    }','    [arr[i], arr[minIndex]] = {{6}}  // Swap ES6','  }','  return arr;','}','','const arr = [12, 21, 4, 14, 6];','selectionSort(arr);','console.log("Array terurut:", arr);'],
+ a:[['arr.length;'],['i < n-1; i++) {'],['i;'],['j < n; j++) {'],['arr[minIndex]) {'],['j;'],['[arr[minIndex], arr[i]];']],
+ h:['Panjang array disimpan di n, lalu diakhiri titik koma.','Putaran luar sampai n-1. Tiga bagian for dipisah titik koma, lalu ditutup kurung dan dibuka kurung kurawal.','Anggap elemen ke-i sebagai yang terkecil sementara.','Loop dalam mulai dari i+1 sampai sebelum n.','Bandingkan dengan elemen terkecil sementara. Kondisi if ditutup kurung lalu kurung kurawal buka.','Simpan indeks elemen yang lebih kecil, akhiri titik koma.','Sisi kanan destructuring berisi pasangan yang sama dengan sisi kiri, urutannya dibalik.']},
+{id:'bubble',n:'Bubble Sort',i:'🫧',t:'Pengurutan',tp:'c',lv:'Tulis baris dari petunjuk',w:'O(n²), terbaik O(n)',r:'O(1)',
+ k:'Seperti gelembung naik: dua tetangga yang urutannya salah saling bertukar, sehingga yang terbesar mengapung ke ujung.',
+ m:'Satu baris penuh dihilangkan. Baca komentar di sebelahnya, lalu tulis barisnya lengkap dengan tanda bacanya.',
+ d:[[12,21,4,14,6]],
+ c:['function bubbleSort(arr) {','  const n = arr.length;','  for (let i = 0; i < n-1; i++) {','    {{0}}  // tandai: belum ada pertukaran di putaran ini','    for (let j = 0; j < n-i-1; j++) {','      {{1}}  // jika elemen kiri lebih besar dari elemen kanan','        {{2}}  // tukar posisi keduanya (swap ES6)','        {{3}}  // catat bahwa terjadi pertukaran','      }','    }','    {{4}}  // jika tidak ada pertukaran, hentikan putaran','  }','  {{5}}  // kembalikan array','}','','const arr = [12, 21, 4, 14, 6];','{{6}}  // panggil fungsi pengurutan','console.log("Array terurut:", arr);'],
+ a:[['let swapped = false;'],['if (arr[j] > arr[j+1]) {'],['[arr[j], arr[j+1]] = [arr[j+1], arr[j]];'],['swapped = true;'],['if (!swapped) break;'],['return arr;'],['bubbleSort(arr);']],
+ h:['Variabel penanda dibuat dengan let dan awalnya false karena belum ada pertukaran.','Kondisi tukar: elemen j lebih besar dari elemen j+1, diakhiri { untuk membuka blok.','Swap ES6 memakai destructuring: sisi kiri dan kanan berisi pasangan yang sama dengan urutan terbalik.','Catat pertukaran dengan menjadikan swapped bernilai true.','Tanda seru membalik nilai: jika tidak ada pertukaran, hentikan loop dengan break.','Fungsi mengembalikan array yang sudah terurut.','Panggil fungsi dengan arr sebagai argumen, akhiri titik koma.']},
+{id:'binary',n:'Binary Search',i:'🎯',t:'Pencarian',tp:'d',lv:'Tulis isi fungsi',w:'O(log n)',r:'O(1)',
+ k:'Seperti menebak angka 1 sampai 100: selalu tanya angka di tengah, lalu buang separuh yang pasti salah. Syaratnya data harus terurut.',
+ m:'Seluruh isi fungsi kosong (11 baris). Ikuti komentar langkah demi langkah dan tulis tiap baris sesuai buku.',
+ d:[[7,13,19,22,36],19],
+ c:['function binarySearch(arr, target) {','  {{0}}  // batas kiri awal','  {{1}}  // batas kanan awal (indeks terakhir)','','  {{2}}  // ulangi selama ruang pencarian masih ada','    {{3}}  // hitung indeks tengah, bulatkan ke bawah','','    {{4}}  // jika elemen tengah sama dengan target','      {{5}}  // kembalikan indeks tengah','    {{6}}  // jika elemen tengah lebih kecil dari target','      {{7}}  // geser batas kiri','    {{8}}  // selain itu','      {{9}}  // geser batas kanan','    }','  }','  {{10}}  // target tidak ditemukan','}','','const arr = [7, 13, 19, 22, 36];','const target = 19;','const result = binarySearch(arr, target);','','if (result !== -1) {','  console.log(`Target ditemukan di indeks: ${result}`);','} else {','  console.log("Target tidak ditemukan");','}'],
+ a:[['let low = 0;'],['let high = arr.length - 1;'],['while (low <= high) {'],['const mid = Math.floor((low + high) / 2);'],['if (arr[mid] === target) {','if (arr[mid] == target) {'],['return mid;'],['} else if (arr[mid] < target) {'],['low = mid + 1;'],['} else {'],['high = mid - 1;'],['return -1;']],
+ h:['Batas kiri awal adalah indeks pertama, yaitu 0.','Batas kanan awal adalah indeks terakhir: panjang array dikurangi 1.','Selama low <= high masih ada ruang pencarian, jadi loop while dibuka dengan {.','Titik tengah = (low + high) / 2 dibulatkan ke bawah dengan Math.floor.','Cek apakah elemen tengah sama dengan target memakai ===.','Jika ketemu, kembalikan indeks tengah.','Elemen tengah lebih kecil dari target berarti target ada di kanan. Baris ini juga menutup blok sebelumnya dengan }.','Geser batas kiri ke mid + 1 karena mid sudah pasti bukan target.','Kondisi sisanya: elemen tengah lebih besar, target ada di kiri.','Geser batas kanan ke mid - 1.','Jika loop berakhir, target tidak ada: kembalikan -1.']},
+{id:'merge',n:'Merge Sort',i:'🔀',t:'Pengurutan',tp:'e',lv:'Tulis ulang dari nol',w:'O(n log n)',r:'O(n)',
+ k:'Bagi array jadi dua terus-menerus sampai tinggal satu elemen, lalu gabungkan potongan kecil itu secara berurutan (divide and conquer).',
+ m:'Tingkat akhir: tulis ulang seluruh kode merge sort dari kotak kosong, termasuk fungsi merge dan pemanggilnya, seperti contoh di buku paket. Komentar boleh dilewati.',
+ d:[[12,21,4,14,6]],
+ ref:['function mergeSort(arr) {','  if (arr.length <= 1) {','    return arr;','  }','  const mid = Math.floor(arr.length / 2);','  const left = mergeSort(arr.slice(0, mid));','  const right = mergeSort(arr.slice(mid));','  return merge(left, right);','}','function merge(left, right) {','  const result = [];','  let i = 0, j = 0;','  while (i < left.length && j < right.length) {','    if (left[i] <= right[j]) {','      result.push(left[i++]);','    } else {','      result.push(right[j++]);','    }','  }','  return result.concat(left.slice(i)).concat(right.slice(j));','}','const arr = [12, 21, 4, 14, 6];','const sortedArr = mergeSort(arr);','console.log("Array terurut:", sortedArr);'],
+ o:['fungsi mergeSort: kasus dasar jika panjang array 1 atau kurang, return arr','hitung mid, bagi array jadi left dan right secara rekursif, lalu return merge(left, right)','fungsi merge: siapkan result kosong dan penunjuk i, j = 0','while kedua sisi masih punya elemen: masukkan yang lebih kecil ke result','return result disambung sisa left dan sisa right dengan concat','di luar fungsi: buat arr, panggil mergeSort, tampilkan dengan console.log']}
+];
+let nama='',cur=0,sk=100,res=[],ms={},hs={},tm=null,fr=[],fi=0,data=[],tgt=0,lastIn=null,ck=0,lastAcc=0;const BUKA_SEMUA=false;
+const nz=s=>s.replace(/[\u201c\u201d\u201e]/g,'"').replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,''),sum=()=>res.reduce((a,b)=>a+(b||0),0),stars=v=>v>=80?'⭐⭐⭐':v>=50?'⭐⭐':'⭐';
+function show(id){['nm','home','stage','end'].forEach(x=>$('#'+x).hidden=x!=id);$('#xp').textContent=sum();scrollTo(0,0)}
+function nameScreen(){$('#nm').innerHTML=`<h1>Algo Coder</h1><p class="mu">Latihan menulis kode algoritma pencarian dan pengurutan, sama seperti di buku paket. Perhatikan setiap tanda baca: koma, titik, titik koma, dan operator.</p><div class="card"><label for="nama"><b>Siapa namamu?</b></label><input id="nama" maxlength="30" placeholder="Tulis nama lengkap" autocomplete="name" autocapitalize="words"><div class="row"><button onclick="mulai()">Mulai bermain</button></div><div id="ne" style="color:var(--bad)"></div></div>`;
+$('#nama').addEventListener('keydown',e=>{if(e.key=='Enter')mulai()});show('nm')}
+function mulai(){const v=$('#nama').value.trim();if(v.length<2){$('#ne').textContent='Tulis namamu dulu (minimal 2 huruf).';return}nama=v;home()}
+function home(){stop();let h=`<h1>Halo, ${esc(nama)}!</h1><p class="mu">Ada 5 tingkat. Urutannya dari algoritma yang paling mudah diimplementasikan sampai yang paling sulit, dan cara menulisnya ikut naik: teliti tanda baca, menyambung baris, menulis baris dari petunjuk, menulis isi fungsi, lalu menulis ulang seluruh kode seperti di buku.</p><div class="grid">`;
+S.forEach((s,i)=>{const kc=i>0&&res[i-1]==null&&!BUKA_SEMUA;h+=`<button class="card st" ${kc?'disabled style="opacity:.5"':''} onclick="openStage(${i})"><span style="font-size:28px">${kc?'🔒':s.i}</span><h2>Tingkat ${i+1}: ${s.n}</h2><span class="chip">${s.lv}</span><span class="chip">Kesulitan ${'●'.repeat(i+1)}${'○'.repeat(4-i)}</span><div>${kc?'Selesaikan tingkat sebelumnya':res[i]!=null?stars(res[i])+' · '+res[i]+' poin':'Belum dimainkan'}</div></button>`});
+h+='</div>';if(S.every((_,i)=>res[i]!=null))h+='<div class="row"><button onclick="fin()">Lihat hasil akhir</button></div>';$('#home').innerHTML=h;show('home')}
+const fmt=t=>{const k=t.indexOf('//');return k<0?esc(t):esc(t.slice(0,k))+'<span class="cm">'+esc(t.slice(k))+'</span>'};
+function lineHTML(l,fn){const t=l.trimStart(),p=l.length-t.length;let h=`<div class="ln" style="padding-left:${p}ch">`;t.split(/\{\{(\d+)\}\}/).forEach((x,k)=>{h+=k%2?fn(+x):fmt(x)});return h+'</div>'}
+function openStage(i){stop();cur=i;sk=100;hs={};ck=0;ms[i]={};const s=S[i],e=s.tp=='e';
+const c=e?`<textarea id="ta" rows="16" wrap="off" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Tulis kode lengkap di sini, sama seperti di buku paket"></textarea>`:`<div class="code" id="code">`+s.c.map(l=>lineHTML(l,n=>`<input data-n="${n}" style="width:${Math.min(46,Math.max(3,s.a[n][0].length+2))}ch" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Kotak ${n+1}">`)).join('')+'</div>';
+const keys=[';',',','.','=','===','!==','<','>','<=','>=','&&','!','+','-','/','*','(',')','[',']','{','}','"','`','$'];
+$('#stage').innerHTML=`<div class="row"><button class="sec" onclick="home()">← Peta misi</button></div><h2>${s.i} Tingkat ${i+1}: ${s.n}</h2><p class="mu">${s.k}</p>
+<div class="card"><b>Misi:</b> ${s.m}<div><span class="chip">${s.lv}</span><span class="chip">Waktu ${s.w}</span><span class="chip">Ruang ${s.r}</span></div></div>
+${c}
+<div class="row"><button onclick="${e?'cekE()':'cek()'}">Periksa kode</button><button class="sec" onclick="pet()">Petunjuk (${e?'−10':'−5'})</button><span>Poin misi: <b id="sc">100</b></span></div>
+<div id="msg" role="status">Ketuk kotak, lalu ketik. Spasi tidak berpengaruh, tetapi tanda baca harus tepat.</div>
+<div id="rv"></div><div id="sim" hidden></div>
+<div id="kp">${keys.map(k=>`<button class="sec" data-k="${esc(k)}" aria-label="${esc(k)}">${esc(k)}</button>`).join('')}</div>`;
+const kp=$('#kp');kp.addEventListener('mousedown',e=>e.preventDefault());
+kp.addEventListener('touchstart',e=>{const b=e.target.closest('button');if(b){e.preventDefault();ins(b.dataset.k)}},{passive:false});
+kp.addEventListener('click',e=>{const b=e.target.closest('button');if(b)ins(b.dataset.k)});show('stage')}
+document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('#code input,#ta'))lastIn=e.target});
+function ins(ch){const e=lastIn;if(!e||e.disabled||!document.contains(e))return;const a=e.selectionStart==null?e.value.length:e.selectionStart,b=e.selectionEnd==null?a:e.selectionEnd;e.value=e.value.slice(0,a)+ch+e.value.slice(b);e.focus();try{e.setSelectionRange(a+ch.length,a+ch.length)}catch(x){}}
+const val=n=>document.querySelector(`#code input[data-n="${n}"]`).value.trim();
+const okf=n=>{const v=val(n);return v&&S[cur].a[n].some(x=>nz(x)===nz(v))};
+function review(){const s=S[cur],w=[];
+const h=s.c.map(l=>lineHTML(l,n=>{const v=val(n);if(okf(n))return`<b class="rk">${esc(v)}</b>`;w.push(n);return`<s class="rw">${v?esc(v):'(kosong)'}</s> <b class="rk">${esc(s.a[n][0])}</b>`})).join('');
+$('#rv').innerHTML=`<div class="card"><h2>Hasil penulisan kode</h2><p class="mu">Hijau = benar. Merah dicoret = tulisanmu, hijau di sebelahnya = yang seharusnya.</p><div class="code">${h}</div>`+(w.length?`<ol>${w.map(n=>`<li>Kotak ${n+1}: kamu menulis <code>${esc(val(n)||'(kosong)')}</code>, seharusnya <code>${esc(s.a[n][0])}</code>. ${esc(s.h[n])}</li>`).join('')}</ol>`:'<p><b>Semua kotak benar.</b> Kodemu lengkap.</p>')+'</div>';return w.length}
+function cek(){let bad=0,left=0;
+document.querySelectorAll('#code input').forEach(e=>{if(e.disabled)return;const n=+e.dataset.n;
+if(okf(n)){e.disabled=true;e.className='ok'}else{left++;const v=e.value.trim();e.className=v?'bad':'';if(v){bad++;ms[cur][n]=ms[cur][n]||{w:v}}}});
+review();if(bad){sk=Math.max(20,sk-5*bad);$('#sc').textContent=sk}
+$('#msg').textContent=left?(bad?`Ada ${bad} kotak yang belum tepat (−${5*bad} poin). Baca koreksi di bawah, lalu perbaiki.`:'Masih ada kotak kosong. Isi semua kotak, lalu periksa.'):'Semua benar! Jalankan simulasinya di bawah.';
+if(left)$('#rv').scrollIntoView({block:'nearest',behavior:'smooth'});else done()}
+function pet(){const s=S[cur];
+if(s.tp=='e'){hs.e=(hs.e||0)+1;if(hs.e==1){sk=Math.max(20,sk-10);$('#msg').textContent='💡 Kerangka: '+s.o.map((x,i)=>`${i+1}) ${x}`).join('; ')}
+else{sk=Math.max(20,sk-30);$('#rv').innerHTML='<div class="card"><h2>Kode di buku paket</h2><div class="code">'+s.ref.map(l=>lineHTML(l,()=>'')).join('')+'</div></div>';$('#msg').textContent='Kode buku ditampilkan (−30). Ketik sendiri ulang, jangan ditempel.'}$('#sc').textContent=sk;return}
+const e=[...document.querySelectorAll('#code input')].find(x=>!x.disabled);if(!e)return;const n=+e.dataset.n;hs[n]=(hs[n]||0)+1;ms[cur][n]=ms[cur][n]||{w:'(petunjuk)'};
+if(hs[n]==1){sk=Math.max(20,sk-5);$('#msg').textContent='💡 Kotak '+(n+1)+': '+s.h[n]}else{sk=Math.max(20,sk-10);e.value=s.a[n][0];$('#msg').textContent='Jawaban kotak '+(n+1)+' diisikan. Pahami dulu, lalu tekan Periksa kode.'}$('#sc').textContent=sk;e.focus()}
+function lcs(A,B){const a=A.map(nz),b=B.map(nz),n=a.length,m=b.length,L=Array.from({length:n+1},()=>Array(m+1).fill(0));
+for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]==b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+const r=[];let i=0,j=0;while(i<n&&j<m){if(a[i]==b[j]){r.push(['=',A[i],i]);i++;j++}else if(L[i+1][j]>=L[i][j+1]){r.push(['-',A[i],i]);i++}else{r.push(['+',B[j]]);j++}}
+while(i<n){r.push(['-',A[i],i]);i++}while(j<m){r.push(['+',B[j]]);j++}return r}
+function cekE(){const s=S[cur],t=$('#ta').value;if(!t.trim()){$('#msg').textContent='Tulis kodenya dulu di kotak.';return}ck++;
+const R=s.ref,A=R.map(x=>x.trim()),B=t.split('\n').map(l=>l.replace(/\/\/.*$/,'').trim()).filter(Boolean);
+const perfect=nz(A.join(''))==nz(B.join('')),ops=perfect?A.map((x,i)=>['=',x,i]):lcs(A,B),o=[];
+for(let i=0;i<ops.length;){if(ops[i][0]=='='){o.push(ops[i++]);continue}const d=[],p=[];while(i<ops.length&&ops[i][0]!='='){(ops[i][0]=='-'?d:p).push(ops[i]);i++}
+const k=Math.min(d.length,p.length);for(let q=0;q<k;q++)o.push(['~',d[q][1],p[q][1],d[q][2]]);for(let q=k;q<d.length;q++)o.push(d[q]);for(let q=k;q<p.length;q++)o.push(p[q])}
+const eq=o.filter(x=>x[0]=='=').length,full=o.every(x=>x[0]=='=');lastAcc=eq/A.length;ms[cur]={};let c=0;
+const pad=i=>`<div class="ln" style="padding-left:${R[i].length-R[i].trimStart().length}ch">`;
+const h=o.map(x=>{if(x[0]=='=')return pad(x[2])+`<b class="rk">${esc(x[1])}</b></div>`;
+if(x[0]=='~'){ms[cur]['L'+c++]={lbl:'baris',w:x[2],e:x[1]};return pad(x[3])+`<s class="rw">${esc(x[2])}</s> <b class="rk">${esc(x[1])}</b></div>`}
+if(x[0]=='-'){ms[cur]['L'+c++]={lbl:'baris',w:'(tidak ditulis)',e:x[1]};return pad(x[2])+`<b class="rk">${esc(x[1])}</b> <span class="cm">// kurang</span></div>`}
+ms[cur]['L'+c++]={lbl:'baris',w:x[1],e:'(hapus baris ini)'};return`<div class="ln"><s class="rw">${esc(x[1])}</s> <span class="cm">// kelebihan</span></div>`}).join('');
+$('#rv').innerHTML=`<div class="card"><h2>Hasil penulisan ulang</h2><p class="mu">Hijau = sesuai buku. Merah dicoret = tulisanmu, hijau di sebelahnya = yang seharusnya. Komentar dan spasi diabaikan.</p><div class="code">${h}</div><p><b>${eq} dari ${A.length} baris sesuai (${Math.round(lastAcc*100)}%).</b></p>${full?'':'<div class="row"><button class="sec" onclick="kirim()">Kirim hasil akhir</button></div>'}</div>`;
+if(full){sk=Math.max(20,sk-3*(ck-1));$('#sc').textContent=sk;$('#msg').textContent='Sempurna! Kodemu sama dengan buku.';done()}
+else{sk=Math.max(20,sk-3);$('#sc').textContent=sk;$('#msg').textContent='Belum sama dengan buku. Perbaiki lalu periksa lagi, atau kirim hasil akhir.';$('#rv').scrollIntoView({block:'nearest',behavior:'smooth'})}}
+function kirim(){sk=Math.max(10,Math.round(sk*lastAcc));$('#sc').textContent=sk;done()}
+function done(){res[cur]=sk;const ta=$('#ta');if(ta)ta.readOnly=true;$('#xp').textContent=sum();$('#kp').hidden=true;const s=S[cur],c=s.t=='Pencarian';data=s.d[0].slice();tgt=s.d[1];$('#sim').hidden=false;
+$('#sim').innerHTML=`<div class="card"><h2>${stars(sk)} Simulasi ${s.n}</h2>
+<div class="row">${c?`<label>Target <input type="number" id="tg" value="${tgt}" onchange="regen()"></label>`:''}<button onclick="play()" id="pl">▶ Putar</button><button class="sec" onclick="stepF()">Langkah</button><button class="sec" onclick="regen()">Ulang</button><button class="sec" onclick="acak()">🎲 Data acak</button></div>
+<div class="bars" id="bars"></div><div id="fm" class="mu" role="status"></div><div class="out" id="out"></div></div>
+<div class="row"><button onclick="${cur<S.length-1?'openStage('+(cur+1)+')':'fin()'}">${cur<S.length-1?'Misi berikutnya':'Lihat hasil akhir'}</button></div>`;
+regen();$('#sim').scrollIntoView({behavior:'smooth'})}
+const cr=()=>S[cur].t=='Pencarian';
+function acak(){const n=cr()?7:6;let a=[];while(a.length<n){const v=1+Math.floor(Math.random()*40);if(!a.includes(v))a.push(v)}
+if(S[cur].id=='binary')a.sort((x,y)=>x-y);data=a;if(cr()){tgt=Math.random()<.5?a[Math.floor(Math.random()*n)]:41+Math.floor(Math.random()*9);$('#tg').value=tgt}regen()}
+function regen(){stop();const e=$('#tg');if(e)tgt=+e.value;fr=gen(S[cur].id,data,tgt);fi=0;draw()}
+function stop(){clearInterval(tm);tm=null;const b=$('#pl');if(b)b.textContent='▶ Putar'}
+function play(){if(tm){stop();return}if(fi>=fr.length-1)fi=0;$('#pl').textContent='⏸ Jeda';tm=setInterval(()=>{if(fi<fr.length-1){fi++;draw()}else stop()},750)}
+function stepF(){stop();if(fi<fr.length-1)fi++;draw()}
+function draw(){const f=fr[fi],mx=Math.max(...f.a);let h='';
+f.a.forEach((v,k)=>{const c=f.f.includes(k)?'f':f.s.includes(k)?'s':f.c.includes(k)?'c':f.d.includes(k)?'d':'',g=f.g&&k>=f.g[0]&&k<=f.g[1]?' g':'';
+h+=`<div class="col"><div class="b ${c}${g}" style="height:${30+v/mx*130}px">${v}</div><small>${k} ${f.tag[k]?'· '+f.tag[k]:''}</small></div>`});
+$('#bars').innerHTML=h;$('#fm').textContent=`Langkah ${fi+1} dari ${fr.length}: ${f.m}`;$('#out').textContent=f.o?'> '+f.o:'> (menunggu program selesai)'}
+function gen(id,a0,t){const a=a0.slice(),n=a.length,f=[];
+const P=o=>f.push(Object.assign({a:a.slice(),c:[],s:[],d:[],f:[],g:null,tag:{},m:''},o));
+const T=(...p)=>{const o={};p.forEach(([i,x])=>{o[i]=o[i]?o[i]+'/'+x:x});return o};
+const R=(x,y)=>{const r=[];for(let k=x;k<=y;k++)r.push(k);return r};
+const out=()=>'Array terurut: ['+a.join(', ')+']';
+if(id=='linear'){for(let i=0;i<n;i++){P({c:[i],tag:T([i,'i']),m:`i = ${i}, arr[${i}] = ${a[i]}. Sama dengan ${t}?`});
+if(a[i]===t){P({f:[i],tag:T([i,'i']),m:`Ketemu! return ${i}`,o:`Target ditemukan di indeks: ${i}`});return f}}
+P({m:'Semua elemen sudah diperiksa, return -1',o:'Target tidak ditemukan'})}
+else if(id=='binary'){let lo=0,hi=n-1;while(lo<=hi){const mid=Math.floor((lo+hi)/2),g=[lo,hi];
+P({g,c:[mid],tag:T([lo,'low'],[mid,'mid'],[hi,'high']),m:`low=${lo}, high=${hi}, mid=${mid}, arr[mid]=${a[mid]}`});
+if(a[mid]===t){P({g,f:[mid],tag:T([mid,'mid']),m:`arr[mid] === target, return ${mid}`,o:`Target ditemukan di indeks: ${mid}`});return f}
+else if(a[mid]<t){P({g,c:[mid],tag:T([mid,'mid']),m:`${a[mid]} < ${t}: target di kanan, low = ${mid+1}`});lo=mid+1}
+else{P({g,c:[mid],tag:T([mid,'mid']),m:`${a[mid]} > ${t}: target di kiri, high = ${mid-1}`});hi=mid-1}}
+P({m:'low > high, ruang pencarian habis, return -1',o:'Target tidak ditemukan'})}
+else if(id=='selection'){for(let i=0;i<n-1;i++){let mn=i;
+for(let j=i+1;j<n;j++){P({d:R(0,i-1),c:[j,mn],tag:T([i,'i'],[mn,'min'],[j,'j']),m:`Bandingkan arr[${j}]=${a[j]} dengan arr[minIndex]=${a[mn]}`});if(a[j]<a[mn])mn=j}
+if(mn!==i){[a[i],a[mn]]=[a[mn],a[i]];P({d:R(0,i-1),s:[i,mn],m:`Tukar posisi ${i} dengan posisi ${mn}`})}}
+P({d:R(0,n-1),m:'Selesai, semua elemen terurut',o:out()})}
+else if(id=='bubble'){for(let i=0;i<n-1;i++){let sw=false;
+for(let j=0;j<n-i-1;j++){P({d:R(n-i,n-1),c:[j,j+1],tag:T([j,'j'],[j+1,'j+1']),m:`Apakah arr[${j}]=${a[j]} > arr[${j+1}]=${a[j+1]}?`});
+if(a[j]>a[j+1]){[a[j],a[j+1]]=[a[j+1],a[j]];sw=true;P({d:R(n-i,n-1),s:[j,j+1],m:'Ya, tukar dan swapped = true'})}}
+if(!sw){P({d:R(0,n-1),m:'Tidak ada pertukaran (swapped = false), break',o:out()});return f}}
+P({d:R(0,n-1),m:'Selesai, semua elemen terurut',o:out()})}
+else{P({m:'Divide: array dibelah rekursif sampai 1 elemen, lalu digabung (conquer)'});
+const ms2=(l,r)=>{if(l>=r)return;const m=Math.floor((l+r)/2);ms2(l,m);ms2(m+1,r);const L=a.slice(l,m+1),Q=a.slice(m+1,r+1);let i=0,j=0,k=l;
+const w=v=>{a[k]=v;P({g:[l,r],s:[k],tag:T([k,'k']),m:`Gabung bagian [${l}..${r}]: tulis ${v} di posisi ${k}`});k++};
+while(i<L.length&&j<Q.length)w(L[i]<=Q[j]?L[i++]:Q[j++]);while(i<L.length)w(L[i++]);while(j<Q.length)w(Q[j++])};
+ms2(0,n-1);P({d:R(0,n-1),m:'Selesai, semua elemen terurut',o:out()})}
+return f}
+function fin(){stop();const tot=sum(),mx=S.length*100,p=Math.round(tot/mx*100);let r='',w='';
+S.forEach((s,i)=>{r+=`<tr><td>${i+1}</td><td>${s.i} ${s.n}</td><td>${s.lv}</td><td>${res[i]!=null?stars(res[i])+' '+res[i]:'-'}</td></tr>`;
+Object.entries(ms[i]||{}).forEach(([k,x])=>{const e=x.e||s.a[k][0];w+=`<li><b>${s.n}</b>, ${x.lbl||'kotak '+(+k+1)}: ${x.w==='(petunjuk)'?'memakai petunjuk, seharusnya':'kamu menulis <code>'+esc(x.w)+'</code>, seharusnya'} <code>${esc(e)}</code>.${x.e?'':' '+esc(s.h[k])}</li>`})});
+const ket=p>=85?'Sangat baik! Penulisan kodemu sudah teliti sampai tingkat akhir.':p>=60?'Baik. Masih ada tanda baca, operator, atau baris yang perlu dilatih.':'Perlu latihan lagi. Ulangi permainan dan perhatikan tiap tanda baca.';
+$('#end').innerHTML=`<h1>Hasil ${esc(nama)}</h1><div class="card"><p style="font-size:22px;margin:0"><b>${tot}</b> dari ${mx} poin (${p}%)</p><p>${ket}</p></div>
+<div class="card"><h2>Yang perlu diperbaiki</h2>${w?'<ol>'+w+'</ol>':'<p>Tidak ada kesalahan penulisan. Hebat!</p>'}</div>
+<div class="card"><h2>Rincian tingkat</h2><div style="overflow-x:auto"><table><tr><th>Tingkat</th><th>Algoritma</th><th>Cara menulis</th><th>Poin</th></tr>${r}</table></div>
+<p class="mu">Binary search lebih cepat dari linear search, tetapi data harus terurut. Merge sort paling cepat untuk data besar, tetapi butuh memori tambahan. Selection dan bubble sort sederhana dan hemat memori, namun lambat untuk data besar.</p></div>
+<div class="row"><button onclick="lain()">🎮 Game lainnya</button><button class="sec" onclick="again()">🔁 Ulangi permainan</button></div><div id="ln" class="mu"></div>`;show('end')}
+function lain(){if(LINK_GAME_LAIN)window.open(LINK_GAME_LAIN,'_blank','noopener');else $('#ln').textContent='Tautan game lain belum diisi oleh guru.'}
+function again(){res=[];ms={};cur=0;home()}
+nameScreen();
+</script></body></html>
