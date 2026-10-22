@@ -51,7 +51,7 @@
   .heart.lost{ opacity:.18; filter:none; transform:scale(.85); }
 
   #streakChip{
-    position:absolute; top:calc(60px + env(safe-area-inset-top)); left:calc(18px + env(safe-area-inset-left)); z-index:5;
+    position:absolute; top:calc(84px + env(safe-area-inset-top)); left:calc(18px + env(safe-area-inset-left)); z-index:5;
     background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.4);
     padding:4px 12px; border-radius:20px; font-size:13px; color:var(--mango);
     opacity:0; transition:opacity .25s; pointer-events:none;
@@ -143,6 +143,31 @@
     padding:0 16px;
   }
 
+  input, .card input{ user-select:text; -webkit-user-select:text; }
+  #playerTag{
+    position:absolute; top:calc(54px + env(safe-area-inset-top)); left:calc(16px + env(safe-area-inset-left)); z-index:5;
+    background:rgba(198,255,61,.12); border:1px solid rgba(198,255,61,.35);
+    padding:3px 12px; border-radius:20px; font-size:13px; color:var(--lime);
+    max-width:55vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    pointer-events:none; display:none;
+  }
+  #playerTag.show{ display:block; }
+  #nameInput{
+    width:100%; font-family:'Fredoka'; font-weight:500; font-size:16px; text-align:center;
+    padding:12px 14px; margin-bottom:6px; border-radius:12px;
+    background:rgba(255,255,255,.06); border:1.5px solid rgba(198,255,61,.3);
+    color:var(--ink); outline:none;
+  }
+  #nameInput:focus{ border-color:var(--lime); }
+  #nameErr{ color:var(--pink); font-size:12.5px; min-height:18px; margin-bottom:10px; font-weight:500; }
+  .resName{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:24px; color:var(--lime); word-break:break-word; margin:2px 0 0; }
+  .resLbl{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-dim); }
+  .statGrid{ display:flex; justify-content:center; gap:10px; margin:8px 0 18px; }
+  .statGrid div{ flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:8px 4px; }
+  .statGrid b{ display:block; font-family:'Baloo 2'; font-size:20px; color:var(--ink); }
+  .statGrid small{ font-size:10px; color:var(--ink-dim); }
+  .btnStack{ display:flex; flex-direction:column; gap:12px; align-items:stretch; }
+  a.btn{ display:block; text-decoration:none; text-align:center; }
   @media (max-width:420px){
     #scoreBox{ font-size:24px; }
     .heart{ font-size:20px; }
@@ -167,6 +192,7 @@
     <div id="scoreBox"><span class="lbl">Skor</span><span id="scoreVal">0</span></div>
     <div id="livesBox"></div>
   </div>
+  <div id="playerTag">👤 <span id="playerTagName"></span></div>
   <div id="streakChip">🔥 Beruntun!</div>
   <div id="floatScores"></div>
   <div id="hint">Geser jari / mouse untuk mengiris buah — hati‑hati, jangan sampai buah jatuh</div>
@@ -184,6 +210,8 @@
         <span>🍓<small>Kuis!</small></span>
         <span>🪙<small>+1❤️</small></span>
       </div>
+      <input type="text" id="nameInput" maxlength="24" placeholder="Tulis namamu di sini" autocomplete="off">
+      <div id="nameErr"></div>
       <button class="btn" id="startBtn">MULAI MAIN</button>
     </div>
   </div>
@@ -202,11 +230,21 @@
   <!-- Game over -->
   <div class="overlay" id="overOverlay">
     <div class="card">
-      <h1>GAME OVER</h1>
-      <p>Nyawa habis! Ini hasil akhirmu:</p>
+      <h1>HASIL AKHIR</h1>
+      <div class="resLbl">Pemain</div>
+      <p class="resName" id="resName"></p>
+      <div class="resLbl" style="margin-top:12px;">Total Poin</div>
       <div id="finalScore">0</div>
-      <p id="finalStat" style="margin-top:-6px;"></p>
-      <button class="btn" id="restartBtn">MAIN LAGI</button>
+      <div class="statGrid">
+        <div><b id="stSlice">0</b><small>Buah diiris</small></div>
+        <div><b id="stRight">0</b><small>Soal benar</small></div>
+        <div><b id="stWrong">0</b><small>Soal salah</small></div>
+      </div>
+      <p id="finalStat" style="margin:-6px 0 16px;"></p>
+      <div class="btnStack">
+        <a class="btn" id="nextGameLink" href="#">PERMAINAN SELANJUTNYA 🎮</a>
+        <button class="btn secondary" id="restartBtn">MAIN LAGI</button>
+      </div>
     </div>
   </div>
 </div>
@@ -214,6 +252,13 @@
 <script>
 (function(){
   "use strict";
+
+  // GANTI tautan ini dengan alamat halaman HTML permainan berikutnya
+  const NEXT_GAME_URL = 'permainan-berikutnya.html';
+  let playerName = '';
+  let statSlice = 0, statRight = 0, statWrong = 0;
+  function readSaved(){ try{ return localStorage.getItem('playerName') || ''; }catch(e){ return ''; } }
+  function writeSaved(n){ try{ localStorage.setItem('playerName', n); }catch(e){} }
 
   /* ---------------- Bank soal ---------------- */
   const QUESTIONS = [
@@ -405,6 +450,7 @@
       }
     } else {
       setScore(score + f.type.points);
+      statSlice++;
       streakCount++;
       floatText(px-14, py-10, '+'+f.type.points, '#c6ff3d');
       if(streakCount >= 4){
@@ -515,10 +561,12 @@
     });
     if(chosenIdx === correctIdx){
       setScore(score + 5);
+      statRight++;
       quizResult.textContent = '✅ Benar! +5 poin';
       quizResult.style.color = 'var(--lime)';
     } else {
       setScore(score - 3);
+      statWrong++;
       quizResult.textContent = chosenIdx===-1 ? '⏱️ Waktu habis! −3 poin' : '❌ Kurang tepat. −3 poin';
       quizResult.style.color = 'var(--pink)';
     }
@@ -630,11 +678,17 @@
   function endGame(){
     running = false;
     document.getElementById('finalScore').textContent = score;
-    document.getElementById('finalStat').textContent = 'Terus berlatih supaya makin jago menjawab soal Informatika!';
+    document.getElementById('resName').textContent = playerName;
+    document.getElementById('stSlice').textContent = statSlice;
+    document.getElementById('stRight').textContent = statRight;
+    document.getElementById('stWrong').textContent = statWrong;
+    document.getElementById('nextGameLink').href = "https://codexpawi.vercel.app/naga.html";
+    document.getElementById('finalStat').textContent = 'Nyawa habis! Terus berlatih supaya makin jago menjawab soal Informatika!';
     document.getElementById('overOverlay').classList.add('show');
   }
 
   function resetGame(){
+    statSlice=0; statRight=0; statWrong=0;
     score=0; lives=START_LIVES; fruits=[]; particles=[]; trail=[];
     spawnTimer=0; streakCount=0;
     setScore(0); renderLives();
@@ -645,10 +699,24 @@
     running = true;
   }
 
-  document.getElementById('startBtn').addEventListener('click', ()=>{
+  const nameInput = document.getElementById('nameInput');
+  nameInput.value = readSaved();
+  function startWithName(){
+    const n = nameInput.value.trim().replace(/\s+/g,' ');
+    if(!n){
+      document.getElementById('nameErr').textContent = 'Nama tidak boleh kosong, ya.';
+      return;
+    }
+    playerName = n;
+    writeSaved(n);
+    document.getElementById('nameErr').textContent = '';
+    document.getElementById('playerTagName').textContent = n;
+    document.getElementById('playerTag').classList.add('show');
     document.getElementById('startOverlay').classList.remove('show');
     resetGame();
-  });
+  }
+  document.getElementById('startBtn').addEventListener('click', startWithName);
+  nameInput.addEventListener('keydown', e=>{ if(e.key==='Enter') startWithName(); });
   document.getElementById('restartBtn').addEventListener('click', resetGame);
 
   renderLives();
