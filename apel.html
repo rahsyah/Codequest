@@ -452,6 +452,66 @@
     to{ transform: translateY(340px) rotate(400deg); opacity:0; }
   }
 
+  /* ---------- Player chip ---------- */
+  .player-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    margin-top:10px;
+    background:var(--paper);
+    border:2.5px solid var(--leaf);
+    border-radius:999px;
+    padding:5px 14px 5px 10px;
+    font-family:'Baloo 2';font-weight:700;font-size:14px;color:var(--leaf);
+    box-shadow:var(--shadow);
+    max-width:100%;
+  }
+  .player-chip span.nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;}
+
+  /* ---------- Name & result screens ---------- */
+  .overlay.name-screen{z-index:200;background:rgba(46,42,38,0.7);}
+  .overlay.result-screen{z-index:150;background:var(--sky);}
+  .name-card input{
+    width:100%;
+    font-family:'Nunito';font-weight:700;font-size:16px;
+    padding:12px 14px;
+    border:2.5px solid var(--board-line);
+    border-radius:12px;
+    margin-bottom:14px;
+    color:var(--ink);
+    text-align:center;
+    outline:none;
+  }
+  .name-card input:focus{border-color:var(--leaf-mid);}
+  .name-card .err{color:var(--apple);font-size:12.5px;font-weight:700;min-height:16px;margin:-8px 0 8px;}
+  .btn-main{
+    display:block;width:100%;
+    font-family:'Baloo 2';font-weight:700;font-size:16px;
+    padding:12px 10px;
+    border-radius:14px;border:none;
+    background:var(--apple);color:#fff;
+    box-shadow:0 5px 0 var(--apple-dark);
+    cursor:pointer;text-align:center;text-decoration:none;
+  }
+  .btn-main:active{transform:translateY(3px);box-shadow:0 2px 0 var(--apple-dark);}
+  .btn-main.green{background:var(--leaf-mid);box-shadow:0 5px 0 #4C7332;}
+  .btn-main.green:active{box-shadow:0 2px 0 #4C7332;}
+  .btn-ghost{
+    display:block;width:100%;
+    font-family:'Baloo 2';font-weight:700;font-size:14px;
+    padding:10px;border-radius:14px;
+    border:2px solid var(--board-line);
+    background:var(--sky);color:var(--leaf);
+    cursor:pointer;
+  }
+  .result-card{max-width:360px;}
+  .result-name{font-family:'Baloo 2';font-weight:800;font-size:22px;color:var(--apple);margin:0 0 2px;word-break:break-word;}
+  .result-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#8A968A;font-weight:700;}
+  .result-score{font-family:'Baloo 2';font-weight:800;font-size:56px;line-height:1;color:var(--leaf);margin:4px 0 2px;}
+  .result-score small{font-size:18px;color:#8A968A;font-weight:700;}
+  .breakdown{margin:14px 0 18px;border-top:2px dashed var(--board-line);padding-top:10px;}
+  .breakdown-row{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 2px;color:#5B6B58;font-weight:700;}
+  .breakdown-row b{color:var(--leaf);}
+  .result-actions{display:flex;flex-direction:column;gap:10px;}
+
   footer{
     text-align:center;
     margin-top:22px;
@@ -471,6 +531,7 @@
     <div class="eyebrow">Belajar Coding &amp; Arah</div>
     <h1>Kebun <span class="red">Apel</span>: Petualangan Tupai</h1>
     <p class="subtitle">Susun panah, jalankan program, bantu Tupai mengumpulkan apel! 🐿️</p>
+    <div class="player-chip" id="playerChip" style="display:none;">👤 <span class="nm" id="playerName"></span></div>
   </header>
 
   <div class="statusbar">
@@ -487,6 +548,11 @@
     <div class="status-item">
       <span class="status-label">Target</span>
       <span class="status-value" id="targetLabel">0/0</span>
+    </div>
+    <div class="divider-dot"></div>
+    <div class="status-item">
+      <span class="status-label">Poin</span>
+      <span class="status-value" id="pointsLabel">0</span>
     </div>
   </div>
 
@@ -534,7 +600,7 @@
 
   <div class="levels" id="levels"></div>
 
-  <footer>Dibuat untuk kelas Coding &amp; Kecerdasan Artifisial 🍎 — dapat dimainkan di banyak HP sekaligus, tanpa login.</footer>
+  <footer>Dibuat untuk kelas Coding &amp; Kecerdasan Artifisial 🍎 — dapat dimainkan di banyak HP sekaligus.</footer>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -547,6 +613,35 @@
     <div class="win-actions">
       <button class="secondary" id="replayBtn">Main Lagi</button>
       <button class="primary" id="nextBtn">Level Berikutnya →</button>
+      <button class="primary" id="resultBtn" style="display:none;">Lihat Hasil 🏆</button>
+    </div>
+  </div>
+</div>
+
+<!-- Layar nama pemain -->
+<div class="overlay name-screen show" id="nameScreen">
+  <div class="win-card name-card">
+    <span class="big-emoji">🐿️</span>
+    <h2>Selamat Datang!</h2>
+    <p>Tulis namamu dulu sebelum membantu Tupai memanen apel.</p>
+    <input type="text" id="nameInput" maxlength="24" placeholder="Nama kamu" autocomplete="off">
+    <div class="err" id="nameErr"></div>
+    <button class="btn-main" id="startBtn">Mulai Bermain →</button>
+  </div>
+</div>
+
+<!-- Halaman hasil -->
+<div class="overlay result-screen" id="resultScreen">
+  <div class="win-card result-card" id="resultCard">
+    <span class="big-emoji">🏆</span>
+    <div class="result-label">Hasil Permainan</div>
+    <p class="result-name" id="resultName"></p>
+    <div class="result-label">Total Poin</div>
+    <div class="result-score"><span id="resultScore">0</span> <small>poin</small></div>
+    <div class="breakdown" id="breakdown"></div>
+    <div class="result-actions">
+      <a class="btn-main green" id="nextGameLink" href="#">Permainan Selanjutnya 🎮</a>
+      <button class="btn-ghost" id="restartAllBtn">↻ Main Ulang dari Awal</button>
     </div>
   </div>
 </div>
@@ -554,6 +649,11 @@
 <script>
 (function(){
   "use strict";
+
+  // GANTI tautan ini dengan alamat halaman HTML permainan berikutnya
+  const NEXT_GAME_URL = 'permainan-berikutnya.html';
+  const POINTS_PER_APPLE = 10;   // tiap apel yang dikumpulkan
+  // Bonus waktu: +1 poin untuk setiap detik tersisa saat level selesai
 
   const LEVELS = [
     {
@@ -591,6 +691,7 @@
   const winEmoji = document.getElementById('winEmoji');
   const nextBtn = document.getElementById('nextBtn');
   const replayBtn = document.getElementById('replayBtn');
+  const resultBtn = document.getElementById('resultBtn');
   const timerwrap = document.getElementById('timerwrap');
   const timerFill = document.getElementById('timerFill');
   const timerText = document.getElementById('timerText');
@@ -607,6 +708,8 @@
   let timeTotal = 0;
   let timerInterval = null;
   let ended = false; // true once level is won or time has run out
+  let playerName = '';
+  let levelScores = [0,0,0];
 
   function beep(freq, dur){
     try{
@@ -624,6 +727,89 @@
   }
 
   function keyOf(r,c){ return r+','+c; }
+
+  /* ---------- Poin ---------- */
+  function liveLevelPoints(){ return collected.size * POINTS_PER_APPLE; }
+  function totalPoints(){
+    let sum = 0;
+    LEVELS.forEach((_, i)=>{
+      sum += (i === levelIndex)
+        ? Math.max(levelScores[i], liveLevelPoints())
+        : levelScores[i];
+    });
+    return sum;
+  }
+  function saveLevelScore(won){
+    let pts = liveLevelPoints();
+    if(won) pts += Math.ceil(Math.max(0, timeLeft)); // bonus waktu
+    levelScores[levelIndex] = Math.max(levelScores[levelIndex], pts);
+    renderBasket();
+  }
+
+  /* ---------- Nama pemain ---------- */
+  function readSaved(){
+    try{ return localStorage.getItem('playerName') || ''; }catch(e){ return ''; }
+  }
+  function writeSaved(n){
+    try{ localStorage.setItem('playerName', n); }catch(e){}
+  }
+  function showNameScreen(){
+    const input = document.getElementById('nameInput');
+    input.value = readSaved();
+    document.getElementById('nameScreen').classList.add('show');
+    setTimeout(()=> input.focus(), 50);
+  }
+  function submitName(){
+    const input = document.getElementById('nameInput');
+    const n = input.value.trim().replace(/\s+/g,' ');
+    if(!n){
+      document.getElementById('nameErr').textContent = 'Nama tidak boleh kosong, ya.';
+      return;
+    }
+    playerName = n;
+    writeSaved(n);
+    document.getElementById('nameErr').textContent = '';
+    document.getElementById('playerName').textContent = n;
+    document.getElementById('playerChip').style.display = 'inline-flex';
+    document.getElementById('nameScreen').classList.remove('show');
+    levelScores = [0,0,0];
+    levelIndex = 0;
+    loadLevel();
+  }
+  document.getElementById('startBtn').addEventListener('click', submitName);
+  document.getElementById('nameInput').addEventListener('keydown', e=>{
+    if(e.key === 'Enter') submitName();
+  });
+
+  /* ---------- Halaman hasil ---------- */
+  function showResult(){
+    stopTimer();
+    overlayEl.classList.remove('show');
+    document.getElementById('resultName').textContent = playerName;
+    document.getElementById('resultScore').textContent = levelScores.reduce((a,b)=>a+b,0);
+    const bd = document.getElementById('breakdown');
+    bd.innerHTML = '';
+    LEVELS.forEach((lvl,i)=>{
+      const row = document.createElement('div');
+      row.className = 'breakdown-row';
+      const l = document.createElement('span');
+      l.textContent = 'Level ' + (i+1) + ' (' + lvl.apples.length + ' apel)';
+      const v = document.createElement('b');
+      v.textContent = levelScores[i] + ' poin';
+      row.appendChild(l); row.appendChild(v);
+      bd.appendChild(row);
+    });
+    const link = document.getElementById('nextGameLink');
+    link.href = "https://codexpawi.vercel.app/fruitslice.html";
+    document.getElementById('resultScreen').classList.add('show');
+    spawnConfetti(document.getElementById('resultCard'));
+  }
+  document.getElementById('restartAllBtn').addEventListener('click', ()=>{
+    document.getElementById('resultScreen').classList.remove('show');
+    levelScores = [0,0,0];
+    levelIndex = 0;
+    loadLevel();
+  });
 
   function currentLevel(){ return LEVELS[levelIndex]; }
 
@@ -739,6 +925,7 @@
   }
 
   function positionCritter(){
+    if(!critterEl) return;
     const lvl = currentLevel();
     const cellW = boardEl.clientWidth / lvl.cols;
     const cellH = boardEl.clientHeight / lvl.rows;
@@ -774,6 +961,7 @@
   function renderBasket(){
     const lvl = currentLevel();
     targetLabel.textContent = collected.size + '/' + lvl.apples.length;
+    document.getElementById('pointsLabel').textContent = totalPoints();
     basketRow.innerHTML = '';
     for(let i=0;i<collected.size;i++){
       const s = document.createElement('span');
@@ -880,6 +1068,7 @@
   function launchWin(){
     ended = true;
     stopTimer();
+    saveLevelScore(true);
     const isLast = levelIndex === LEVELS.length - 1;
     unlockedCount = Math.max(unlockedCount, levelIndex + 2);
     buildLevelChips();
@@ -889,25 +1078,31 @@
     winMsg.textContent = isLast
       ? 'Tupai berhasil memanen semua apel di kebun. Kamu programmer hebat!'
       : 'Semua apel berhasil dikumpulkan. Siap untuk tantangan berikutnya?';
-    nextBtn.style.display = isLast ? 'none' : 'block';
+    nextBtn.textContent = isLast ? 'Lihat Hasil 🏆' : 'Level Berikutnya →';
+    nextBtn.style.display = 'block';
+    nextBtn.dataset.mode = isLast ? 'result' : 'next';
+    resultBtn.style.display = 'none';
     overlayEl.classList.add('show');
-    spawnConfetti();
+    spawnConfetti(winCard);
   }
 
   function launchTimeout(){
     stopTimer();
     running = false;
     document.getElementById('runBtn').disabled = false;
+    saveLevelScore(false);
     winCard.classList.add('timeout');
     winEmoji.textContent = '⏰';
     winTitle.textContent = 'Waktu Habis!';
     const lvl = currentLevel();
     winMsg.textContent = 'Tupai baru mengumpulkan ' + collected.size + ' dari ' + lvl.apples.length + ' apel. Ayo susun programnya lebih cepat!';
     nextBtn.style.display = 'none';
+    resultBtn.style.display = 'block';
     overlayEl.classList.add('show');
   }
 
-  function spawnConfetti(){
+  function spawnConfetti(target){
+    target = target || winCard;
     const colors = ['#D7263D','#F2A65A','#6A994E','#A9D6E5','#3A5A40'];
     for(let i=0;i<26;i++){
       const c = document.createElement('div');
@@ -916,7 +1111,7 @@
       c.style.background = colors[Math.floor(Math.random()*colors.length)];
       c.style.animationDuration = (1.4 + Math.random()*1.2)+'s';
       c.style.animationDelay = (Math.random()*0.4)+'s';
-      winCard.appendChild(c);
+      target.appendChild(c);
       setTimeout(()=> c.remove(), 3200);
     }
   }
@@ -926,12 +1121,14 @@
     loadLevel();
   });
   nextBtn.addEventListener('click', ()=>{
+    if(nextBtn.dataset.mode === 'result'){ showResult(); return; }
     overlayEl.classList.remove('show');
     levelIndex = Math.min(levelIndex+1, LEVELS.length-1);
     loadLevel();
   });
+  resultBtn.addEventListener('click', showResult);
 
-  loadLevel();
+  showNameScreen();
 })();
 </script>
 </body>
