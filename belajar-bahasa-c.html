@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#eef2f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1626" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dasar C">
+<meta name="format-detection" content="telephone=no">
+<title>Dasar Bahasa C - Informatika Kelas X</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f5;--ink:#14213d;--mut:#51607a;--card:#fff;--line:#c9d3df;--amb:#f2a541;--ok:#1f8f5f;--bad:#cf3f3f;--code:#14213d;--codefg:#e8eefc}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1626;--ink:#e8eefc;--mut:#9fb0cc;--card:#17233b;--line:#2c3c5c;--code:#0a111f}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:16px/1.6 'Bricolage Grotesque',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent;overflow-wrap:break-word}
+body::before{content:"";position:fixed;top:0;right:0;bottom:0;left:0;z-index:-1;pointer-events:none;opacity:.45;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px}
+button,input,select,.ln,tbody tr,.chip{touch-action:manipulation}
+code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,'Roboto Mono',monospace}
+header{padding:32px max(20px,env(safe-area-inset-right)) 12px max(20px,env(safe-area-inset-left));max-width:980px;margin:auto}
+h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.05;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
+header p{margin:0;color:var(--mut);max-width:60ch}
+nav{position:-webkit-sticky;position:sticky;top:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-left:max(12px,env(safe-area-inset-left))!important;z-index:5;background:var(--bg);border-bottom:2px solid var(--ink);display:flex;gap:4px;overflow-x:auto;padding:8px 12px;margin-top:16px}
+nav button{flex:none;min-height:44px;white-space:nowrap;font:inherit;font-weight:600;background:none;border:2px solid transparent;border-radius:8px;padding:6px 12px;color:var(--ink);cursor:pointer}
+nav button[aria-selected=true]{background:var(--ink);color:var(--bg)}
+nav button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--amb);outline-offset:2px}
+main{max-width:980px;margin:auto;padding:20px max(20px,env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+section{display:none}section.on{display:block}
+h2{font-size:1.7rem;margin:0 0 4px}
+.lead{color:var(--mut);margin:0 0 18px;max-width:65ch}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:5px 5px 0 var(--ink)}
+.codebox{background:var(--code);color:var(--codefg);border-radius:10px;padding:10px 0;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.95rem;overflow-x:auto}
+.ln{display:flex;gap:14px;padding:3px 14px;cursor:pointer;border-left:4px solid transparent;white-space:pre}
+@media(hover:hover){.ln:hover{background:#ffffff14}tbody tr:hover{background:#f2a54140}.opt:hover:not(:disabled){background:#f2a54133}}
+.ln.sel{background:#f2a54133;border-left-color:var(--amb)}
+.ln i{color:#7f90b3;font-style:normal;width:1ch}
+.k{color:#8fd0ff}.s{color:#ffd98a}.t{color:#9be3b5}
+.note{background:#f2a54126;border-left:5px solid var(--amb);padding:10px 14px;border-radius:6px;margin-top:12px}
+.ok{color:var(--ok);font-weight:600}.bad{color:var(--bad);font-weight:600}
+input,select{font:inherit;font-size:16px;min-height:44px;-webkit-appearance:none;appearance:none;border-radius:8px;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;padding:8px 10px;border:2px solid var(--ink);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+.btn{font:inherit;min-height:44px;font-weight:700;background:var(--ink);color:var(--bg);border:2px solid var(--ink);border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn.alt{background:var(--card);color:var(--ink)}
+ul.rules{list-style:none;padding:0;margin:10px 0 0}
+ul.rules li{padding:4px 0}
+ul.rules li::before{content:"\25CB\FE0E ";color:var(--mut)}
+ul.rules li.p::before{content:"\2714\FE0E ";color:var(--ok)}ul.rules li.f::before{content:"\2718\FE0E ";color:var(--bad)}
+ul.rules li.p{color:var(--ok)}ul.rules li.f{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.9rem;background:var(--card);border:2px solid var(--ink);border-radius:6px;padding:3px 10px;cursor:pointer;color:var(--ink)}
+.chip.hit{background:var(--amb);color:#14213d}.chip.dim{opacity:.25}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{border:2px solid var(--ink);padding:10px 9px;text-align:left}
+th{background:var(--ink);color:var(--bg)}
+tbody tr{cursor:pointer}tbody tr.sel{background:#f2a54140}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+select{padding-right:30px;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.codebox .ln{width:max-content;min-width:100%}
+.row input{flex:1 1 140px;min-width:0}
+.mem{display:flex;flex-wrap:wrap;gap:3px;margin:8px 0}
+.cell{width:30px;height:30px;background:var(--amb);border:2px solid var(--ink);border-radius:4px;display:grid;place-items:center;font:700 .7rem 'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;color:#14213d}
+.tabs{display:flex;gap:8px;margin-bottom:10px}
+.opt{min-height:48px;display:block;width:100%;text-align:left;font:inherit;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:10px 12px;margin:8px 0;cursor:pointer}
+.opt.c{background:var(--ok);color:#fff}.opt.w{background:var(--bad);color:#fff}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 14px}.bar b{display:block;height:100%;background:var(--ok);transition:width .3s}
+.big{font-size:2.6rem;font-weight:800;margin:0}
+@media(max-width:520px){
+body{font-size:16px}
+main{padding-top:14px}
+.card{padding:12px;box-shadow:3px 3px 0 var(--ink)}
+.codebox{font-size:.82rem}.ln{gap:10px;padding:5px 10px}
+table{font-size:.85rem}th,td{padding:8px 6px}
+.cell{width:26px;height:26px;font-size:.62rem}
+.btn{flex:1 1 auto}
+.tabs .btn{flex:1}
+h2{font-size:1.45rem}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header>
+<h1>Kenalan dengan bahasa C</h1>
+<p>Klik, ketik, dan coba sendiri. Materi mengikuti buku Informatika SMA/MA/SMK/MAK Kelas X: struktur program, identifier, tipe data, variabel, konstanta, dan kata kunci.</p>
+</header>
+<nav id="nav" role="tablist"></nav>
+<main>
+
+<section id="s0">
+<h2>Struktur dasar program C</h2>
+<p class="lead">Satu salah ketik saja bisa membuat program error. Klik tiap baris untuk tahu fungsinya.</p>
+<div class="card">
+<div class="codebox" id="hello"></div>
+<div class="note" id="helloExp">Klik salah satu baris kode di atas.</div>
+</div>
+<div class="card">
+<b>Ciri pemrograman prosedural</b>
+<p class="lead" style="margin:4px 0 10px">Pendekatan yang dipakai bahasa C. Klik kartu untuk melihat artinya.</p>
+<div class="chips" id="proc"></div>
+<div class="note" id="procExp" style="display:none"></div>
+</div>
+</section>
+
+<section id="s1">
+<h2>Identifier: uji nama buatanmu</h2>
+<p class="lead">Identifier adalah nama yang kamu tentukan sendiri, misalnya nama variabel, konstanta, atau fungsi. Ketik sebuah nama dan lihat aturan mana yang terlanggar.</p>
+<div class="card">
+<div class="row"><input id="idIn" value="jumlahMurid" aria-label="Nama identifier" size="26" autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="done"><span id="idRes" class="mono"></span></div>
+<div class="row">Coba:
+<button class="chip" data-t="2nilai">2nilai</button><button class="chip" data-t="_total">_total</button><button class="chip" data-t="nama siswa">nama siswa</button><button class="chip" data-t="while">while</button><button class="chip" data-t="Nilai">Nilai</button></div>
+<ul class="rules" id="idRules"></ul>
+<div class="note" id="idCase"></div>
+</div>
+</section>
+
+<section id="s2">
+<h2>32 kata kunci (keyword)</h2>
+<p class="lead">Kata kunci punya makna tetap, jadi tidak boleh dipakai sebagai identifier. Cari atau klik salah satunya.</p>
+<div class="card">
+<div class="row"><input id="kwIn" placeholder="cari kata kunci..." autocapitalize="off" autocorrect="off" enterkeyhint="search" type="search" aria-label="Cari kata kunci"><span id="kwCount" class="mono"></span></div>
+<div class="chips" id="kw"></div>
+<div class="note" id="kwExp">Klik sebuah kata kunci.</div>
+</div>
+</section>
+
+<section id="s3">
+<h2>Tipe data dasar</h2>
+<p class="lead">Tipe data menentukan jenis nilai, jumlah memori, dan rentang nilai. Klik satu baris untuk melihat kotak memorinya (satu kotak = 1 byte).</p>
+<div class="card">
+<div class="scroll"><table><thead><tr><th>Tipe</th><th>Jenis</th><th>Memori</th><th>Rentang</th></tr></thead><tbody id="tt"></tbody></table></div>
+<div class="mem" id="memViz"></div>
+<div class="note" id="ttNote">Kenapa memilih <code>int</code> untuk bilangan bulat lebih efisien daripada <code>float</code> atau <code>double</code>? Karena memori yang dipakai lebih hemat dan program lebih cepat.</div>
+<p class="mono" style="font-size:.8rem;color:var(--mut)">Catatan: pada buku, rentang char tertulis -127 s.d. 128 dan long -9,2×10⁸; nilai yang benar -128 s.d. 127 dan ±9,2×10¹⁸. Tanyakan ke gurumu ya.</p>
+</div>
+</section>
+
+<section id="s4">
+<h2>Variabel: rakit deklarasimu</h2>
+<p class="lead">Variabel adalah tempat di memori untuk menampung data. Ia punya tiga hal: nama, nilai, dan tipe.</p>
+<div class="card">
+<div class="row">
+<select id="vType" aria-label="Tipe data"><option>int</option><option>char</option><option>float</option><option>short</option><option>long</option><option>double</option></select>
+<input id="vName" value="jumlahMurid" aria-label="Nama variabel" size="16" autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="done">
+<input id="vVal" value="55" aria-label="Nilai awal (boleh kosong)" size="12" autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="done">
+</div>
+<div class="codebox" style="padding:14px"><span id="vCode"></span></div>
+<div class="mem" id="vMem"></div>
+<div id="vMsg"></div>
+<p class="lead" style="margin:10px 0 0">Kosongkan kolom nilai untuk deklarasi tanpa nilai awal. Tiga contoh cepat:</p>
+<div class="row"><button class="chip" data-v="int|jumlahMurid|55">int</button><button class="chip" data-v="char|huruf|'a'">char</button><button class="chip" data-v="float|jarak|7.25">float</button><button class="chip" data-v="short|umur|18">short</button></div>
+</div>
+<div class="card">
+<b>Variabel lokal vs global</b>
+<div class="codebox" style="padding:12px 14px;margin:10px 0"><span class="t">int</span> total = 0; <span style="color:#7f90b3">// global: bisa dipakai di mana saja</span><br><span class="t">int</span> main(){<br>&nbsp;&nbsp;<span class="t">int</span> x = 5; <span style="color:#7f90b3">// lokal: hanya hidup di main</span><br>}</div>
+<div class="row"><button class="btn alt" data-sc="total">Pakai total di fungsi lain</button><button class="btn alt" data-sc="x">Pakai x di fungsi lain</button></div>
+<div id="scMsg" class="note">Pilih salah satu variabel.</div>
+</div>
+</section>
+
+<section id="s5">
+<h2>Konstanta: nilai yang dikunci</h2>
+<p class="lead">Konstanta tidak berubah selama program berjalan. Di bahasa C, tulis dengan kata kunci <code>const</code>.</p>
+<div class="card">
+<div class="tabs"><button class="btn" id="cV">Variabel biasa</button><button class="btn alt" id="cC">Konstanta (const)</button></div>
+<div class="codebox" style="padding:14px" id="cCode"></div>
+<div class="row" style="margin-top:12px"><button class="btn" id="cTry">Ubah nilai pi menjadi 3</button></div>
+<div id="cMsg" class="note">Tekan tombol untuk mencoba.</div>
+</div>
+</section>
+
+<section id="s6">
+<h2>Kuis kilat</h2>
+<p class="lead">Urutan soal dan pilihan jawaban diacak setiap kali main.</p>
+<div class="card" id="quiz"></div>
+</section>
+
+</main>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KW="auto break case char const continue default do double else enum extern float for goto if int long register return short signed sizeof static struct switch typedef union unsigned void volatile while".split(" ");
+const KWINFO={int:"Tipe data bilangan bulat, 4 byte.",char:"Tipe data karakter, 1 byte.",float:"Tipe data bilangan riil, 4 byte.",double:"Tipe data bilangan riil, 8 byte.",short:"Bilangan bulat 2 byte.",long:"Bilangan bulat 8 byte.",const:"Mendeklarasikan konstanta yang nilainya tidak bisa diubah.",return:"Mengakhiri fungsi dan mengembalikan nilai.",if:"Percabangan berdasarkan kondisi.",else:"Pasangan if untuk kondisi yang tidak terpenuhi.",for:"Perulangan dengan jumlah langkah tertentu.",while:"Perulangan selama kondisi benar.",do:"Perulangan yang menjalankan badan lebih dulu.",switch:"Memilih satu dari banyak kasus.",case:"Satu cabang di dalam switch.",break:"Keluar dari perulangan atau switch.",continue:"Lompat ke iterasi berikutnya.",void:"Tanpa nilai (misalnya fungsi tanpa return).",struct:"Menggabungkan beberapa data jadi satu tipe.",typedef:"Memberi nama baru pada sebuah tipe.",sizeof:"Menghitung ukuran tipe/variabel dalam byte.",goto:"Lompat ke label tertentu."};
+// nav
+const names=["Struktur","Identifier","Kata kunci","Tipe data","Variabel","Konstanta","Kuis"];
+function go(i){$$("section").forEach((s,j)=>s.classList.toggle("on",i==j));$$("#nav button").forEach((b,j)=>b.setAttribute("aria-selected",i==j));scrollTo(0,0);const t=$$("#nav button")[i];if(t&&t.scrollIntoView)t.scrollIntoView({inline:"center",block:"nearest"})}
+$("#nav").innerHTML=names.map((n,i)=>`<button role="tab" data-i="${i}">${n}</button>`).join("");
+$("#nav").onclick=e=>{if(e.target.dataset.i)go(+e.target.dataset.i)};go(0);
+// struktur
+const HL=[["<span class='k'>#include</span> <span class='s'>&lt;stdio.h&gt;</span>","Preprocessor directive: menyertakan header stdio.h yang berisi fungsi input/output standar seperti printf."],["<span class='t'>int</span> main(){","Deklarasi fungsi utama. Eksekusi program selalu dimulai dari main, dan fungsi ini mengembalikan nilai int."],["    printf(<span class='s'>\"Hello World!\\n\"</span>);","Memanggil printf untuk mencetak teks ke layar. Tanda \\n adalah karakter newline yang memindahkan kursor ke baris baru."],["    <span class='k'>return</span> 0;","Mengakhiri main dan mengembalikan 0 ke sistem operasi. Nilai 0 berarti program selesai dengan sukses."],["}","Penutup blok fungsi main."]];
+$("#hello").innerHTML=HL.map((l,i)=>`<div class="ln" tabindex="0" data-i="${i}"><i>${i+1}</i><span>${l[0]}</span></div>`).join("");
+$("#hello").onclick=$("#hello").onkeydown=e=>{if(e.type=="keydown"&&e.key!="Enter")return;const r=e.target.closest(".ln");if(!r)return;$$(".ln").forEach(x=>x.classList.remove("sel"));r.classList.add("sel");$("#helloExp").innerHTML="<b>Baris "+(+r.dataset.i+1)+":</b> "+HL[r.dataset.i][1]};
+const PR={"Prosedur/fungsi":"Kode dibagi menjadi blok-blok prosedur atau fungsi; tiap prosedur berisi instruksi berurutan untuk satu tujuan.","Struktur kontrol":"Mendukung pernyataan kondisional, perulangan, dan pengulangan berdasarkan iterasi.","Variabel & data":"Variabel dipakai untuk menyimpan data, dan tipe data diatur lewat bahasa pemrograman.","Modularitas":"Program dipecah menjadi modul-modul yang mudah dikelola dan dikembangkan secara terpisah.","Reusabilitas":"Prosedur bisa dipanggil dari berbagai bagian program dan dipakai berulang kali."};
+$("#proc").innerHTML=Object.keys(PR).map(k=>`<button class="chip">${k}</button>`).join("");
+$("#proc").onclick=e=>{if(e.target.classList.contains("chip")){const p=$("#procExp");p.style.display="block";p.textContent=PR[e.target.textContent]}};
+// identifier
+function chk(n){return[["Maksimum 32 karakter",n.length>0&&n.length<=32],["Karakter pertama huruf atau underscore (_)",/^[A-Za-z_]/.test(n)],["Hanya huruf, angka, dan underscore (tanpa spasi)",/^[A-Za-z0-9_]+$/.test(n)],["Bukan kata kunci",!KW.includes(n)]]}
+function idRun(){const n=$("#idIn").value,r=chk(n);$("#idRules").innerHTML=r.map(x=>`<li class="${x[1]?"p":"f"}">${x[0]}</li>`).join("");const ok=r.every(x=>x[1]);$("#idRes").innerHTML=ok?"<span class='ok'>Valid</span>":"<span class='bad'>Tidak valid</span>";$("#idCase").innerHTML=n?`C bersifat <b>case sensitive</b>: <code>${esc(n)}</code> berbeda dari <code>${esc(swap(n))}</code>.`:"Ketik sebuah nama."}
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])),swap=s=>[...s].map(c=>c==c.toUpperCase()?c.toLowerCase():c.toUpperCase()).join("");
+$("#idIn").oninput=idRun;$$("[data-t]").forEach(b=>b.onclick=()=>{$("#idIn").value=b.dataset.t;idRun()});idRun();
+// keywords
+function kwRun(){const q=$("#kwIn").value.trim().toLowerCase();let n=0;$("#kw").innerHTML=KW.map(k=>{const h=!q||k.includes(q);n+=h;return`<button class="chip ${q&&h?"hit":""} ${!h?"dim":""}">${k}</button>`}).join("");$("#kwCount").textContent=n+" dari 32"}
+$("#kwIn").oninput=kwRun;kwRun();
+$("#kw").onclick=e=>{if(e.target.classList.contains("chip")){const k=e.target.textContent;$("#kwExp").innerHTML=`<code>${k}</code>: ${KWINFO[k]||"Kata kunci bahasa C dengan makna tetap. Tidak boleh dijadikan identifier."}`}};
+// tipe data
+const TD=[["int","Bilangan bulat",4,"-2,1×10⁹ hingga 2,1×10⁹"],["char","Karakter",1,"-128 hingga 127"],["float","Bilangan riil",4,"1,2×10⁻³⁸ hingga 3,4×10³⁸"],["short","Bilangan bulat",2,"-32768 hingga 32767"],["long","Bilangan bulat",8,"±9,2×10¹⁸"],["double","Bilangan riil",8,"2,3×10⁻³⁰⁸ hingga 1,7×10³⁰⁸"]];
+const cells=(n,l)=>Array.from({length:n},(_,i)=>`<div class="cell">${l?l[i]||"":i+1}</div>`).join("");
+$("#tt").innerHTML=TD.map((r,i)=>`<tr data-i="${i}" tabindex="0"><td class="mono"><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]} byte</td><td>${r[3]}</td></tr>`).join("");
+$("#tt").onclick=e=>{const r=e.target.closest("tr");if(!r)return;$$("#tt tr").forEach(x=>x.classList.remove("sel"));r.classList.add("sel");const t=TD[r.dataset.i];$("#memViz").innerHTML=cells(t[2]);$("#ttNote").innerHTML=`<code>${t[0]}</code> memakai <b>${t[2]} byte</b> (${t[2]*8} bit) untuk menyimpan ${t[1].toLowerCase()}.`};
+// variabel
+const VT={int:[4,/^-?\d+$/],char:[1,/^'.'$/],float:[4,/^-?\d+(\.\d+)?$/],short:[2,/^-?\d+$/],long:[8,/^-?\d+$/],double:[8,/^-?\d+(\.\d+)?$/]};
+function vRun(){const t=$("#vType").value,n=$("#vName").value.trim(),v=$("#vVal").value.trim(),m=[];
+const bad=chk(n).filter(x=>!x[1]);if(bad.length)m.push("Nama tidak valid: "+bad[0][0].toLowerCase()+" dilanggar.");
+if(v&&!VT[t][1].test(v)){m.push(t=="char"?"Nilai char ditulis satu karakter di antara tanda kutip tunggal, contoh 'a'.":["int","short","long"].includes(t)?"Tipe "+t+" hanya untuk bilangan bulat; nilai "+esc(v)+" tidak cocok.":"Nilai harus berupa angka, contoh 7.25.")}
+else if(v&&t=="short"&&Math.abs(+v)>32767)m.push("Nilai di luar rentang short (-32768 s.d. 32767).");
+else if(v&&t=="int"&&Math.abs(+v)>2147483647)m.push("Nilai di luar rentang int; coba tipe long.");
+$("#vCode").innerHTML=`<span class="t">${t}</span> ${esc(n)||"..."}${v?" = <span class='s'>"+esc(v)+"</span>":""};`;
+$("#vMem").innerHTML=cells(VT[t][0],v&&!m.length?(t=="char"?[v[1]]:[]):0);
+$("#vMsg").innerHTML=m.length?`<p class="bad">${m[0]}</p>`:`<p class="ok">Deklarasi benar. Variabel <code>${esc(n)}</code> memesan ${VT[t][0]} byte di memori.</p>`}
+["#vType","#vName","#vVal"].forEach(s=>$(s).oninput=vRun);vRun();
+$$("[data-v]").forEach(b=>b.onclick=()=>{const p=b.dataset.v.split("|");$("#vType").value=p[0];$("#vName").value=p[1];$("#vVal").value=p[2];vRun()});
+$$("[data-sc]").forEach(b=>b.onclick=()=>{$("#scMsg").innerHTML=b.dataset.sc=="total"?"<span class='ok'>Berhasil.</span> <code>total</code> adalah variabel global, bisa diakses di bagian program mana pun.":"<span class='bad'>Error:</span> 'x' undeclared. <code>x</code> variabel lokal, hanya bisa dipakai di dalam fungsi <code>main</code>."});
+// konstanta
+let isC=false;
+function cRun(){$("#cCode").innerHTML=`<span class="t">${isC?"const float":"float"}</span> pi = 3.14;`;$("#cV").className="btn"+(isC?" alt":"");$("#cC").className="btn"+(isC?"":" alt");$("#cMsg").textContent="Tekan tombol untuk mencoba."}
+$("#cV").onclick=()=>{isC=false;cRun()};$("#cC").onclick=()=>{isC=true;cRun()};
+$("#cTry").onclick=()=>{$("#cMsg").innerHTML=isC?"<span class='bad'>error:</span> assignment of read-only variable 'pi'. Konstanta tidak bisa diubah.":"<span class='ok'>Berhasil.</span> pi sekarang bernilai 3. Variabel biasa nilainya boleh berubah, tapi untuk nilai matematika seperti pi, konstanta lebih aman."};cRun();
+// kuis
+const QS=[["Fungsi yang menjadi titik awal eksekusi program C adalah...",["main()","printf()","stdio.h","return"],"Eksekusi program C selalu dimulai dari fungsi main."],
+["Identifier yang valid dalam C adalah...",["_total","2nilai","nama siswa","while"],"Karakter pertama harus huruf atau underscore, tanpa spasi, dan bukan kata kunci."],
+["Tipe data yang tepat untuk menyimpan jarak 7.25 adalah...",["float","int","char","short"],"7.25 adalah bilangan riil, jadi pakai float atau double."],
+["Berapa byte memori yang dipakai tipe data int menurut buku?",["4 byte","1 byte","2 byte","8 byte"],"int memakai 4 byte; char 1, short 2, long dan double 8."],
+["Karakter \\n pada printf berfungsi untuk...",["Pindah ke baris baru","Menghapus layar","Mengakhiri program","Menambah spasi"],"\\n adalah karakter newline."],
+["Variabel yang dideklarasikan di luar fungsi disebut variabel...",["global","lokal","konstanta","statis"],"Variabel global bisa diakses dari bagian program mana pun."],
+["Kata kunci untuk membuat konstanta di bahasa C adalah...",["const","static","define","final"],"Dengan const, nilai tidak dapat diubah selama program berjalan."],
+["Jumlah kata kunci pada bahasa C menurut buku adalah...",["32","16","50","64"],"Ada 32 kata kunci, dan tidak boleh dipakai sebagai identifier."],
+["Mana deklarasi variabel dengan nilai awal yang benar?",["int umur = 18;","umur int = 18;","int = umur 18;","18 = int umur;"],"Bentuknya: <tipe_data> <nama_variabel> = <nilai_awal>;"],
+["'Hello' dan 'hello' dianggap berbeda sebagai identifier karena C bersifat...",["case sensitive","case insensitive","strongly typed","interpretatif"],"C membedakan huruf besar dan huruf kecil."]];
+const sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let Q,qi,sc;
+function qStart(){Q=sh(QS).slice(0,8).map(q=>({q:q[0],o:sh(q[1]),a:q[1][0],e:q[2]}));qi=0;sc=0;qShow()}
+function qShow(){if(qi>=Q.length){const p=Math.round(sc/Q.length*100);$("#quiz").innerHTML=`<p class="big">${sc}/${Q.length}</p><p>${p>=75?"Kerja bagus! Kamu siap lanjut ke materi berikutnya.":"Ayo ulangi bagian materi yang masih terasa sulit."}</p><button class="btn" id="again">Main lagi (soal diacak)</button>`;$("#again").onclick=qStart;return}
+const q=Q[qi];$("#quiz").innerHTML=`<div class="bar"><b style="width:${qi/Q.length*100}%"></b></div><div class="mono" style="color:var(--mut)">Soal ${qi+1} dari ${Q.length}</div><h3 style="margin:6px 0">${esc(q.q)}</h3>${q.o.map(o=>`<button class="opt mono">${esc(o)}</button>`).join("")}<div id="fb"></div>`;
+$$(".opt").forEach(b=>b.onclick=()=>{const r=b.textContent==q.a;sc+=r;$$(".opt").forEach(x=>{x.disabled=true;if(x.textContent==q.a)x.classList.add("c")});if(!r)b.classList.add("w");$("#fb").innerHTML=`<div class="note"><b class="${r?"ok":"bad"}">${r?"Benar!":"Belum tepat."}</b> ${esc(q.e)}</div><button class="btn" id="nx" style="margin-top:10px">${qi+1<Q.length?"Soal berikutnya":"Lihat hasil"}</button>`;$("#nx").onclick=()=>{qi++;qShow()};$("#nx").scrollIntoView({block:"nearest",behavior:"smooth"})})}
+qStart();
+</script>
+</body>
+</html>
