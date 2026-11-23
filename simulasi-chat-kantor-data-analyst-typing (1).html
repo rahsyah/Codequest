@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<title>Simulasi Chat Kantor - Junior Data Analyst</title>
+<style>
+:root{--bg1:#e0f2fe;--bg2:#fef3c7;--card:#fff;--ink:#1e293b;--mut:#64748b;--pri:#4f46e5;--pri2:#7c3aed;--ok:#16a34a;--no:#dc2626;--warn:#f59e0b;--line:#e2e8f0;--chat:#efeae2;--kiri:#fff;--kanan:#d9fdd3}
+@media(prefers-color-scheme:dark){:root{--bg1:#0f172a;--bg2:#1e1b4b;--card:#1e293b;--ink:#f1f5f9;--mut:#94a3b8;--line:#334155;--chat:#0b141a;--kiri:#202c33;--kanan:#005c4b}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}body{overscroll-behavior-y:contain}
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--bg1),var(--bg2));min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:14px}
+.card{background:var(--card);border-radius:20px;padding:20px;box-shadow:0 8px 24px rgba(79,70,229,.12);margin-bottom:14px}
+h1{margin:6px 0;font-size:clamp(24px,6vw,34px)}.big{font-size:56px;text-align:center}.mut{color:var(--mut)}.ctr{text-align:center}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.btn{background:linear-gradient(90deg,var(--pri),var(--pri2));color:#fff;font-weight:700;padding:13px 22px;font-size:16px;width:100%}
+.ctr .btn{width:auto}.btn:active{transform:scale(.97)}
+.babak{display:flex;gap:10px;align-items:center;margin:8px 0}.babak span{font-size:28px}
+/* ---- aplikasi chat ---- */
+#sGame{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;max-width:820px;margin:0 auto;display:flex;flex-direction:column;background:var(--chat);box-shadow:0 0 40px rgba(0,0,0,.25)}
+.top{background:var(--pri);color:#fff;padding:8px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top .av{background:#fff}.who{flex:1;min-width:0;line-height:1.2}.who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.who small{opacity:.85}
+.chip{background:rgba(255,255,255,.2);border-radius:99px;padding:6px 12px;font-weight:700;font-size:13px;white-space:nowrap}
+.help{background:var(--warn);color:#422006;font-weight:700;padding:9px 12px;min-height:40px;font-size:13px}.help:disabled{opacity:.4;cursor:not-allowed}
+.bar{height:5px;background:rgba(0,0,0,.15)}.bar i{display:block;height:100%;width:0;background:var(--warn);transition:width .4s}
+#chat{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 10px;background-image:radial-gradient(rgba(100,116,139,.18) 1px,transparent 1px);background-size:18px 18px}
+.row{display:flex;gap:8px;margin:8px 0;align-items:flex-end}.row.kanan{justify-content:flex-end}
+.av{width:38px;height:38px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:22px;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.msg{max-width:84%;padding:8px 12px;border-radius:14px;line-height:1.45;font-size:15px;box-shadow:0 1px 2px rgba(0,0,0,.18);animation:pop .22s;overflow-wrap:anywhere}
+.kiri .msg{background:var(--kiri);border-bottom-left-radius:4px}.kanan .msg{background:var(--kanan);border-bottom-right-radius:4px}
+.nm{font-weight:700;font-size:12.5px;color:var(--pri);margin-bottom:2px}.kanan .nm{color:var(--ok)}
+.msg time{display:block;text-align:right;font-size:11px;color:var(--mut);margin-top:3px}
+.sis{text-align:center;margin:10px 0}.sis span{background:rgba(100,116,139,.28);border-radius:10px;padding:4px 12px;font-size:12.5px}
+.tbl{overflow-x:auto;margin:8px 0}table{border-collapse:collapse;font-size:13px}th,td{border:1px solid var(--line);padding:4px 8px;text-align:left}th{background:var(--pri);color:#fff}
+.poin{display:inline-block;background:var(--ok);color:#fff;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700;margin-top:4px}
+.dots span{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--mut);animation:bl 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,80%,100%{opacity:.25}40%{opacity:1}}@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+#bawah{background:var(--card);border-top:1px solid var(--line);padding:10px 10px calc(10px + env(safe-area-inset-bottom));max-height:46vh;max-height:46dvh;overflow-y:auto;overscroll-behavior:contain}
+.lbl{font-size:12.5px;font-weight:700;color:var(--mut);margin:0 2px 6px}
+.opt{min-height:48px;display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--kanan);color:var(--ink);border:2px solid var(--ok);border-radius:18px 18px 4px 18px;padding:10px 14px;margin:6px 0;font-size:15px;line-height:1.4;transition:.15s}
+.opt:hover:not(:disabled){transform:translateX(-3px);filter:brightness(.96)}
+.opt b{background:var(--ok);color:#fff;border-radius:8px;min-width:26px;height:26px;display:grid;place-items:center;flex:none}
+.opt.no{border-color:var(--no);background:rgba(220,38,38,.12);opacity:.6;text-decoration:line-through}.opt.no b{background:var(--no)}
+.opt.gone{opacity:.2;text-decoration:line-through;border-style:dashed}
+.inp{width:100%;max-width:380px;font:inherit;font-size:18px;padding:13px 16px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-align:center;margin:6px 0 14px}
+.inp:focus{outline:none;border-color:var(--pri)}.shake{animation:sh .4s;border-color:var(--no)}
+@keyframes sh{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.ctr .btn{margin:4px}
+.tgt{font-family:Consolas,"Courier New",monospace;background:rgba(79,70,229,.1);border:1px dashed var(--pri);border-radius:8px;padding:8px 10px;margin:6px 0;font-size:14.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.tgt .ok{color:var(--ok);font-weight:700}.tgt .bad{color:var(--no);background:rgba(220,38,38,.2);font-weight:700}.tgt .cur{border-left:2px solid var(--pri)}
+.comp{display:flex;gap:8px;align-items:center}
+.comp input{flex:1;min-width:0;font-family:Consolas,"Courier New",monospace;font-size:16px;padding:11px 16px;border:2px solid var(--line);border-radius:24px;background:var(--card);color:var(--ink)}
+.comp input:focus{outline:none;border-color:var(--pri)}
+.send{background:var(--pri);color:#fff;width:46px;height:46px;border-radius:50%;font-size:20px;flex:none}
+.tm{font-size:12.5px;color:var(--mut);margin-top:6px}
+@media(max-width:480px){.wrap{padding:10px}.card{padding:16px}.msg{max-width:90%;font-size:14.5px}.top{flex-wrap:nowrap;gap:6px;padding:8px}.chip{padding:6px 10px}.who small{font-size:11px}.btn{min-height:48px}.tgt{font-size:13.5px}}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:30}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="wrap">
+<section id="sMulai" class="card ctr">
+  <div class="big">💬</div>
+  <h1>Simulasi Chat Kantor</h1>
+  <p class="mut">Hari pertama jadi <b>Junior Data Analyst</b>! Atasan dan rekan kerja akan mengirim masalah data lewat chat. Balas dengan tindakan yang tepat untuk menambah <b>Reputasi Kantor</b>. Tidak ada Game Over: salah dibalas dengan reaksi lucu, lalu coba lagi!</p>
+  <div style="text-align:left;max-width:380px;margin:12px auto" id="daftarBabak"></div>
+  <label class="mut" for="inNama" style="font-weight:700">Siapa namamu, Analis?</label><br>
+  <input class="inp" id="inNama" type="text" maxlength="40" placeholder="Ketik nama lengkapmu" autocomplete="name"><br>
+  <button class="btn" onclick="mulai()">🚀 Buka Chat Kantor</button>
+</section>
+<section id="sAntar" class="card ctr" hidden>
+  <div class="big" id="aIkon"></div><h1 id="aJudul"></h1>
+  <p class="mut" id="aIsi"></p>
+  <button class="btn" id="aBtn"></button>
+</section>
+<section id="sAkhir" class="card ctr" hidden>
+  <div class="big">🏅</div><h1>Halaman Reward</h1>
+  <p>Selamat, <b id="fNama"></b>! Total Reputasi Kantor-mu:</p>
+  <div style="font-size:48px;font-weight:800;color:var(--pri)" id="fSkor"></div>
+  <p>Jabatan barumu: <b id="fRank"></b></p>
+  <p class="mut" id="fRinci"></p>
+  <img id="sertImg" alt="Sertifikat penghargaan" style="width:100%;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.25);margin:10px 0">
+  <p class="mut" style="font-size:13px;margin:0 0 8px">Jika tombol tidak mengunduh (misalnya dibuka dari dalam aplikasi chat), tekan lama gambar lalu pilih "Simpan gambar".</p>
+  <button class="btn" onclick="unduh()">⬇️ Unduh Sertifikat (PNG)</button>
+  <button class="btn" style="background:var(--mut)" onclick="location.reload()">🔁 Main Lagi</button>
+</section>
+</div>
+
+<section id="sGame" hidden>
+  <div class="top">
+    <div class="av" id="hAv">💬</div>
+    <div class="who"><b id="hNama">Chat Kantor</b><small id="hStatus">online</small></div>
+    <span class="chip">🏆 <span id="hSkor">0</span></span>
+    <button class="help" id="btnBantu" onclick="bantuan()"></button>
+  </div>
+  <div class="bar"><i id="prog"></i></div>
+  <div id="chat"></div>
+  <div id="bawah" hidden></div>
+</section>
+
+<script>
+/* =====================================================================
+   ★ BAGIAN UNTUK GURU: PENGATURAN GAME ★
+   ===================================================================== */
+const KONFIG = {
+  ACAK_SOAL: true,      // true = urutan soal (termasuk soal mengetik) diacak di dalam tiap babak SETIAP game dimainkan
+  ACAK_OPSI: true,      // true = urutan pilihan A-B-C-D diacak
+  POIN_BENAR: 10,       // poin jika benar pada percobaan pertama
+  POIN_ULANG: 5,        // poin jika benar setelah salah/mencoba ulang
+  JATAH_BANTUAN: 3,     // jumlah "Tanya Senior (50:50)" per permainan
+  POIN_BONUS_KETIK: 5,  // bonus poin ⚡ Kilat untuk soal mengetik yang selesai sebelum batas waktu (percobaan pertama)
+  NAMA_SEKOLAH: "SMK Pawiyatan Surabaya",                        // tampil di sertifikat
+  JUDUL_MAPEL:  "Data Analyst Administrasi - Kelas XII Manajemen Perkantoran",  // tampil di sertifikat
+  NAMA_GURU:    "Hamsyah"        // isi nama Anda untuk tanda tangan di sertifikat (kosongkan = "Guru Mata Pelajaran")
+};
+
+const BABAK = [
+  { nama: "Data Cleaning",          ikon: "🧹", ket: "Kenali, rapikan, dan siapkan data." },
+  { nama: "Rumus & Pengolahan",     ikon: "🧮", ket: "VLOOKUP, HLOOKUP, Pivot Table, dan kawan-kawan." },
+  { nama: "Visualisasi & Insight",  ikon: "📈", ket: "Ubah data jadi cerita dan keputusan." }
+];
+
+/* =====================================================================
+   ★ BAGIAN UNTUK GURU: KARAKTER KANTOR (pengirim pesan di chat) ★
+   Tiap karakter punya nama, avatar emoji, kalimat pembuka, pujian (jika siswa benar),
+   dan reaksi lucu (jika siswa salah). Boleh ditambah/diganti sesuka Anda.
+   Untuk memilih pengirim suatu soal, tambahkan  tokoh:"bos"  (atau hrd / keu / senior)
+   di blok soal. Jika tidak ditulis, karakter dipilih otomatis bergantian.
+   ===================================================================== */
+const TOKOH = {
+  bos:    { nama:"Pak Bos",       ikon:"👨‍💼", peran:"Manajer",
+            pembuka:["Selamat pagi! Bisa minta tolong sebentar? 🙏","Ada masalah data nih, tolong dibantu ya."],
+            puji:["Mantap! Inilah analis yang saya cari 👏","Tepat sekali! Bonus kopi gratis buat kamu ☕"],
+            kaget:["Waduh... kalau begini, laporan saya bisa dikembalikan direksi 😅","Hmm, saya jadi pusing. Coba dipikir lagi ya 🤯"] },
+  hrd:    { nama:"Mbak HRD",      ikon:"👩‍💼", peran:"HRD",
+            pembuka:["Hai! Aku butuh bantuanmu soal data nih 😊","Halo Analis, ada yang perlu dicek bareng ya."],
+            puji:["Yeay, benar banget! Kamu keren 🌟","Tepat! Aku catat di penilaian kinerjamu ✨"],
+            kaget:["Aduh, hampir! Tapi belum pas nih 🙈","Eh eh, kayaknya itu kurang tepat deh 😬"] },
+  keu:    { nama:"Tim Keuangan",  ikon:"🧑‍💻", peran:"Keuangan",
+            pembuka:["Permisi, ada angka yang bikin kami bingung 📊","Halo, tolong bantu cek data ini ya."],
+            puji:["Angkanya klop! Terima kasih ya 💰","Benar! Auditor pun akan tersenyum 😁"],
+            kaget:["Waduh, kalau begini neraca kami bisa jebol 😱","Hmm, angkanya jadi tidak klop nih 🧮"] },
+  senior: { nama:"Mas Senior",    ikon:"🧔", peran:"Senior Analyst",
+            pembuka:["Yo Junior! Ada kasus menarik nih 😎","Sini, kita bahas satu kasus data."],
+            puji:["Nah, gitu dong! Kamu belajar cepat 💪","Mantap, aku bangga sama juniorku 🥹"],
+            kaget:["Hehe, jebakan klasik! Coba lagi ya 😄","Hampir! Dulu aku juga pernah salah di sini 🙃"] }
+};
+const TOKOH_BAWAAN = [["hrd","keu","bos"],["keu","senior","bos"],["bos","hrd","senior"]]; // urutan otomatis per babak
+
+/* =====================================================================
+   ★ BAGIAN UNTUK GURU: DAFTAR SOAL (30 SOAL) ★
+   Cara mengedit — tiap soal adalah satu blok { ... }, pisahkan dengan koma.
+     babak  : 1, 2, atau 3 (10 soal per babak)
+     soal   : teks pertanyaan
+     tabel  : (OPSIONAL) tabel pendukung, baris pertama = judul kolom. Hapus baris ini jika tidak perlu.
+     opsi   : daftar pilihan jawaban, urut A, B, C, D (boleh 4 atau 5 pilihan)
+     kunci  : huruf jawaban benar sesuai urutan di "opsi" ("A", "B", "C", "D", atau "E")
+     salah  : balasan atasan di chat jika siswa menjawab SALAH (letak kesalahan, boleh dibuat lucu)
+     tips   : "Tips Cepat Ingat" yang dikirim atasan setelah memuji (jawaban BENAR)
+     tokoh  : (OPSIONAL) pengirim pesan: "bos", "hrd", "keu", atau "senior"
+   SOAL MENGETIK CEPAT (variasi): tulis  tipe:"ketik"  lalu isi
+     teks   : kalimat/rumus yang harus diketik persis oleh siswa
+     batas  : target waktu (detik) untuk bonus ⚡ Kilat
+     (soal, salah, tips, tabel, tokoh dipakai seperti biasa; "opsi" dan "kunci" tidak diperlukan)
+   Catatan: jangan pakai tanda kutip ganda (") di dalam teks; gunakan kutip tunggal (').
+   ===================================================================== */
+const questions = [
+
+/* ================= BABAK 1: DATA CLEANING ================= */
+{ babak:1,
+  soal:"Seorang staf administrasi mengumpulkan nomor telepon pelanggan, alamat email, dan catatan keluhan layanan ke dalam komputer. Sebelum diolah menjadi laporan grafik bulanan bagi manajer, kumpulan fakta mentah tersebut disebut sebagai...",
+  opsi:["Informasi","Database terstruktur","Data","Keputusan manajerial","Arsip statis"], kunci:"C",
+  salah:"Fakta mentah yang belum diolah itu masih 'bahan baku', bukan 'masakan jadi'. Kalau sudah diolah dan punya makna, barulah disebut informasi. Tepung belum bisa disebut kue 🍰.",
+  tips:"Data = bahan mentah. Informasi = masakan jadi. Keputusan = pesta makan!" },
+
+{ babak:1,
+  soal:"Dalam siklus pengolahan data administrasi, proses memeriksa kelengkapan dokumen, menghapus data ganda (duplicate), dan memperbaiki kesalahan format tanggal sebelum data dianalisis dikenal dengan istilah...",
+  opsi:["Data Collection (Pengumpulan Data)","Data Cleaning (Pembersihan Data)","Data Visualization (Visualisasi Data)","Data Archiving (Pengarsipan Data)","Data Distribution (Distribusi Data)"], kunci:"B",
+  salah:"Menghapus duplikat dan merapikan format itu seperti mencuci sayur sebelum dimasak 🥬. Namanya Data Cleaning. Visualisasi baru dilakukan setelah datanya bersih.",
+  tips:"Cleaning = mencuci sebelum memasak. Data kotor, hasil analisis ikut kotor!" },
+
+{ babak:1,
+  soal:"Dalam pengelolaan data kepegawaian di Excel, setiap karyawan diberi Nomor Induk Pegawai (NIP) yang berbeda agar data tidak tertukar saat ditarik dengan rumus pencarian. Dalam konsep basis data, NIP berfungsi sebagai...",
+  opsi:["Foreign Key","Record","Field","Primary Key","Value"], kunci:"D",
+  salah:"Record itu satu baris data, Field itu satu kolom, Value itu isi selnya. Yang bertugas jadi 'KTP unik' pembeda tiap baris adalah Primary Key 🔑.",
+  tips:"Primary Key = KTP-nya data: unik, tidak boleh kembar." },
+
+{ babak:1,
+  soal:"Range F2:F8 menunjukkan ...",
+  opsi:["Satu baris dan tujuh kolom","Tujuh baris dan satu kolom","Dua baris dan delapan kolom","Delapan baris dan dua kolom","Dua baris dan tujuh kolom"], kunci:"B",
+  salah:"Huruf F itu kolomnya (cuma satu, tetap di F), sedangkan angka 2 sampai 8 itu barisnya. Jadi berjalan ke bawah dari baris 2 sampai 8 = 7 baris. Hati-hati, jangan menghitung 8 - 2 = 6 ya (ujungnya ikut dihitung)!",
+  tips:"Huruf = kolom (berdiri tegak), Angka = baris (berbaring). Hitung 2,3,4,5,6,7,8 = 7 baris." },
+
+{ babak:1,
+  soal:"Dalam data pegawai terdapat beberapa cell kosong pada kolom Nomor Telepon. Seorang staf langsung mengisi semua cell kosong dengan angka 0. Tindakan tersebut sebaiknya ...",
+  opsi:["Dipertahankan karena kosong berarti nol","Dilanjutkan agar seluruh tabel terisi","Diganti dengan angka acak untuk sementara","Dihapus bersama seluruh baris pegawai","Diperiksa karena kosong belum tentu berarti nol"], kunci:"E",
+  salah:"Kosong itu bisa berarti 'belum diisi', 'tidak punya', atau 'lupa dicatat'. Nomor telepon '0' itu palsu dan bisa menyesatkan analisis. Selidiki dulu sebelum mengisi 🕵️.",
+  tips:"Kosong ≠ Nol. Kosong = 'tidak tahu', nol = 'ada nilainya yaitu nol'." },
+
+{ babak:1,
+  soal:"Admin menemukan satu pelanggan tercatat tiga kali dengan nomor telepon yang sama. Jika data langsung dipakai untuk menghitung jumlah pelanggan, hasil laporan menjadi lebih besar dari kondisi sebenarnya. Langkah yang paling tepat adalah ...",
+  opsi:["Menggandakan data agar lebih mudah dihitung","Menghapus seluruh pelanggan yang memiliki nomor telepon","Mengubah nomor telepon menjadi angka acak","Menggunakan fungsi MAX untuk memilih pelanggan","Mengidentifikasi dan menangani data duplikat sebelum analisis"], kunci:"E",
+  salah:"Satu orang dihitung tiga kali = laporan jadi 'pelanggan bayangan' 👻. Duplikat harus ditemukan dan ditangani (misalnya Remove Duplicates) SEBELUM dianalisis.",
+  tips:"Duplikat = penggelembung angka. Bersihkan dulu, hitung kemudian." },
+
+{ babak:1,
+  soal:"Seorang administrator menemukan total penjualan di spreadsheet adalah Rp780 juta, sedangkan laporan sistem perusahaan menunjukkan Rp670 juta. Langkah pertama yang paling ilmiah sebelum menyatakan salah satu laporan salah adalah ...",
+  opsi:["Memilih angka yang lebih besar","Memeriksa sumber data, periode, duplikasi, filter, dan formula yang digunakan","Menghapus spreadsheet","Menggunakan angka sistem tanpa pemeriksaan","Mengubah semua data agar sama"], kunci:"B",
+  salah:"Menebak-nebak atau memaksa angka agar sama itu bukan analisis, itu sulap 🎩. Cara ilmiah: telusuri dulu sumber, periode, duplikat, filter, dan rumusnya.",
+  tips:"Angka beda? Jangan menuduh, telusuri: Sumber - Periode - Duplikat - Filter - Formula." },
+
+{ babak:1,
+  soal:"Seorang admin membuat tabel referensi: Kolom A = Nama Karyawan, Kolom B = ID Karyawan, Kolom C = Divisi. Ia mencari Nama Karyawan berdasarkan ID dengan rumus =VLOOKUP(ID_Karyawan; $A$2:$C$20; 1; FALSE), namun selalu gagal. Solusi paling tepat untuk memperbaiki struktur data adalah ...",
+  opsi:["Mengganti argumen FALSE menjadi TRUE","Mengubah angka indeks kolom 1 menjadi 2","Memindahkan kolom ID Karyawan ke posisi paling kiri (kolom pertama) pada tabel referensi","Mengganti fungsi VLOOKUP menjadi HLOOKUP tanpa mengubah posisi kolom","Menghapus tanda dolar ($) pada rentang tabel referensi"], kunci:"C",
+  salah:"VLOOKUP itu 'penderita rabun': ia hanya mencari di kolom PALING KIRI tabel dan mengambil data ke arah kanan. ID ada di kolom B, jadi dia tidak ketemu. Pindahkan ID ke kolom pertama!",
+  tips:"VLOOKUP hanya melihat ke kanan ➡️. Kunci pencarian harus di kolom paling kiri." },
+
+{ babak:1,
+  soal:"Sebuah tabel transaksi berisi Kode Barang dan Jumlah. Tabel referensi berisi Kode Barang, Nama Barang, dan Harga. Jika staf ingin mengambil Nama Barang berdasarkan Kode Barang, maka data referensi sebaiknya memiliki ...",
+  opsi:["Kode Barang pada kolom pertama","Nama Barang pada kolom pertama","Jumlah transaksi pada kolom pertama","Total transaksi pada kolom pertama","Harga Barang pada kolom pertama"], kunci:"A",
+  salah:"Yang dijadikan kunci pencarian (Kode Barang) harus berada di kolom pertama tabel referensi. Kalau yang di depan malah Nama atau Harga, rumusnya mencari di tempat yang salah 🔍.",
+  tips:"Kunci dulu, baru isinya: kolom pertama = yang dicari." },
+
+{ babak:1, tipe:"ketik",
+  soal:"Mohon input ulang data pegawai ini ke sistem. Hati-hati, satu typo atau spasi nyasar saja bisa bikin VLOOKUP menghasilkan #N/A!",
+  teks:"P0798 / Watanabe Kaito / Admin / 23-11-2026", batas:15,
+  salah:"Data yang salah ketik atau kelebihan spasi tidak dikenali VLOOKUP, hasilnya #N/A dan laporan jadi berantakan 😵. Kunci pencarian harus persis sama!",
+  tips:"#N/A sering lahir dari typo atau spasi tersembunyi. Input teliti = data bersih." },
+
+/* ================= BABAK 2: RUMUS & PENGOLAHAN ================= */
+{ babak:2,
+  soal:"Perbedaan mendasar antara fungsi VLOOKUP dan HLOOKUP dalam pengolahan tabel referensi administrasi terletak pada...",
+  opsi:["Jumlah argumen yang digunakan di dalam rumus","Jenis data yang dicari (teks atau angka)","Arah pembacaan tabel referensi (vertikal/kolom atau horizontal/baris)","Versi aplikasi Microsoft Excel yang digunakan","Kecepatan dalam memproses ribuan baris data"], kunci:"C",
+  salah:"Keduanya sama-sama punya 3-4 argumen dan bisa mencari teks maupun angka. Beda mereka cuma arah: V = Vertikal (tabel tersusun ke bawah/kolom), H = Horizontal (tabel tersusun mendatar/baris) ↕️↔️.",
+  tips:"V = Vertikal (kolom), H = Horizontal (baris). Lihat bentuk tabelnya!" },
+
+{ babak:2,
+  soal:"Perhatikan sintaks =VLOOKUP(lookup_value; table_array; col_index_num; [range_lookup]). Argumen col_index_num berfungsi untuk menentukan...",
+  opsi:["Sel kunci yang dijadikan patokan pencarian data","Alamat rentang tabel referensi yang diblok","Nomor urut kolom pada tabel referensi yang nilainya akan diambil","Tingkat kecocokan data apakah mutlak atau mendekati","Nomor baris tempat hasil rumus akan ditampilkan"], kunci:"C",
+  salah:"Sel kunci itu lookup_value, rentang tabel itu table_array, tingkat kecocokan itu range_lookup. Nah, col_index_num itu 'nomor kolom ke berapa yang mau dipetik' 🍎, dihitung dari kolom pertama tabel.",
+  tips:"col_index = 'Kolom ke-berapa yang diambil?' (hitung dari kolom paling kiri tabel = 1)." },
+
+{ babak:2,
+  soal:"Seorang admin logistik mencari nama barang berdasarkan kode menggunakan VLOOKUP. Agar kode yang dicari harus sama persis dengan di tabel referensi (dan memunculkan #N/A jika salah ketik), argumen [range_lookup] wajib diisi dengan...",
+  opsi:["TRUE atau 1","FALSE atau 0","EXACT","MATCH","Dikosongkan tanpa tanda titik koma"], kunci:"B",
+  salah:"TRUE (atau dikosongkan) berarti 'cocok perkiraan' dan sering menghasilkan jawaban ngawur kalau data belum urut. Untuk kecocokan persis, gunakan FALSE atau 0.",
+  tips:"FALSE = Fanatik, harus persis sama. TRUE = Toleran, boleh mirip-mirip." },
+
+{ babak:2, tipe:"ketik",
+  soal:"Tolong ketik rumus di sel B2 untuk mengambil Nama Barang berdasarkan kode di A2 dari tabel referensi D1:F4. Tabel referensi harus dikunci dengan tanda $ supaya aman ditarik ke bawah.",
+  tabel:[["Kode","Nama Barang","Harga"],["KRT-01","Kertas HVS A4 80gr","52000"],["KRT-02","Kertas Folio F4 70gr","48000"],["TNT-01","Tinta Printer Hitam","95000"]],
+  teks:"=VLOOKUP(A2;$D$2:$F$4;2;FALSE)", batas:18,
+  salah:"Rumus itu rewel: lupa tanda $, salah titik koma, atau huruf FALSE kurang satu saja bisa bikin error 😅. Teliti tiap karakter!",
+  tips:"=VLOOKUP(kunci; $tabel$ terkunci; kolom ke-n; FALSE). Tabel dikunci ($), kunci pencarian dibiarkan bebas." },
+
+{ babak:2,
+  soal:"Tabel referensi tunjangan jabatan disusun mendatar pada rentang A10:D12. Jika sel C2 berisi golongan pegawai 'II', rumus yang tepat untuk menampilkan besaran Tunjangan pegawai tersebut secara otomatis adalah...",
+  tabel:[["Golongan (baris 10)","I","II","III"],["Jabatan (baris 11)","Staf Admin","Supervisor","Manajer"],["Tunjangan (baris 12)","500000","1250000","2500000"]],
+  opsi:["=HLOOKUP(C2; $A$10:$D$12; 2; FALSE)","=VLOOKUP(C2; $A$10:$D$12; 3; FALSE)","=HLOOKUP(C2; $B$10:$D$12; 2; FALSE)","=HLOOKUP(C2; $B$10:$D$12; 3; FALSE)","=HLOOKUP(C2; $A$10:$D$12; 3; TRUE)"], kunci:"D",
+  salah:"Tabel mendatar = HLOOKUP. Rentang yang dipakai harus dimulai dari kolom B ($B$10:$D$12) supaya baris pertama berisi golongan I, II, III yang dicari. Tunjangan ada di baris ke-3 dari rentang, jadi row_index = 3, dan pencarian pastinya FALSE.",
+  tips:"HLOOKUP: hitung BARIS dari atas. Judul (1) - Jabatan (2) - Tunjangan (3)." },
+
+{ babak:2,
+  soal:"Data pegawai: P0689 Kobayashi Aoi (Kasir), P0798 Watanabe Kaito (Admin), P0981 Takahashi Yui (Sekertaris). Pada tabel absensi hanya terdapat Kode Pegawai. Admin ingin secara otomatis menampilkan nama pegawai berdasarkan kode tersebut. Fungsi yang paling sesuai adalah ...",
+  tabel:[["Kode","Nama","Jabatan"],["P0689","Kobayashi Aoi","Kasir"],["P0798","Watanabe Kaito","Admin"],["P0981","Takahashi Yui","Sekertaris"]],
+  opsi:["VLOOKUP","IF","AVERAGE","COUNT","MAX"], kunci:"A",
+  salah:"IF untuk logika, AVERAGE untuk rata-rata, COUNT untuk menghitung jumlah sel angka, MAX untuk nilai tertinggi. Mengambil data dari tabel lain berdasarkan kode = tugas VLOOKUP 🔎.",
+  tips:"Ingin 'ambil data dari tabel lain' ➜ ingat VLOOKUP si Pencari Handal." },
+
+{ babak:2,
+  soal:"Sebuah perusahaan memiliki ribuan transaksi dengan kolom Tanggal, Cabang, Produk, dan Total Penjualan. Manajer meminta ringkasan total penjualan setiap cabang tanpa menghitung transaksi satu per satu. Fitur yang paling sesuai adalah ...",
+  opsi:["Find","Sort","Pivot Table","Spell Check","Page Layout"], kunci:"C",
+  salah:"Find mencari kata, Sort mengurutkan, Spell Check memeriksa ejaan, Page Layout mengatur halaman cetak. Meringkas ribuan baris per kategori dalam sekejap = Pivot Table 🧩.",
+  tips:"Banyak data + butuh ringkasan per kategori = Pivot Table." },
+
+{ babak:2,
+  soal:"Sebuah perusahaan memiliki 10.000 transaksi dari berbagai cabang. Manajer meminta laporan: 'Berapa total transaksi masing-masing cabang setiap bulan?' Cara yang paling efisien adalah ...",
+  opsi:["Menghitung satu per satu menggunakan kalkulator","Menggunakan Pivot Table dengan cabang dan bulan sebagai kategori","Menghapus data transaksi lama","Membuat satu worksheet untuk setiap transaksi","Mengurutkan data berdasarkan nama pelanggan"], kunci:"B",
+  salah:"Kalkulator untuk 10.000 transaksi? Besok pagi belum selesai 😅. Pivot Table bisa merangkum dengan cabang dan bulan sebagai kategori hanya dalam beberapa klik.",
+  tips:"Dua kategori (cabang x bulan) = Baris & Kolom di Pivot Table." },
+
+{ babak:2,
+  soal:"Sebelumnya staf membutuhkan tiga jam setiap akhir bulan untuk membuat rekap pengeluaran. Setelah menggunakan spreadsheet dengan rumus dan template otomatis, pekerjaan selesai dalam 30 menit. Kesimpulan yang paling tepat adalah ...",
+  opsi:["Spreadsheet menggantikan seluruh pekerjaan staf","Keputusan perusahaan dapat dibuat tanpa analisis","Data keuangan tidak perlu diperiksa kembali","Semua laporan dapat dibuat tanpa sumber data","Otomatisasi dapat mengurangi pekerjaan berulang"], kunci:"E",
+  salah:"Otomatisasi itu asisten, bukan pengganti. Ia mempercepat pekerjaan berulang, tetapi manusia tetap perlu memeriksa data, menganalisis, dan mengambil keputusan 🤖🤝🧑.",
+  tips:"Otomatisasi = memangkas kerja berulang, bukan memangkas berpikir." },
+
+{ babak:2,
+  soal:"Seorang staf memiliki data absensi pegawai selama satu bulan. Manajer meminta menentukan pegawai yang perlu perhatian khusus berdasarkan jumlah ketidakhadiran TANPA keterangan resmi. Analisis yang paling tepat adalah...",
+  tabel:[["PEGAWAI","HADIR","IZIN","SAKIT","ALPA"],["Ban Tjie Tong","22","2","1","0"],["Ban Seng Tong","19","1","2","3"],["Pien Tze Huang","23","1","1","0"],["Zhong Yao","20","3","1","1"],["Wan Fu Dang","22","0","3","0"]],
+  opsi:["Membandingkan jumlah izin seluruh pegawai","Mengurutkan pegawai berdasarkan jumlah hadir","Membandingkan jumlah alpa setiap pegawai","Menghitung rata-rata sakit seluruh pegawai","Menjumlahkan seluruh data ketidakhadiran"], kunci:"C",
+  salah:"Izin dan sakit punya keterangan resmi, jadi bukan masalah. Yang tidak disertai keterangan adalah ALPA. Pilih kolom data yang menjawab pertanyaan manajer 🎯.",
+  tips:"Baca pertanyaannya, pilih kolom yang relevan: tanpa keterangan = ALPA." },
+
+/* ================= BABAK 3: VISUALISASI & INSIGHT ================= */
+{ babak:3,
+  soal:"Pemantauan cepat dan berkelanjutan atas kondisi terkini, berformat ringkas dalam satu tampilan, bersifat visual, sering terhubung ke data yang diperbarui otomatis, dan cocok untuk memantau penjualan harian. Hal tersebut dikenal sebagai…",
+  opsi:["Analyst","Dashboard","Report / Laporan","Flowchart","Storyboard"], kunci:"B",
+  salah:"Satu layar, visual, real-time, untuk memantau = Dashboard, seperti dashboard mobil yang menunjukkan kecepatan saat ini 🚗. Report lebih rinci dan statis (laporan periodik).",
+  tips:"Dashboard = speedometer (pantau sekarang). Report = buku rapor (rangkuman periode)." },
+
+{ babak:3,
+  soal:"Memberikan ringkasan komprehensif, konteks, dan penjelasan mendalam atas data historis atau pertanyaan bisnis tertentu. Umumnya rinci, bisa beberapa halaman, bersifat periodik/statis, lengkap dengan narasi dan rekomendasi. Cocok untuk mencatat keuangan bulanan. Hal tersebut dikenal sebagai…",
+  opsi:["Analyst","Dashboard","Report / Laporan","Flowchart","Storyboard"], kunci:"C",
+  salah:"Rinci, berhalaman-halaman, statis, ada narasi dan rekomendasi = Report / Laporan 📄. Dashboard itu ringkas dan hidup, bukan dokumen panjang.",
+  tips:"Report = Rapor bulanan. Rinci, periodik, ada narasi." },
+
+{ babak:3,
+  soal:"Mengolah dan menganalisis data mentah untuk menemukan pola, tren, atau anomali, lalu mengubahnya menjadi insight dan rekomendasi tindakan. Perannya menentukan metrik relevan, menyusun struktur analisis, membangun/memelihara dashboard maupun report, serta menjelaskan maknanya kepada pemangku kepentingan. Hal tersebut dikenal sebagai…",
+  opsi:["Analyst","Dashboard","Report / Laporan","Flowchart","Storyboard"], kunci:"A",
+  salah:"Deskripsi ini berbicara tentang SEORANG yang bekerja (menganalisis, membangun, menjelaskan), bukan alat atau dokumennya. Dashboard dan Report adalah produk kerjanya; pelakunya adalah Analyst 🧑‍💻.",
+  tips:"Analyst = si Pembuat Dashboard & Report sekaligus penjelasnya." },
+
+{ babak:3,
+  soal:"Seorang admin menyimpulkan bahwa Kecap Rajarasa harus menjadi prioritas utama karena penjualannya nomor dua. Namun supervisor meminta analisis tambahan sebelum keputusan dibuat. Data apa yang paling perlu diperhatikan?",
+  tabel:[["PRODUK","PENJUALAN","RETURN"],["Kecap Rajarasa","486","74"],["Kecap Jeruk Nipis Tulen","578","38"],["Kecap Lee Kum Kee","293","21"]],
+  opsi:["Warna tabel","Jumlah karakter nama produk","Persentase retur terhadap penjualan","Urutan produk dalam tabel","Jumlah kolom pada laporan"], kunci:"C",
+  salah:"Penjualan tinggi belum tentu bagus kalau banyak dikembalikan. Hitung rasio retur: 74/486 ≈ 15,2% (Rajarasa) vs 38/578 ≈ 6,6% dan 21/293 ≈ 7,2%. Jadi Rajarasa justru paling sering diretur! Warna dan urutan tabel tidak ada hubungannya 🎨.",
+  tips:"Jangan terpukau angka besar. Bandingkan rasio (persentase), bukan hanya jumlah." },
+
+{ babak:3,
+  soal:"Manajer memiliki data penjualan bulanan selama satu tahun. Ia ingin mengetahui apakah penjualan cenderung naik atau turun dari waktu ke waktu. Grafik yang paling sesuai adalah ...",
+  opsi:["Pie Chart","Column Chart","Line Chart","Scatter Chart","Doughnut Chart"], kunci:"C",
+  salah:"Pie dan Doughnut untuk bagian dari keseluruhan, Scatter untuk hubungan dua variabel, Column untuk membandingkan kategori. Untuk melihat TREN dari waktu ke waktu, garis adalah jagonya 📈.",
+  tips:"Tren waktu = Line Chart. Porsi = Pie. Bandingkan kategori = Column." },
+
+{ babak:3,
+  soal:"Sebuah dashboard administrasi menampilkan 15 grafik sekaligus. Atasan justru kesulitan menemukan informasi penting. Evaluasi yang paling tepat adalah ...",
+  opsi:["Dashboard terlalu banyak menggunakan data","Dashboard perlu menampilkan informasi yang relevan","Dashboard harus menggunakan lebih banyak grafik","Dashboard sebaiknya menghapus seluruh angka","Dashboard tidak perlu menggunakan data aktual"], kunci:"B",
+  salah:"Masalahnya bukan kurang grafik, tapi terlalu ramai tanpa fokus. Dashboard yang baik cuma menampilkan hal-hal yang relevan untuk keputusan 🎯. Less is more!",
+  tips:"Dashboard bagus = fokus, bukan ramai. Tampilkan yang relevan saja." },
+
+{ babak:3,
+  soal:"Bagian administrasi mencatat data absensi karyawan selama enam bulan. Setelah dianalisis, terlihat jumlah keterlambatan meningkat setiap hari Senin. Tindakan yang paling sesuai berdasarkan data tersebut adalah ...",
+  opsi:["Menghapus data hari Senin","Membandingkan pola absensi antarhari","Mengurangi jumlah hari kerja","Mengganti sistem penggajian","Mengabaikan data keterlambatan"], kunci:"B",
+  salah:"Menghapus atau mengabaikan data yang tidak enak dilihat sama dengan menutup mata 🙈. Langkah analitis berikutnya adalah membandingkan pola antarhari untuk mencari penyebabnya.",
+  tips:"Ada pola? Telusuri dulu (bandingkan), jangan langsung hapus atau hukum." },
+
+{ babak:3,
+  soal:"Data inventaris kantor menunjukkan penggunaan kertas rata-rata 20 rim per bulan. Stok saat ini hanya tersisa 5 rim. Jika proses pemesanan membutuhkan waktu beberapa hari, keputusan administrasi yang paling rasional adalah ...",
+  opsi:["Mempertimbangkan pemesanan stok berikutnya","Menunggu sampai stok benar-benar habis","Mengurangi pencatatan penggunaan kertas","Mengganti seluruh dokumen menjadi digital","Menghapus data penggunaan bulan sebelumnya"], kunci:"A",
+  salah:"5 rim tinggal sekitar seperempat bulan, sementara pemesanan butuh beberapa hari. Menunggu habis = kantor kehabisan kertas saat butuh 📄😱. Data dipakai untuk mengambil keputusan lebih awal.",
+  tips:"Stok tipis + pemesanan butuh waktu = pesan sebelum habis (pikirkan lead time)." },
+
+{ babak:3,
+  soal:"Bagian administrasi mencatat pengeluaran operasional setiap bulan. Kepala kantor ingin mengetahui pos pengeluaran yang paling besar agar dapat mengevaluasi penggunaan anggaran. Data yang paling membantu untuk kebutuhan tersebut adalah ...",
+  opsi:["Nama pegawai dan jabatannya","Jenis pengeluaran dan jumlahnya","Nomor surat dan tanggal surat","Alamat kantor dan nomor telepon","Nama pemasok dan alamat pemasok"], kunci:"B",
+  salah:"Untuk mencari pos terbesar kamu butuh dua hal: apa jenis pengeluarannya dan berapa jumlahnya 💰. Nama pegawai, nomor surat, atau alamat tidak menjawab pertanyaan itu.",
+  tips:"Pertanyaan 'pos terbesar' = butuh KATEGORI + NOMINAL." },
+
+{ babak:3, tipe:"ketik",
+  soal:"Laporan penjualan harus punya insight, bukan sekadar angka. Tolong ketik ulang kalimat insight berikut ke laporan dengan teliti, jangan sampai angkanya keliru!",
+  teks:"Penjualan Maret naik 25% dari Februari, didorong produk unggulan di wilayah Surabaya.", batas:30,
+  salah:"Dalam laporan, satu angka atau kata yang salah ketik bisa mengubah makna insight 📉. Periksa angka, tanda persen, dan tanda bacanya!",
+  tips:"Insight bagus = angka + penjelasan penyebab (apa, berapa, mengapa)." }
+
+];
+
+/* =====================================================================
+   ⚙️ MESIN GAME (guru tidak perlu mengubah bagian di bawah ini)
+   ===================================================================== */
+const $ = id => document.getElementById(id), HURUF = "ABCDE";
+const S = { nama:"", sertURL:"", b:0, daftar:[], i:0, skor:0, bantu:KONFIG.JATAH_BANTUAN, terjawab:false, ulang:false, pakaiBantu:false, busy:false, menit:480, tk:null, opsi:[], mode:"pilgan", t0:0, tmrId:0, ketikTeks:"", hasil:[0,0,0] };
+const maksB = n => 10*KONFIG.POIN_BENAR + questions.filter(q => q.babak===n+1 && q.tipe==="ketik").length*KONFIG.POIN_BONUS_KETIK;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const pilih = a => a[Math.random()*a.length|0];
+function acak(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function esc(s){ return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function tampil(id){ ["sMulai","sGame","sAntar","sAkhir"].forEach(x => $(x).hidden = x!==id); window.scrollTo(0,0); }
+
+(function cek(){
+  [1,2,3].forEach(n => { const c = questions.filter(q=>q.babak===n).length; if(c!==10) console.warn("Babak "+n+" berisi "+c+" soal (seharusnya 10)."); });
+  questions.forEach((q,i) => {
+    if(q.tipe==="ketik"){ if(!q.teks) console.warn("Soal #"+(i+1)+": soal mengetik harus punya 'teks'."); }
+    else if(HURUF.indexOf(q.kunci)<0 || HURUF.indexOf(q.kunci)>=q.opsi.length) console.warn("Soal #"+(i+1)+": kunci jawaban tidak valid.");
+    if(q.tokoh && !TOKOH[q.tokoh]) console.warn("Soal #"+(i+1)+": tokoh '"+q.tokoh+"' tidak ada di daftar TOKOH.");
+  });
+})();
+
+$("daftarBabak").innerHTML = BABAK.map((b,i) => '<div class="babak"><span>'+b.ikon+'</span><div><b>Babak '+(i+1)+': '+b.nama+'</b><br><small class="mut">'+b.ket+'</small></div></div>').join("");
+
+/* ---- menyesuaikan tinggi layar saat keyboard HP muncul ---- */
+if(window.visualViewport){
+  const vv = window.visualViewport, fit = () => { const g=$("sGame"); g.style.height = vv.height+"px"; g.style.top = vv.offsetTop+"px"; turun(); };
+  vv.addEventListener("resize", fit); vv.addEventListener("scroll", fit);
+}
+
+/* ---- fungsi chat ---- */
+function jam(){ S.menit++; const h=Math.floor(S.menit/60)%24, m=S.menit%60; return String(h).padStart(2,"0")+"."+String(m).padStart(2,"0"); }
+function turun(){ const c=$("chat"); c.scrollTo({top:c.scrollHeight, behavior:"smooth"}); }
+function tambah(sisi, tk, html){
+  const d = document.createElement("div"); d.className = "row "+sisi;
+  d.innerHTML = (sisi==="kiri" ? '<div class="av">'+tk.ikon+'</div>' : '') +
+    '<div class="msg"><div class="nm">'+(sisi==="kiri" ? tk.nama : esc(S.nama))+'</div>'+html+'<time>'+jam()+'</time></div>';
+  $("chat").appendChild(d); turun();
+}
+function sistem(t){ const d=document.createElement("div"); d.className="sis"; d.innerHTML="<span>"+t+"</span>"; $("chat").appendChild(d); turun(); }
+async function ketik(tk, ms){
+  $("hStatus").textContent = "sedang mengetik…";
+  const d = document.createElement("div"); d.className = "row kiri";
+  d.innerHTML = '<div class="av">'+tk.ikon+'</div><div class="msg dots"><span></span><span></span><span></span></div>';
+  $("chat").appendChild(d); turun(); await sleep(ms); d.remove(); $("hStatus").textContent = "online";
+}
+function tabelHtml(t){
+  return t ? '<div class="tbl"><table>'+t.map((r,ri) => '<tr>'+r.map(c => ri?'<td>'+esc(c)+'</td>':'<th>'+esc(c)+'</th>').join("")+'</tr>').join("")+'</table></div>' : "";
+}
+function tokohSoal(q){ return (q.tokoh && TOKOH[q.tokoh]) || TOKOH[ TOKOH_BAWAAN[S.b][S.i%3] ]; }
+
+/* acak soal tiap babak; soal pembuka dijamin berbeda dari permainan sebelumnya */
+function acakBabak(l, n){
+  let a = acak(l);
+  try{
+    const k = "daa_awal"+n, last = localStorage.getItem(k);
+    if(last!==null && a.length>1 && questions.indexOf(a[0])===+last){ const j = 1+(Math.random()*(a.length-1)|0); [a[0],a[j]] = [a[j],a[0]]; }
+    localStorage.setItem(k, questions.indexOf(a[0]));
+  }catch(e){}
+  return a;
+}
+
+/* ---- input nama ---- */
+try{ $("inNama").value = localStorage.getItem("daa_nama") || ""; }catch(e){}
+$("inNama").addEventListener("keydown", e => { if(e.key==="Enter") mulai(); });
+function mulai(){
+  const v = $("inNama").value.trim().replace(/\s+/g," "), el = $("inNama");
+  if(!v){ el.classList.add("shake"); el.focus(); setTimeout(() => el.classList.remove("shake"), 500); return; }
+  S.nama = v.slice(0,40);
+  try{ localStorage.setItem("daa_nama", S.nama); }catch(e){}
+  mulaiBabak(0);
+}
+
+/* ---- alur permainan ---- */
+function mulaiBabak(n){
+  S.b = n; const l = questions.filter(q => q.babak === n+1);
+  S.daftar = KONFIG.ACAK_SOAL ? acakBabak(l,n) : l; S.i = 0; S.menit = 480;
+  $("chat").innerHTML = ""; tampil("sGame");
+  if(n===0) sistem("👋 Selamat datang di kantor, "+esc(S.nama)+"!");
+  sistem("📅 Senin, 08.00 • Babak "+(n+1)+": "+BABAK[n].nama+" "+BABAK[n].ikon);
+  tampilSoal();
+}
+
+async function tampilSoal(){
+  const q = S.daftar[S.i], tk = tokohSoal(q);
+  S.tk = tk; S.terjawab = false; S.ulang = false; S.pakaiBantu = false; S.busy = true;
+  S.mode = q.tipe==="ketik" ? "ketik" : "pilgan"; S.t0 = 0; S.ketikTeks = ""; clearInterval(S.tmrId);
+  let o = S.mode==="ketik" ? [] : q.opsi.map((t,k) => ({t, ok: HURUF[k]===q.kunci}));
+  S.opsi = KONFIG.ACAK_OPSI ? acak(o) : o;
+  $("bawah").hidden = true; $("hAv").textContent = tk.ikon; $("hNama").textContent = tk.nama+" • "+tk.peran;
+  $("prog").style.width = (S.i/S.daftar.length*100)+"%"; updHud();
+  await ketik(tk, 600);
+  tambah("kiri", tk, esc((S.i===0 ? "Halo, "+S.nama+"! " : "")+pilih(tk.pembuka)));
+  await ketik(tk, 900);
+  tambah("kiri", tk, '<b>'+(S.mode==="ketik" ? '⌨️ Tantangan Ketik Cepat' : '📌 Tugas')+' '+(S.i+1)+' dari '+S.daftar.length+'</b><br>'+esc(q.soal)+tabelHtml(q.tabel)+(S.mode==="ketik" ? '<div class="tgt">'+esc(q.teks)+'</div><small>⚡ Target kilat: '+q.batas+' detik</small>' : ''));
+  S.busy = false; renderBawah(); updHud();
+}
+
+function renderBawah(){
+  const b = $("bawah"); b.hidden = false;
+  if(S.terjawab){
+    b.innerHTML = '<button class="btn" onclick="lanjut()">'+(S.i===S.daftar.length-1 ? "Selesai Babak ✔" : "Tugas berikutnya ➜")+'</button>';
+  } else if(S.mode==="ketik"){
+    b.innerHTML = `<div class="lbl">⌨️ Tantangan Mengetik — ketik persis seperti pesan di atas, lalu tekan Kirim</div><div id="tgtLive" class="tgt"></div><form class="comp" onsubmit="kirimKetik();return false"><input id="kInp" type="text" inputmode="text" enterkeyhint="send" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Ketik di sini…" oninput="ketikLive()" onpaste="return false" ondrop="return false"><button class="send" type="submit">➤</button></form><div class="tm">⏱ <span id="tmr">0.0</span> detik • tempel (paste) dinonaktifkan</div>`;
+    $("kInp").value = S.ketikTeks; ketikLive(true); $("kInp").focus();
+  } else {
+    b.innerHTML = '<div class="lbl">💬 Opsi Balasan Tindakan — ketuk satu untuk membalas</div><div id="opsiBox">'+
+      S.opsi.map((o,k) => '<button class="opt'+(o.mati?' gone':'')+(o.salah?' no':'')+'" data-k="'+k+'"'+((o.mati||o.salah)?' disabled':'')+'><b>'+HURUF[k]+'</b><span>'+esc(o.t)+'</span></button>').join("")+'</div>';
+  }
+  b.scrollTop = 0;
+}
+$("bawah").addEventListener("click", e => { const t = e.target.closest(".opt"); if(t) jawab(+t.dataset.k); });
+
+async function jawab(k){
+  if(S.busy || S.terjawab) return; S.busy = true; updHud();
+  const q = S.daftar[S.i], o = S.opsi[k], tk = S.tk;
+  $("bawah").hidden = true;
+  tambah("kanan", null, '<b>'+HURUF[k]+'.</b> '+esc(o.t));
+  await ketik(tk, 900);
+  if(o.ok){
+    const p = S.ulang ? KONFIG.POIN_ULANG : KONFIG.POIN_BENAR;
+    S.skor += p; S.hasil[S.b] += p; S.terjawab = true;
+    tambah("kiri", tk, esc(pilih(tk.puji))+'<br><span class="poin">🏆 +'+p+' Reputasi Kantor'+(S.ulang?' (bonus usaha ulang)':'')+'</span>');
+    bunyi(true); konfeti(); updHud();
+    await ketik(tk, 800);
+    tambah("kiri", tk, '💡 <b>Tips Cepat Ingat:</b> '+esc(q.tips));
+  } else {
+    o.salah = true; S.ulang = true;
+    tambah("kiri", tk, esc(pilih(tk.kaget))+'<br><br>'+esc(q.salah));
+    sistem("🔁 Ayo balas lagi dengan tindakan yang lebih tepat"); bunyi(false);
+  }
+  S.busy = false; renderBawah(); updHud();
+}
+
+function ketikLive(init){
+  const q = S.daftar[S.i], inp = $("kInp"); if(!inp) return;
+  const v = inp.value, T = q.teks; S.ketikTeks = v;
+  if(!init && v.length && !S.t0){
+    S.t0 = Date.now();
+    S.tmrId = setInterval(() => { const e = $("tmr"); if(e) e.textContent = ((Date.now()-S.t0)/1000).toFixed(1); }, 100);
+  }
+  let h = "";
+  for(let i=0;i<T.length;i++){
+    const c = esc(T[i]);
+    h += i<v.length ? '<span class="'+(v[i]===T[i]?'ok':'bad')+'">'+c+'</span>' : (i===v.length ? '<span class="cur">' : '<span>')+c+'</span>';
+  }
+  if(v.length>T.length) h += '<span class="bad"> ⚠ kelebihan '+(v.length-T.length)+' karakter</span>';
+  $("tgtLive").innerHTML = h;
+}
+
+async function kirimKetik(){
+  if(S.busy || S.terjawab) return;
+  const q = S.daftar[S.i], tk = S.tk, v = $("kInp").value, a = v.trim(); if(!a) return;
+  clearInterval(S.tmrId); const dt = S.t0 ? (Date.now()-S.t0)/1000 : 0;
+  S.busy = true; updHud(); $("bawah").hidden = true;
+  tambah("kanan", null, '<span style="font-family:Consolas,monospace">'+esc(a)+'</span>');
+  await ketik(tk, 900);
+  if(a === q.teks){
+    const base = S.ulang ? KONFIG.POIN_ULANG : KONFIG.POIN_BENAR;
+    const kilat = !S.ulang && dt>0 && dt<=q.batas, bonus = kilat ? KONFIG.POIN_BONUS_KETIK : 0, p = base+bonus;
+    S.skor += p; S.hasil[S.b] += p; S.terjawab = true;
+    const wpm = dt>0 ? Math.round(q.teks.length/5/(dt/60)) : 0;
+    tambah("kiri", tk, esc(pilih(tk.puji))+'<br>⌨️ '+(dt ? dt.toFixed(1)+' detik • ±'+wpm+' kata/menit • ' : '')+'akurasi 100%'+(kilat?' ⚡ <b>Kilat!</b>':'')+
+      '<br><span class="poin">🏆 +'+p+' Reputasi Kantor'+(S.ulang?' (bonus usaha ulang)':'')+(bonus?' (+'+bonus+' kilat)':'')+'</span>');
+    bunyi(true); konfeti(); updHud();
+    await ketik(tk, 800);
+    tambah("kiri", tk, '💡 <b>Tips Cepat Ingat:</b> '+esc(q.tips));
+  } else {
+    S.ulang = true; S.t0 = 0; S.ketikTeks = v;
+    let i = 0; while(i<a.length && i<q.teks.length && a[i]===q.teks[i]) i++;
+    const vis = c => c===" " ? "spasi" : c;
+    const info = i>=q.teks.length ? "ada karakter berlebih mulai dari posisi ke-"+(i+1)
+               : i>=a.length ? "kalimatmu kurang lengkap, berhenti di karakter ke-"+i
+               : "karakter ke-"+(i+1)+" seharusnya «"+vis(q.teks[i])+"» tapi kamu mengetik «"+vis(a[i])+"»";
+    tambah("kiri", tk, esc(pilih(tk.kaget))+'<br><br>'+esc(q.salah)+'<br><br>🔎 Cek: '+esc(info));
+    sistem("🔁 Perbaiki ketikanmu lalu kirim lagi"); bunyi(false);
+  }
+  S.busy = false; renderBawah(); updHud();
+}
+
+function bantuan(){
+  if(S.bantu<=0 || S.terjawab || S.pakaiBantu || S.busy) return;
+  const idx = S.opsi.map((o,k)=>k).filter(k => !S.opsi[k].ok && !S.opsi[k].mati && !S.opsi[k].salah);
+  if(idx.length<=1) return;
+  const simpan = idx[Math.random()*idx.length|0];           // sisakan 1 pilihan salah -> tinggal 2 (50:50)
+  idx.forEach(k => { if(k!==simpan) S.opsi[k].mati = true; });
+  S.bantu--; S.pakaiBantu = true;
+  sistem("🧑‍💼 Kamu menghubungi Senior… 2 opsi dicoret!"); renderBawah(); updHud();
+}
+
+function updHud(){
+  $("hSkor").textContent = S.skor;
+  const b = $("btnBantu"); b.textContent = "🧑‍💼 50:50 ("+S.bantu+")";
+  b.disabled = S.bantu<=0 || S.terjawab || S.pakaiBantu || S.busy || S.mode==="ketik";
+}
+
+function lanjut(){
+  if(S.i < S.daftar.length-1){ S.i++; $("bawah").hidden = true; tampilSoal(); return; }
+  const B = BABAK[S.b], maks = maksB(S.b);
+  if(S.b < 2){
+    $("aIkon").textContent = "🎯"; $("aJudul").textContent = "Babak "+(S.b+1)+" Selesai!";
+    $("aIsi").innerHTML = "Kamu menaklukkan <b>"+B.nama+"</b> dengan "+S.hasil[S.b]+"/"+maks+" poin.<br>Selanjutnya: <b>"+BABAK[S.b+1].ikon+" "+BABAK[S.b+1].nama+"</b>";
+    $("aBtn").className = "btn"; $("aBtn").textContent = "Lanjut ke Babak "+(S.b+2)+" ➜"; $("aBtn").onclick = () => mulaiBabak(S.b+1);
+    tampil("sAntar"); konfeti();
+  } else selesai();
+}
+
+function selesai(){
+  const maks = maksB(0)+maksB(1)+maksB(2), r = S.skor/maks;
+  const rank = r<.4 ? {t:"Magang Ceria",e:"🌱"} : r<.7 ? {t:"Junior Data Analyst",e:"📊"} : r<.95 ? {t:"Data Analyst Handal",e:"🚀"} : {t:"Senior Data Analyst",e:"⭐"};
+  const medali = (v,i) => { const x = v/maksB(i); return x>=.9 ? ["Emas","#f59e0b","🥇"] : x>=.6 ? ["Perak","#94a3b8","🥈"] : ["Perunggu","#b45309","🥉"]; };
+  $("fNama").textContent = S.nama; $("fSkor").textContent = S.skor+" / "+maks; $("fRank").textContent = rank.e+" "+rank.t;
+  $("fRinci").innerHTML = BABAK.map((b,i) => medali(S.hasil[i],i)[2]+" "+b.nama+": "+S.hasil[i]+"/"+maksB(i)).join("<br>");
+  S.sertURL = buatSertifikat(rank, maks, medali); $("sertImg").src = S.sertURL;
+  tampil("sAkhir"); konfeti(); konfeti();
+}
+
+function buatSertifikat(rank, maks, medali){
+  const W=1600, H=1130, c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext("2d");
+  const F='"Segoe UI",Arial,sans-serif', SR='Georgia,"Times New Roman",serif';
+  const t=(s,y,f,col,x)=>{ g.font=f; g.fillStyle=col; g.fillText(s,x||W/2,y); };
+  g.fillStyle="#fffdf5"; g.fillRect(0,0,W,H);
+  const gr=g.createLinearGradient(0,0,W,0); gr.addColorStop(0,"#4f46e5"); gr.addColorStop(1,"#7c3aed");
+  g.fillStyle=gr; g.fillRect(0,0,W,30); g.fillRect(0,H-30,W,30);
+  g.strokeStyle="#f59e0b"; g.lineWidth=6; g.strokeRect(50,60,W-100,H-120);
+  g.strokeStyle="#4f46e5"; g.lineWidth=2; g.strokeRect(66,76,W-132,H-152);
+  g.textAlign="center";
+  t(KONFIG.NAMA_SEKOLAH.toUpperCase(),140,"bold 30px "+F,"#64748b");
+  t("SERTIFIKAT PENGHARGAAN",230,"bold 70px "+SR,"#4f46e5");
+  t("Junior Data Analyst Simulator",285,"34px "+F,"#7c3aed");
+  t("diberikan kepada",360,"italic 30px "+SR,"#64748b");
+  let fs=96; g.font="bold "+fs+"px "+SR; while(g.measureText(S.nama).width>W-300 && fs>40){ fs-=4; g.font="bold "+fs+"px "+SR; }
+  g.fillStyle="#1e293b"; g.fillText(S.nama,W/2,470);
+  g.fillStyle="#f59e0b"; g.fillRect(W/2-300,495,600,4);
+  t("atas keberhasilan menyelesaikan simulasi",555,"30px "+F,"#334155");
+  t(KONFIG.JUDUL_MAPEL,595,"bold 28px "+F,"#334155");
+  t("Reputasi Kantor "+S.skor+" dari "+maks,650,"bold 36px "+F,"#16a34a");
+  t("Jabatan: "+rank.t,710,"bold 46px "+F,"#4f46e5");
+  BABAK.forEach((b,i) => {
+    const m = medali(S.hasil[i],i), x = W/2+(i-1)*430;
+    g.beginPath(); g.arc(x,800,42,0,Math.PI*2); g.fillStyle=m[1]; g.fill();
+    g.lineWidth=5; g.strokeStyle="#fff"; g.stroke();
+    t(String(i+1),816,"bold 44px "+F,"#fff",x);
+    t("Babak "+(i+1)+": "+b.nama,892,"bold 26px "+F,"#1e293b",x);
+    t(m[0]+" • "+S.hasil[i]+"/"+maksB(i),928,"24px "+F,"#64748b",x);
+  });
+  const tgl = new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  t("Surabaya, "+tgl,1010,"24px "+F,"#334155",330);
+  g.fillStyle="#334155"; g.fillRect(W-560,1030,360,2);
+  t(KONFIG.NAMA_GURU || "Guru Mata Pelajaran",1065,"bold 24px "+F,"#334155",W-380);
+  return c.toDataURL("image/png");
+}
+
+function unduh(){
+  const nama = "Sertifikat-"+S.nama.replace(/[^\w\-]+/g,"_")+".png";
+  const bin = atob(S.sertURL.split(",")[1]), u8 = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([u8], {type:"image/png"}));
+  const a = document.createElement("a"); a.href = url; a.download = nama;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* ---- Efek suara sederhana (WebAudio) ---- */
+let ac;
+function bunyi(ok){
+  try{
+    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+    (ok ? [523,659,784] : [220,180]).forEach((f,i) => {
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i*.1;
+      o.frequency.value = f; o.type = ok ? "triangle" : "sawtooth";
+      g.gain.setValueAtTime(.12,t); g.gain.exponentialRampToValueAtTime(.001,t+.2);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+.2);
+    });
+  }catch(e){}
+}
+
+/* ---- Konfeti sederhana ---- */
+const cv = $("cv"), cx = cv.getContext("2d"); let pts = [], anim = false;
+function konfeti(){
+  cv.width = innerWidth; cv.height = innerHeight;
+  const w = ["#4f46e5","#f59e0b","#16a34a","#ec4899","#06b6d4","#ef4444"];
+  for(let i=0;i<90;i++) pts.push({x:cv.width/2,y:cv.height/3,vx:(Math.random()-.5)*14,vy:Math.random()*-12-2,s:5+Math.random()*6,c:w[i%6],l:80+Math.random()*40});
+  if(!anim){ anim = true; frame(); }
+}
+function frame(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  pts = pts.filter(p => p.l>0);
+  pts.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=.35; p.l--; cx.fillStyle=p.c; cx.fillRect(p.x,p.y,p.s,p.s*.6); });
+  if(pts.length) requestAnimationFrame(frame); else { anim=false; cx.clearRect(0,0,cv.width,cv.height); }
+}
+</script>
+</body>
+</html>
