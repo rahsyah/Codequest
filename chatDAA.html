@@ -585,29 +585,30 @@ function buatSertifikat(rank, maks, medali){
   g.strokeStyle="#f59e0b"; g.lineWidth=6; g.strokeRect(50,60,W-100,H-120);
   g.strokeStyle="#4f46e5"; g.lineWidth=2; g.strokeRect(66,76,W-132,H-152);
   g.textAlign="center";
-  t(KONFIG.NAMA_SEKOLAH.toUpperCase(),140,"bold 30px "+F,"#64748b");
-  t("SERTIFIKAT PENGHARGAAN",230,"bold 70px "+SR,"#4f46e5");
-  t("Junior Data Analyst Simulator",285,"34px "+F,"#7c3aed");
-  t("diberikan kepada",360,"italic 30px "+SR,"#64748b");
+  t(KONFIG.NAMA_SEKOLAH.toUpperCase(),120,"bold 30px "+F,"#64748b");
+  t("SERTIFIKAT PENGHARGAAN",205,"bold 70px "+SR,"#4f46e5");
+  t("Junior Data Analyst Simulator",255,"34px "+F,"#7c3aed");
+  t("diberikan kepada",320,"italic 30px "+SR,"#64748b");
   let fs=96; g.font="bold "+fs+"px "+SR; while(g.measureText(S.nama).width>W-300 && fs>40){ fs-=4; g.font="bold "+fs+"px "+SR; }
-  g.fillStyle="#1e293b"; g.fillText(S.nama,W/2,470);
-  g.fillStyle="#f59e0b"; g.fillRect(W/2-300,495,600,4);
-  t("atas keberhasilan menyelesaikan simulasi",555,"30px "+F,"#334155");
-  t(KONFIG.JUDUL_MAPEL,595,"bold 28px "+F,"#334155");
-  t("Reputasi Kantor "+S.skor+" dari "+maks,650,"bold 36px "+F,"#16a34a");
-  t("Jabatan: "+rank.t,710,"bold 46px "+F,"#4f46e5");
+  g.fillStyle="#1e293b"; g.fillText(S.nama,W/2,425);
+  g.fillStyle="#f59e0b"; g.fillRect(W/2-300,450,600,4);
+  t("atas keberhasilan menyelesaikan simulasi",505,"30px "+F,"#334155");
+  t(KONFIG.JUDUL_MAPEL,543,"bold 28px "+F,"#334155");
+  t("Reputasi Kantor "+S.skor+" dari "+maks,595,"bold 36px "+F,"#16a34a");
+  t("Jabatan: "+rank.t,650,"bold 46px "+F,"#4f46e5");
   BABAK.forEach((b,i) => {
     const m = medali(S.hasil[i],i), x = W/2+(i-1)*430;
-    g.beginPath(); g.arc(x,800,42,0,Math.PI*2); g.fillStyle=m[1]; g.fill();
+    g.beginPath(); g.arc(x,725,42,0,Math.PI*2); g.fillStyle=m[1]; g.fill();
     g.lineWidth=5; g.strokeStyle="#fff"; g.stroke();
-    t(String(i+1),816,"bold 44px "+F,"#fff",x);
-    t("Babak "+(i+1)+": "+b.nama,892,"bold 26px "+F,"#1e293b",x);
-    t(m[0]+" • "+S.hasil[i]+"/"+maksB(i),928,"24px "+F,"#64748b",x);
+    t(String(i+1),741,"bold 44px "+F,"#fff",x);
+    t("Babak "+(i+1)+": "+b.nama,800,"bold 26px "+F,"#1e293b",x);
+    t(m[0]+" • "+S.hasil[i]+"/"+maksB(i),834,"24px "+F,"#64748b",x);
   });
   const tgl = new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
-  t("Surabaya, "+tgl,1010,"24px "+F,"#334155",330);
-  g.fillStyle="#334155"; g.fillRect(W-560,1030,360,2);
-  t(KONFIG.NAMA_GURU || "Guru Mata Pelajaran",1065,"bold 24px "+F,"#334155",W-380);
+  t("Surabaya, "+tgl,905,"24px "+F,"#334155",330);
+  t("Guru Mata Pelajaran",905,"22px "+F,"#64748b",W-380);
+  g.fillStyle="#334155"; g.fillRect(W-560,975,360,2);
+  t(KONFIG.NAMA_GURU || "(...........................)",1010,"bold 26px "+F,"#1e293b",W-380);
   return c.toDataURL("image/png");
 }
 
